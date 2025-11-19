@@ -1,6 +1,6 @@
 package be.kdg.ip3.archportal.gameService.application;
 
-import be.kdg.ip3.archportal.gameService.api.GameStudioDto;
+import be.kdg.ip3.archportal.gameService.api.dto.GameStudioDto;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudio;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudioRepository;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.OwnerId;

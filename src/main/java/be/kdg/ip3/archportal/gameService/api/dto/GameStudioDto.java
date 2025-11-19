@@ -1,4 +1,4 @@
-package be.kdg.ip3.archportal.gameService.api;
+package be.kdg.ip3.archportal.gameService.api.dto;
 
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudio;
 
