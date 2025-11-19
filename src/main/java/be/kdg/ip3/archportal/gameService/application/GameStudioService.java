@@ -1,6 +1,6 @@
 package be.kdg.ip3.archportal.gameService.application;
 
-import be.kdg.ip3.archportal.gameService.api.dto.CreateGameStudioDto;
+import be.kdg.ip3.archportal.gameService.application.command.CreateGameStudioCommand;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudio;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudioRepository;
 import be.kdg.ip3.archportal.gameService.domain.owner.Owner;
@@ -19,21 +19,22 @@ public class GameStudioService {
         this.ownerRepo = ownerRepo;
     }
 
-    public GameStudio createGameStudio(CreateGameStudioDto studioDto) {
+    public CreateGameStudioCommand createGameStudio(CreateGameStudioCommand studioCommand) {
         var owner = new Owner(
-                studioDto.ownerFirstName(),
-                studioDto.ownerLastName(),
-                studioDto.ownerEmail());
+                studioCommand.ownerFirstName(),
+                studioCommand.ownerLastName(),
+                studioCommand.ownerEmail());
 
         this.ownerRepo.save(owner);
 
         var studio = new GameStudio(
                 owner.getId(),
-                studioDto.name(),
-                studioDto.description(),
-                studioDto.IBAN());
+                studioCommand.name(),
+                studioCommand.description(),
+                studioCommand.IBAN());
 
         this.gameStudioRepo.save(studio);
-        return studio;
+
+        return CreateGameStudioCommand.fromDomain(studio,owner);
     }
 }

@@ -1,6 +1,6 @@
 package be.kdg.ip3.archportal.gameService.api.dto;
 
-import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudio;
+import be.kdg.ip3.archportal.gameService.application.command.CreateGameStudioCommand;
 
 import java.util.UUID;
 
@@ -14,16 +14,16 @@ public record CreateGameStudioDto(
         String ownerLastName,
         String ownerEmail
 ) {
-    public static CreateGameStudioDto fromDomain(GameStudio studio) {
+    public static CreateGameStudioDto fromDomain(CreateGameStudioCommand studioCommand) {
         return new CreateGameStudioDto(
-                studio.getId().id(),
-                studio.getOwnerId().id(),
-                studio.getName(),
-                studio.getDescription(),
-                studio.getIBAN(),
-                "",
-                "",
-                ""
+                studioCommand.id(),
+                studioCommand.ownerId(),
+                studioCommand.name(),
+                studioCommand.description(),
+                studioCommand.IBAN(),
+                studioCommand.ownerFirstName(),
+                studioCommand.ownerLastName(),
+                studioCommand.ownerEmail()
 
         );
     }
