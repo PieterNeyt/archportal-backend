@@ -1,4 +1,4 @@
-package be.kdg.ip3.archportal.gameService.domain.gamestudio;
+package be.kdg.ip3.archportal.gameService.domain.owner;
 
 import org.springframework.util.Assert;
 

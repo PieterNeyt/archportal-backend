@@ -5,7 +5,10 @@ Content-Type: application/json
 {
   "name": "Epic Games Studio",
   "description": "We create amazing indie games",
-  "IBAN": "BE68539007547034"
+  "IBAN": "BE68539007547034",
+  "ownerEmail": "dorhugomc@gmail.com",
+  "ownerFirstName": "Hugo",
+  "ownerLastName": "Dor"
 }
 
 > {% 
