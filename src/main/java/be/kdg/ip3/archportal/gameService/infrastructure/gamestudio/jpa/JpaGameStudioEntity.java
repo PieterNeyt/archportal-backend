@@ -3,6 +3,7 @@ package be.kdg.ip3.archportal.gameService.infrastructure.gamestudio.jpa;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudio;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudioId;
 import be.kdg.ip3.archportal.gameService.domain.owner.OwnerId;
+import be.kdg.ip3.archportal.gameService.infrastructure.owner.jpa.JpaOwnerEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -15,12 +16,9 @@ public class JpaGameStudioEntity {
     @Id
     private UUID id;
 
-    /* TODO: later one to one maken wanneer je owner toevoegd
-        @OneToOne(fetch = FetchType.LAZY, optional = false)
-        @JoinColumn(name = "owner_id")
-     */
-    @Column(nullable = false)
-    private UUID ownerId;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private JpaOwnerEntity owner;
 
     @Column(nullable = false)
     private String name;
@@ -35,18 +33,18 @@ public class JpaGameStudioEntity {
     protected JpaGameStudioEntity() {
     }
 
-    public JpaGameStudioEntity(UUID id, UUID ownerId, String name, String description, String IBAN) {
+    public JpaGameStudioEntity(UUID id, JpaOwnerEntity owner, String name, String description, String IBAN) {
         this.id = id;
-        this.ownerId = ownerId;
+        this.owner = owner;
         this.name = name;
         this.description = description;
         this.IBAN = IBAN;
     }
 
-    public static JpaGameStudioEntity fromDomain(GameStudio studio) {
+    public static JpaGameStudioEntity fromDomain(GameStudio studio, JpaOwnerEntity owner) {
         return new JpaGameStudioEntity(
                 studio.getId().id(),
-                studio.getOwnerId().id(),
+                owner,
                 studio.getName(),
                 studio.getDescription(),
                 studio.getIBAN()
@@ -55,7 +53,7 @@ public class JpaGameStudioEntity {
 
     public GameStudio toDomain() {
         return new GameStudio(new GameStudioId(id),
-                new OwnerId(ownerId),
+                new OwnerId(owner.getId()),
                 name,
                 description,
                 IBAN);
