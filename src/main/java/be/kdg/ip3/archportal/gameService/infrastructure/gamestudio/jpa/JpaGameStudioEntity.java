@@ -17,7 +17,7 @@ public class JpaGameStudioEntity {
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false, unique = true)
     private JpaOwnerEntity owner;
 
     @Column(nullable = false)
