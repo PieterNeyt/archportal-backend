@@ -40,6 +40,6 @@ public class GameStudioService {
     }
     
     public GameStudio findById(GameStudioId id) {
-        return this.repository.findById(id).orElseThrow(id::notFound);
+        return this.gameStudioRepo.findById(id).orElseThrow(id::notFound);
     }
 }

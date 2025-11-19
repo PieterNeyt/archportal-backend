@@ -1,3 +1,8 @@
+-- ===== Owners =====
+INSERT INTO gameservice.owner (id, first_name, last_name, email)
+VALUES ('51d0b9d3-80aa-4d18-9c3b-84b2f8b8d671', 'Alice', 'Van Houten', 'alice.vh@example.com'),
+       ('7f9244b8-b5ce-4479-96f7-5e02a40211ad', 'Bob', 'Timber', 'bob.timber@example.com');
+
 -- ===== Studios =====
 INSERT INTO gameservice.gamestudio (id, owner_id, name, description, iban)
 VALUES ('3f071d5d-5d2e-4b5f-9c12-7cf7e902b113', '51d0b9d3-80aa-4d18-9c3b-84b2f8b8d671', 'HexGrid Games',
