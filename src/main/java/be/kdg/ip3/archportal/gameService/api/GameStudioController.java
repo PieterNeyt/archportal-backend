@@ -1,8 +1,7 @@
 package be.kdg.ip3.archportal.gameService.api;
 
-import be.kdg.ip3.archportal.gameService.api.dto.GameStudioDto;
+import be.kdg.ip3.archportal.gameService.api.dto.CreateGameStudioDto;
 import be.kdg.ip3.archportal.gameService.application.GameStudioService;
-import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudio;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,13 +20,13 @@ public class GameStudioController {
     }
 
     @PostMapping()
-    public ResponseEntity<GameStudioDto> createGameStudio(@RequestBody GameStudioDto studioDto) {
+    public ResponseEntity<CreateGameStudioDto> createGameStudio(@RequestBody CreateGameStudioDto studioDto) {
         var studio = gameStudioService.createGameStudio(studioDto);
         var location = URI.create("/api/gamestudio/" + studio.getId().id());
 
         return ResponseEntity
                 .created(location)
-                .body(GameStudioDto.fromDomain(studio));
+                .body(CreateGameStudioDto.fromDomain(studio));
     }
 
 

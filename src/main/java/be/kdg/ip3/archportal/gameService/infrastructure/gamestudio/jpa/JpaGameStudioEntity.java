@@ -2,7 +2,7 @@ package be.kdg.ip3.archportal.gameService.infrastructure.gamestudio.jpa;
 
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudio;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudioId;
-import be.kdg.ip3.archportal.gameService.domain.gamestudio.OwnerId;
+import be.kdg.ip3.archportal.gameService.domain.owner.OwnerId;
 import jakarta.persistence.*;
 import lombok.Getter;
 

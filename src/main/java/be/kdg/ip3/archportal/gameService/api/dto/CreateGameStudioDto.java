@@ -4,20 +4,28 @@ import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudio;
 
 import java.util.UUID;
 
-public record GameStudioDto(
+public record CreateGameStudioDto(
         UUID id,
         UUID ownerId,
         String name,
         String description,
-        String IBAN
+        String IBAN,
+        String ownerFirstName,
+        String ownerLastName,
+        String ownerEmail
 ) {
-    public static GameStudioDto fromDomain(GameStudio studio) {
-        return new GameStudioDto(
+    public static CreateGameStudioDto fromDomain(GameStudio studio) {
+        return new CreateGameStudioDto(
                 studio.getId().id(),
                 studio.getOwnerId().id(),
                 studio.getName(),
                 studio.getDescription(),
-                studio.getIBAN()
+                studio.getIBAN(),
+                "",
+                "",
+                ""
+
         );
     }
 }
+

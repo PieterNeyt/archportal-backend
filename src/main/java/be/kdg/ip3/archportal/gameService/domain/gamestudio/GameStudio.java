@@ -1,8 +1,11 @@
 package be.kdg.ip3.archportal.gameService.domain.gamestudio;
 
+import be.kdg.ip3.archportal.gameService.domain.owner.OwnerId;
 import lombok.Getter;
+import org.jmolecules.ddd.annotation.AggregateRoot;
 
 @Getter
+@AggregateRoot
 public class GameStudio {
     private final GameStudioId id;
     private final OwnerId ownerId;
