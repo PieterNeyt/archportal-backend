@@ -1,29 +1,40 @@
 package be.kdg.ip3.archportal.gameService.application;
 
-import be.kdg.ip3.archportal.gameService.api.dto.GameStudioDto;
+import be.kdg.ip3.archportal.gameService.application.command.CreateGameStudioCommand;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudio;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudioRepository;
-import be.kdg.ip3.archportal.gameService.domain.gamestudio.OwnerId;
+import be.kdg.ip3.archportal.gameService.domain.owner.Owner;
+import be.kdg.ip3.archportal.gameService.domain.owner.OwnerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class GameStudioService {
-    private final  GameStudioRepository repository;
-    public GameStudioService(GameStudioRepository repository) {
-        this.repository = repository;
+    private final  GameStudioRepository gameStudioRepo;
+    private final OwnerRepository ownerRepo;
+
+    public GameStudioService(GameStudioRepository repository, OwnerRepository ownerRepo) {
+        this.gameStudioRepo = repository;
+        this.ownerRepo = ownerRepo;
     }
 
-    public GameStudio createGameStudio(GameStudioDto studioDto) {
-        //TODO: later owner ook aanmaken voor de studio
+    public CreateGameStudioCommand createGameStudio(CreateGameStudioCommand studioCommand) {
+        var owner = new Owner(
+                studioCommand.ownerFirstName(),
+                studioCommand.ownerLastName(),
+                studioCommand.ownerEmail());
 
-        var studio = new GameStudio(OwnerId.create(),
-                studioDto.name(),
-                studioDto.description(),
-                studioDto.IBAN());
-        this.repository.save(studio);
+        this.ownerRepo.save(owner);
 
-        return studio;
+        var studio = new GameStudio(
+                owner.getId(),
+                studioCommand.name(),
+                studioCommand.description(),
+                studioCommand.IBAN());
+
+        this.gameStudioRepo.save(studio);
+
+        return CreateGameStudioCommand.fromDomain(studio,owner);
     }
 }
