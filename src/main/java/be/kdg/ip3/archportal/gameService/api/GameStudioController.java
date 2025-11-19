@@ -2,7 +2,6 @@ package be.kdg.ip3.archportal.gameService.api;
 
 import be.kdg.ip3.archportal.gameService.application.GameStudioService;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudio;
-import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudioRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +18,7 @@ public class GameStudioController {
     }
 
     @PostMapping()
-    public ResponseEntity<GameStudioDto> getAllDishes(@RequestBody GameStudioDto studioDto) {
+    public ResponseEntity<GameStudioDto> createGameStudio(@RequestBody GameStudioDto studioDto) {
         GameStudio studio = gameStudioService.createGameStudio(studioDto);
         return ResponseEntity.ok(GameStudioDto.fromDomain(studio));
     }
