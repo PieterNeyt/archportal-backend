@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Table(name = "gamestudio", schema = "gameService")
+@Table(name = "gamestudio", schema = "gameservice")
 public class JpaGameStudioEntity {
     @Id
     private UUID id;
