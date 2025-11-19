@@ -1,0 +1,9 @@
+### Create Game Studio
+POST http://localhost:8080/api/gamestudio
+Content-Type: application/json
+
+{
+  "name": "Epic Games Studio",
+  "description": "We create amazing indie games",
+  "IBAN": "BE68539007547034"
+}
