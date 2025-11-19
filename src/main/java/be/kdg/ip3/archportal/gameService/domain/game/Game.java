@@ -19,18 +19,26 @@ public class Game {
     private String description;
     private Money price;
     private String imageUrl;
+    private String gameUrl;
     private GameGenre genre;
     private List<Achievement> achievements;
     private List<Update> updates;
 
-    public Game(GameId id, GameStudioId studioId, String title, String description, BigDecimal price, String imageUrl, GameGenre genre) {
+    public Game(GameId id, GameStudioId studioId, String title, String description, BigDecimal price, String imageUrl, String gameUrl, GameGenre genre) {
         this.id = id;
         this.studioId = studioId;
         setTitle(title);
         setDescription(description);
         setPrice(Money.of(price));
         this.imageUrl = imageUrl;
+        setGameUrl(gameUrl);
         setGenre(genre);
+    }
+
+    private void setGameUrl(String gameUrl) {
+        if (title == null || title.trim().isEmpty() || title.isEmpty())
+            throw new IllegalArgumentException("The provided game url is invalid");
+        this.gameUrl = gameUrl;
     }
 
     public void setTitle(String title) {

@@ -21,26 +21,29 @@ public class JpaGameEntity {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
     private String imageUrl;
+    @Column(nullable = false)
+    private String gameUrl;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private GameGenre genre;
     // TODO connection to achievement and updates
-    
+
     protected JpaGameEntity() {
     }
 
-    public JpaGameEntity(UUID id, UUID studioId, String title, String description, BigDecimal price, String imageUrl, GameGenre genre) {
+    public JpaGameEntity(UUID id, UUID studioId, String title, String description, BigDecimal price, String imageUrl, String gameUrl, GameGenre genre) {
         this.id = id;
         this.studioId = studioId;
         this.title = title;
         this.description = description;
         this.price = price;
         this.imageUrl = imageUrl;
+        this.gameUrl = gameUrl;
         this.genre = genre;
     }
-    
+
     public static JpaGameEntity fromDomain(Game game) {
         return new JpaGameEntity(game.getId().id(), game.getStudioId().id(), game.getTitle(), game.getDescription(),
-                game.getPrice().money(), game.getImageUrl(), game.getGenre());
+                game.getPrice().money(), game.getImageUrl(), game.getGameUrl(), game.getGenre());
     }
 }

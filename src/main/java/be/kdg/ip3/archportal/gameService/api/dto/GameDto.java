@@ -14,10 +14,15 @@ public record GameDto(
         @NotNull
         UUID studioId,
         @Size(min = 1, max = 100)
+        @NotNull
         String title,
         @Size(min = 1, max = 255)
+        @NotNull
         String description,
         String imageUrl,
+        @NotNull
+        @Size(min = 5)
+        String gameUrl,
         @Min(0)
         BigDecimal price,
         @NotNull
@@ -25,6 +30,6 @@ public record GameDto(
 ) {
     public static GameDto fromDomain(Game game) {
         return new GameDto(game.getId().id(), game.getStudioId().id(), game.getTitle(), game.getDescription(),
-                game.getImageUrl(), game.getPrice().money(), game.getGenre());
+                game.getImageUrl(), game.getGameUrl(), game.getPrice().money(), game.getGenre());
     }
 }
