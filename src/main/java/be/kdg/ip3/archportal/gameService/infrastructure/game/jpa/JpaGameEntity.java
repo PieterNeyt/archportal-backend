@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
-@Table(schema = "gameservice")
+@Table(name = "games", schema = "gameservice")
 public class JpaGameEntity {
     @Id
     private UUID id;
