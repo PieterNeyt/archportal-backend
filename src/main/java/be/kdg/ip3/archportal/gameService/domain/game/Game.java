@@ -1,9 +1,9 @@
 package be.kdg.ip3.archportal.gameService.domain.game;
 
 import be.kdg.ip3.archportal.gameService.domain.Money;
-import be.kdg.ip3.archportal.gameService.domain.achievement.AchievementId;
+import be.kdg.ip3.archportal.gameService.domain.achievement.Achievement;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudioId;
-import be.kdg.ip3.archportal.gameService.domain.update.UpdateId;
+import be.kdg.ip3.archportal.gameService.domain.update.Update;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
@@ -20,8 +20,8 @@ public class Game {
     private Money price;
     private String imageUrl;
     private GameGenre genre;
-    private List<AchievementId> achievements;
-    private List<UpdateId> updates;
+    private List<Achievement> achievements;
+    private List<Update> updates;
 
     public Game(GameId id, GameStudioId studioId, String title, String description, BigDecimal price, String imageUrl, GameGenre genre) {
         this.id = id;
