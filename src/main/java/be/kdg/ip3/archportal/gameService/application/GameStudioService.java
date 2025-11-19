@@ -19,12 +19,12 @@ public class GameStudioService {
         //TODO: later owner ook aanmaken voor de studio
 
 
-        GameStudio studio = new GameStudio(OwnerId.create(),
+        var studio = new GameStudio(OwnerId.create(),
                 studioDto.name(),
                 studioDto.description(),
                 studioDto.IBAN());
-
         this.repository.save(studio);
+
         return studio;
     }
 }

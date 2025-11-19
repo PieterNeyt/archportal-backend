@@ -22,8 +22,9 @@ public class GameStudioController {
 
     @PostMapping()
     public ResponseEntity<GameStudioDto> createGameStudio(@RequestBody GameStudioDto studioDto) {
-        GameStudio studio = gameStudioService.createGameStudio(studioDto);
-        URI location = URI.create("/api/gamestudio/" + studio.getId().id());
+        var studio = gameStudioService.createGameStudio(studioDto);
+        var location = URI.create("/api/gamestudio/" + studio.getId().id());
+
         return ResponseEntity
                 .created(location)
                 .body(GameStudioDto.fromDomain(studio));
