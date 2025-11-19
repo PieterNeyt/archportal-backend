@@ -18,7 +18,6 @@ public class GameStudioService {
     public GameStudio createGameStudio(GameStudioDto studioDto) {
         //TODO: later owner ook aanmaken voor de studio
 
-
         var studio = new GameStudio(OwnerId.create(),
                 studioDto.name(),
                 studioDto.description(),
