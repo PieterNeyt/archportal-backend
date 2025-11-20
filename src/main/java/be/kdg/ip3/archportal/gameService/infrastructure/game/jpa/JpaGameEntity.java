@@ -2,6 +2,8 @@ package be.kdg.ip3.archportal.gameService.infrastructure.game.jpa;
 
 import be.kdg.ip3.archportal.gameService.domain.game.Game;
 import be.kdg.ip3.archportal.gameService.domain.game.GameGenre;
+import be.kdg.ip3.archportal.gameService.domain.game.GameId;
+import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudioId;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -45,5 +47,9 @@ public class JpaGameEntity {
     public static JpaGameEntity fromDomain(Game game) {
         return new JpaGameEntity(game.getId().id(), game.getStudioId().id(), game.getTitle(), game.getDescription(),
                 game.getPrice().money(), game.getImageUrl(), game.getGameUrl(), game.getGenre());
+    }
+
+    public Game toDomain() {
+        return new Game(new GameId(id), new GameStudioId(studioId), title, description, price, imageUrl, gameUrl, genre);
     }
 }
