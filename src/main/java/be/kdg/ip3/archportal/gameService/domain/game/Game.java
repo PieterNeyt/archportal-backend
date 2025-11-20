@@ -35,6 +35,10 @@ public class Game {
         setGenre(genre);
     }
 
+    public Game(GameStudioId studioId, String title, String description, BigDecimal price, String imageUrl, String gameUrl, GameGenre genre) {
+        this(GameId.create(), studioId, title, description, price, imageUrl, gameUrl, genre);
+    }
+
     private void setGameUrl(String gameUrl) {
         if (title == null || title.trim().isEmpty() || title.isEmpty())
             throw new IllegalArgumentException("The provided game url is invalid");

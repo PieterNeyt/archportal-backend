@@ -21,7 +21,7 @@ public class GameService {
 
     public Game createGame(GameDto gameDto) {
         var studio = gameStudioService.findById(new GameStudioId(gameDto.studioId()));
-        var game = new Game(GameId.create(), studio.getId(), gameDto.title(), gameDto.description(),
+        var game = new Game(studio.getId(), gameDto.title(), gameDto.description(),
                 gameDto.price(), gameDto.imageUrl(), gameDto.gameUrl(), gameDto.genre());
         gameRepository.save(game);
         return game;
