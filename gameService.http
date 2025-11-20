@@ -27,3 +27,7 @@ Content-Type: application/json
   "gameUrl": "https://hub.example.com/games/tic-tac-toe",
   "genre": "ABSTRACT"
 }
+
+### Get all games
+GET http://localhost:8080/api/games/
+Content-Type: application/json

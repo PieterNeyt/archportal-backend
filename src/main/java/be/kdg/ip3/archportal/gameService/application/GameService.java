@@ -2,11 +2,12 @@ package be.kdg.ip3.archportal.gameService.application;
 
 import be.kdg.ip3.archportal.gameService.api.dto.GameDto;
 import be.kdg.ip3.archportal.gameService.domain.game.Game;
-import be.kdg.ip3.archportal.gameService.domain.game.GameId;
 import be.kdg.ip3.archportal.gameService.domain.game.GameRepository;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudioId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -25,5 +26,9 @@ public class GameService {
                 gameDto.price(), gameDto.imageUrl(), gameDto.gameUrl(), gameDto.genre());
         gameRepository.save(game);
         return game;
+    }
+    
+    public List<Game> findAll(){
+        return gameRepository.findAll();
     }
 }
