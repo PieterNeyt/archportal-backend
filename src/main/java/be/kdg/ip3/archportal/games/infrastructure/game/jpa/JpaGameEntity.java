@@ -2,6 +2,8 @@ package be.kdg.ip3.archportal.games.infrastructure.game.jpa;
 
 import be.kdg.ip3.archportal.games.domain.game.Game;
 import be.kdg.ip3.archportal.games.domain.game.GameGenre;
+import be.kdg.ip3.archportal.games.domain.game.GameId;
+import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;

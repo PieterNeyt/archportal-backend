@@ -31,9 +31,6 @@ public class JpaProfileEntity {
     private String gamerTag;
 
     @Column(nullable = false)
-    private UUID libraryId;
-
-    @Column(nullable = false)
     private int platformPoints;
 
     @ElementCollection
@@ -46,20 +43,24 @@ public class JpaProfileEntity {
     @Column(name = "benefit_id", nullable = false)
     private List<UUID> platformBenefits = new ArrayList<>();
 
+    @ElementCollection
+    @CollectionTable(name = "profile_library", joinColumns = @JoinColumn(name = "profile_id"), schema = "profileservice")
+    @Column(name = "game_id", nullable = false)
+    private List<UUID> library = new ArrayList<>();
 
     public JpaProfileEntity() {}
 
     public JpaProfileEntity(UUID id, String firstName, String lastName, String icon, String gamerTag,
-                            UUID libraryId, int platformPoints, List<UUID> friends, List<UUID> platformBenefits) {
+                            int platformPoints, List<UUID> friends, List<UUID> platformBenefits, List<UUID> library) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.icon = icon;
         this.gamerTag = gamerTag;
-        this.libraryId = libraryId;
         this.platformPoints = platformPoints;
         this.friends = friends;
         this.platformBenefits = platformBenefits;
+        this.library = library;
     }
 
     public static JpaProfileEntity fromDomain(Profile profile) {
@@ -73,10 +74,10 @@ public class JpaProfileEntity {
                 profile.getLastName(),
                 profile.getIcon(),
                 profile.getGamerTag(),
-                profile.getLibraryId(),
                 profile.getPlatformPoints(),
                 friendIds,
-                profile.getPlatformBenefits()
+                profile.getPlatformBenefits(),
+                profile.getLibrary()
         );
     }
 
@@ -89,12 +90,12 @@ public class JpaProfileEntity {
                 new ProfileId(id),
                 platformBenefits,
                 platformPoints,
-                libraryId,
                 lastName,
                 icon,
                 gamerTag,
                 friendIds,
-                firstName
+                firstName,
+                library
         );
     }
 }

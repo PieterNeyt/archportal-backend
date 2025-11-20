@@ -3,6 +3,7 @@ package be.kdg.ip3.archportal.games.api;
 import be.kdg.ip3.archportal.games.api.dto.CreateGameStudioDto;
 import be.kdg.ip3.archportal.games.application.GameStudioService;
 import be.kdg.ip3.archportal.games.application.command.CreateGameStudioCommand;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -1,6 +1,6 @@
 package be.kdg.ip3.archportal.games.domain.game;
 
-import be.kdg.ip3.archportal.gameService.domain.NotFoundException;
+import be.kdg.ip3.archportal.games.domain.NotFoundException;
 import org.springframework.util.Assert;
 
 import java.util.UUID;

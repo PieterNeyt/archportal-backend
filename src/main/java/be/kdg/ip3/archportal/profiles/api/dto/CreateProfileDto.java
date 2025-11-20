@@ -4,11 +4,9 @@ import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.UUID;
-
 public record CreateProfileDto(
-
         UUID id,
-        UUID libraryId,
+
         @NotBlank(message = "First name is required")
         String firstName,
 
@@ -23,7 +21,6 @@ public record CreateProfileDto(
     public static CreateProfileDto fromDomain(CreateProfileCommand command) {
         return new CreateProfileDto(
                 command.id(),
-                command.libraryId(),
                 command.firstName(),
                 command.lastName(),
                 command.gamerTag(),

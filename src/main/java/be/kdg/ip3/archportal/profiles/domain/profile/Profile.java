@@ -14,27 +14,28 @@ public class Profile {
     private String lastName;
     private String icon;
     private String gamerTag;
-    private UUID libraryId;
+    private List<UUID> library;
     private int platformPoints;
     private List<ProfileId> friends;
     private List<UUID> platformBenefits;
 
-    public Profile(UUID profileId,List<UUID> platformBenefits, int platformPoints, UUID libraryId, String lastName, String icon, String gamerTag, List<ProfileId> friends, String firstName) {
-        this(ProfileId.create(profileId), platformBenefits, platformPoints, libraryId, lastName, icon, gamerTag, friends, firstName);
+    public Profile(UUID profileId,List<UUID> platformBenefits, int platformPoints, String lastName, String icon, String gamerTag, List<ProfileId> friends, String firstName,List<UUID> library) {
+        this(ProfileId.create(profileId), platformBenefits, platformPoints, lastName, icon, gamerTag, friends, firstName,library);
     }
 
-    public Profile(ProfileId profileId,List<UUID> platformBenefits, int platformPoints, UUID libraryId, String lastName, String icon, String gamerTag, List<ProfileId> friends, String firstName) {
-
-        setPlatformPoints(platformPoints);
-        setLastName(lastName);
-        setGamerTag(gamerTag);
-        setFirstName(firstName);
-        this.platformBenefits = platformBenefits;
-        this.icon = icon;
-        this.friends = friends;
+    public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String icon,
+                   String gamerTag, List<ProfileId> friends, String firstName, List<UUID> library) {
         this.id = profileId;
-        this.libraryId = libraryId;
+        this.platformBenefits = platformBenefits;
+        this.platformPoints = platformPoints;
+        this.lastName = lastName;
+        this.icon = icon;
+        this.gamerTag = gamerTag;
+        this.friends = friends;
+        this.firstName = firstName;
+        this.library = library;
     }
+
     public void setFirstName(String firstName) {
         if (firstName == null || firstName.trim().isEmpty() || firstName.isEmpty() || firstName.length() > 255)
             throw new IllegalArgumentException("The firstName provided is invalid.");
@@ -62,5 +63,11 @@ public class Profile {
             throw new IllegalArgumentException("Points cannot be lower than 0");
         }
         this.platformPoints += points;
+    }
+    public boolean hasGame(UUID gameId) {
+        return this.library.contains(gameId);
+    }
+    public void acquireGame(UUID gameId) {
+        this.library.add(gameId);
     }
 }

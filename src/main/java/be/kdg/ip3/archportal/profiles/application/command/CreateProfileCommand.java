@@ -1,7 +1,6 @@
 package be.kdg.ip3.archportal.profiles.application.command;
 
 import be.kdg.ip3.archportal.profiles.api.dto.CreateProfileDto;
-import be.kdg.ip3.archportal.profiles.domain.library.Library;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 
 import java.util.UUID;
@@ -11,8 +10,7 @@ public record CreateProfileCommand(
         String firstName,
         String lastName,
         String gamerTag,
-        String icon,
-        UUID libraryId
+        String icon
 ) {
     public static CreateProfileCommand fromDto(CreateProfileDto dto) {
         return new CreateProfileCommand(
@@ -20,19 +18,17 @@ public record CreateProfileCommand(
                 dto.firstName(),
                 dto.lastName(),
                 dto.gamerTag(),
-                dto.icon(),
-                dto.libraryId()
+                dto.icon()
         );
     }
 
-    public static CreateProfileCommand fromDomain(Profile profile, Library library) {
+    public static CreateProfileCommand fromDomain(Profile profile) {
         return new CreateProfileCommand(
                 profile.getId().id(),
                 profile.getFirstName(),
                 profile.getLastName(),
                 profile.getGamerTag(),
-                profile.getIcon(),
-                library.getId().id()
+                profile.getIcon()
         );
     }
 }
