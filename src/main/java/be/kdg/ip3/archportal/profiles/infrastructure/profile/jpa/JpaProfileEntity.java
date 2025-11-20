@@ -24,7 +24,7 @@ public class JpaProfileEntity {
     @Column(nullable = false, length = 255)
     private String lastName;
 
-    @Column(nullable = true, length = 255)
+    @Column(length = 255)
     private String icon;
 
     @Column(nullable = false, length = 255)
@@ -37,16 +37,16 @@ public class JpaProfileEntity {
     private int platformPoints;
 
     @ElementCollection
-    @CollectionTable(name = "profile_friends", joinColumns = @JoinColumn(name = "profile_id"))
+    @CollectionTable(name = "profile_friends", joinColumns = @JoinColumn(name = "profile_id"),schema = "profileservice")
     @Column(name = "friend_id", nullable = false)
     private List<UUID> friends = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name = "profile_platform_benefits", joinColumns = @JoinColumn(name = "profile_id"))
+    @CollectionTable(name = "profile_platform_benefits", joinColumns = @JoinColumn(name = "profile_id"),schema = "profileservice")
     @Column(name = "benefit_id", nullable = false)
     private List<UUID> platformBenefits = new ArrayList<>();
 
-    // No-arg constructor voor JPA
+
     public JpaProfileEntity() {}
 
     public JpaProfileEntity(UUID id, String firstName, String lastName, String icon, String gamerTag,
@@ -60,11 +60,6 @@ public class JpaProfileEntity {
         this.platformPoints = platformPoints;
         this.friends = friends;
         this.platformBenefits = platformBenefits;
-    }
-
-    public JpaProfileEntity(String firstName, String lastName, String icon, String gamerTag,
-                            UUID libraryId, int platformPoints, List<UUID> friends, List<UUID> platformBenefits) {
-        this(ProfileId.create().id(), firstName, lastName, icon, gamerTag, libraryId, platformPoints, friends, platformBenefits);
     }
 
     public static JpaProfileEntity fromDomain(Profile profile) {

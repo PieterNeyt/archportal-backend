@@ -22,7 +22,12 @@ public class Library {
         this.games =games;
     }
 
-    public void AquireGame(UUID gameId){
+    public void acquireGame(UUID gameId){
         this.games.add(gameId);
     }
+    public boolean hasGame(UUID gameId) {
+        return this.games.contains(gameId);
+    }
+
+
 }

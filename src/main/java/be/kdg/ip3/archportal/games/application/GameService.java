@@ -7,6 +7,9 @@ import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.UUID;
+
 @Service
 @Transactional
 public class GameService {
@@ -25,4 +28,11 @@ public class GameService {
         gameRepository.save(game);
         return game;
     }
+
+    public List<UUID> validateGames(List<UUID> gameIds) {
+        return gameIds.stream()
+                .filter(gameId -> !gameRepository.existsById(gameId))
+                .toList();
+    }
+
 }

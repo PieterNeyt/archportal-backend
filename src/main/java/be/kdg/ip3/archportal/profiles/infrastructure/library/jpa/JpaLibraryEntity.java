@@ -18,7 +18,7 @@ public class JpaLibraryEntity {
     private UUID id;
 
     @ElementCollection
-    @CollectionTable(name = "library_games", joinColumns = @JoinColumn(name = "library_id"))
+    @CollectionTable(name = "library_games", joinColumns = @JoinColumn(name = "library_id"),schema = "profileservice")
     @Column(name = "game_id", nullable = false)
     private List<UUID> games = new ArrayList<>();
 
@@ -26,11 +26,6 @@ public class JpaLibraryEntity {
 
     public JpaLibraryEntity(UUID id, List<UUID> games) {
         this.id = id;
-        this.games = games;
-    }
-
-    public JpaLibraryEntity(List<UUID> games) {
-        this.id = LibraryId.create().id();
         this.games = games;
     }
 

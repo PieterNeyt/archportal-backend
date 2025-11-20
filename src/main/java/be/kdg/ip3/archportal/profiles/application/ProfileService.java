@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.profiles.application;
 
+import be.kdg.ip3.archportal.games.GamesApi;
 import be.kdg.ip3.archportal.profiles.application.command.AcquireGameCommand;
 import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
 import be.kdg.ip3.archportal.profiles.domain.library.Library;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -17,10 +20,12 @@ import java.util.ArrayList;
 public class ProfileService {
     private final ProfileRepository profileRepository;
     private final LibraryRepository libraryRepository;
+    private final GamesApi gamesApi;
 
-    public ProfileService(ProfileRepository profileRepository, LibraryRepository libraryRepository) {
+    public ProfileService(ProfileRepository profileRepository, LibraryRepository libraryRepository, GamesApi gamesApi) {
         this.profileRepository = profileRepository;
         this.libraryRepository = libraryRepository;
+        this.gamesApi = gamesApi;
     }
 
     public CreateProfileCommand createProfile(CreateProfileCommand command) {
@@ -45,9 +50,27 @@ public class ProfileService {
 
     public void acquireGames(AcquireGameCommand command) {
 
+        List<UUID> nonExistentGames = gamesApi.validateGames(command.games());
+
+        if (!nonExistentGames.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "The following games do not exist: " + nonExistentGames
+            );
+        }
+
         var profile = profileRepository.findById(command.profileId());
         var library = libraryRepository.findById(profile.getLibraryId());
-        command.games().forEach(library::AquireGame);
+        for (UUID gameId : command.games()) {
+
+            if (library.hasGame(gameId)) {
+                throw new IllegalArgumentException(
+                        "Game with id %s is already in the library".formatted(gameId)
+                );
+            }
+
+            library.acquireGame(gameId);
+        }
+
         libraryRepository.save(library);
     }
 }
