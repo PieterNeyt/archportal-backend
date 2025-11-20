@@ -2,11 +2,14 @@ package be.kdg.ip3.archportal.gameService.infrastructure;
 
 import be.kdg.ip3.archportal.gameService.domain.NotFoundException;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudio;
+import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudioId;
 import be.kdg.ip3.archportal.gameService.domain.gamestudio.GameStudioRepository;
 import be.kdg.ip3.archportal.gameService.infrastructure.gamestudio.jpa.JpaGameStudioEntity;
 import be.kdg.ip3.archportal.gameService.infrastructure.gamestudio.jpa.JpaGameStudioRepository;
 import be.kdg.ip3.archportal.gameService.infrastructure.owner.jpa.JpaOwnerRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 public class DbGameStudioRepository  implements GameStudioRepository {
@@ -16,6 +19,11 @@ public class DbGameStudioRepository  implements GameStudioRepository {
     public DbGameStudioRepository(JpaGameStudioRepository jpaGameStudioRepository, JpaOwnerRepository jpaOwnerRepository) {
         this.jpaGameStudioRepository = jpaGameStudioRepository;
         this.jpaOwnerRepository = jpaOwnerRepository;
+    }
+
+    @Override
+    public Optional<GameStudio> findById(GameStudioId id) {
+        return this.jpaGameStudioRepository.findById(id.id()).map(JpaGameStudioEntity::toDomain);
     }
 
     @Override

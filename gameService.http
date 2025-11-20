@@ -10,3 +10,20 @@ Content-Type: application/json
   "ownerFirstName": "Hugo",
   "ownerLastName": "Dor"
 }
+
+> {% 
+client.global.set("studioId", response.body.id)
+ %}
+
+### Create Game
+POST http://localhost:8080/api/games
+Content-Type: application/json
+
+{
+  "studioId": "{{studioId}}",
+  "title": "Tic-Tac Toe",
+  "description": "Tic-Tac-Toe is a simple two-player game played on a 3×3 grid. Players take turns marking spaces—one as X, the other as O—with the goal of placing three of their symbols in a row horizontally, vertically, or diagonally.",
+  "price": 2.54,
+  "gameUrl": "https://hub.example.com/games/tic-tac-toe",
+  "genre": "ABSTRACT"
+}

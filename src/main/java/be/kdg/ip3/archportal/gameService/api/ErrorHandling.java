@@ -22,6 +22,12 @@ public class ErrorHandling {
         ErrorResponse errorResponse = new ErrorResponse(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
+    
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
 
     public record ErrorResponse(String message) {
     }
