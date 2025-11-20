@@ -27,12 +27,12 @@ public class Profile {
                    String gamerTag, List<ProfileId> friends, String firstName, List<UUID> library) {
         this.id = profileId;
         this.platformBenefits = platformBenefits;
-        this.platformPoints = platformPoints;
-        this.lastName = lastName;
+       setPlatformPoints(platformPoints);
+       setLastName(lastName);
         this.icon = icon;
-        this.gamerTag = gamerTag;
+      setGamerTag(gamerTag);
         this.friends = friends;
-        this.firstName = firstName;
+        setFirstName(firstName);
         this.library = library;
     }
 
