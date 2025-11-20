@@ -23,7 +23,7 @@ public class GameController {
     @PostMapping({"", "/"})
     public ResponseEntity<GameDto> createGame(@Valid @RequestBody GameDto gameDto) {
         var game = gameService.createGame(gameDto);
-        var location = URI.create("/api/gamestudio/" + game.getId().id());
+        var location = URI.create("/api/games/" + game.getId().id());
         return ResponseEntity.created(location).body(GameDto.fromDomain(game));
     }
 }

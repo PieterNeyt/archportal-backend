@@ -1,8 +1,7 @@
 package be.kdg.ip3.archportal.gameService.domain.update;
 
-import org.jmolecules.ddd.annotation.Entity;
+import org.jmolecules.ddd.annotation.ValueObject;
 
-@Entity
-public class Update {
-    private UpdateId id;
+@ValueObject
+public record Update() {
 }
