@@ -1,0 +1,26 @@
+### Create profile
+POST http://localhost:8080/api/profile
+Content-Type: application/json
+
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "firstName": "Pieter",
+  "lastName": "Neyt",
+  "gamerTag": "Kwibus",
+  "icon": "https://assets.manutd.com/AssetPicker/images/0/0/10/126/687707/Legends-Profile_Cristiano-Ronaldo1523460877263.jpg"
+}
+
+
+### Add game to library
+PUT http://localhost:8080/api/profile/acquire
+Content-Type: application/json
+
+{
+  "profileId": "550e8400-e29b-41d4-a716-446655440000",
+  "games": [
+    "f7b56a1e-1c63-4d0c-aa75-3b40e8253e19",
+    "7aefc340-96ed-4bb9-8262-34b50aa55420",
+    "9a5f6920-29e8-4d34-82ee-9df5249e8e72"
+  ]
+}
+
