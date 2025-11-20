@@ -4,8 +4,11 @@ import org.jmolecules.ddd.annotation.Repository;
 
 import java.util.UUID;
 
+import java.util.List;
+
 @Repository
 public interface GameRepository {
     void save(Game game);
     boolean existsById(UUID gameId);
+    List<Game> findAll();
 }

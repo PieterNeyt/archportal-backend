@@ -46,4 +46,8 @@ public class JpaGameEntity {
         return new JpaGameEntity(game.getId().id(), game.getStudioId().id(), game.getTitle(), game.getDescription(),
                 game.getPrice().money(), game.getImageUrl(), game.getGameUrl(), game.getGenre());
     }
+
+    public Game toDomain() {
+        return new Game(new GameId(id), new GameStudioId(studioId), title, description, price, imageUrl, gameUrl, genre);
+    }
 }
