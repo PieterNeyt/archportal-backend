@@ -22,7 +22,6 @@ public class JpaLibraryEntity {
     @Column(name = "game_id", nullable = false)
     private List<UUID> games = new ArrayList<>();
 
-    // No-arg constructor verplicht voor JPA
     public JpaLibraryEntity() {}
 
     public JpaLibraryEntity(UUID id, List<UUID> games) {

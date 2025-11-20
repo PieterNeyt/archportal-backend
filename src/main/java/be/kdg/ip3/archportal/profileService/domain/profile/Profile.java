@@ -16,14 +16,13 @@ public class Profile {
     private String lastName;
     private String icon;
     private String gamerTag;
-    //:TODO --> de library moet worden aangemaakt en mee gekoppeld worden bij aanmaken account
     private UUID libraryId;
     private int platformPoints;
     private List<ProfileId> friends;
     private List<UUID> platformBenefits;
 
-    public Profile(List<UUID> platformBenefits, int platformPoints, UUID libraryId, String lastName, String icon, String gamerTag, List<ProfileId> friends, String firstName) {
-        this(ProfileId.create(), platformBenefits, platformPoints, libraryId, lastName, icon, gamerTag, friends, firstName);
+    public Profile(UUID profileId,List<UUID> platformBenefits, int platformPoints, UUID libraryId, String lastName, String icon, String gamerTag, List<ProfileId> friends, String firstName) {
+        this(ProfileId.create(profileId), platformBenefits, platformPoints, libraryId, lastName, icon, gamerTag, friends, firstName);
     }
 
     public Profile(ProfileId profileId,List<UUID> platformBenefits, int platformPoints, UUID libraryId, String lastName, String icon, String gamerTag, List<ProfileId> friends, String firstName) {

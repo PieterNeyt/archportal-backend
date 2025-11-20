@@ -11,5 +11,8 @@ public record ProfileId(UUID id) {
     public static ProfileId create() {
         return new ProfileId(UUID.randomUUID());
     }
+    public static ProfileId create(UUID profileId) {
+        return new ProfileId(profileId);
+    }
 
 }
