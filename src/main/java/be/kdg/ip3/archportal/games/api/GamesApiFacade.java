@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.games.api;
 
-import be.kdg.ip3.archportal.games.GamesApi;
+import be.kdg.ip3.archportal.games.shared.GameDto;
+import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.application.GameService;
 import org.springframework.stereotype.Component;
 
@@ -19,5 +20,11 @@ public class GamesApiFacade implements GamesApi {
     @Override
     public List<UUID> validateGames(List<UUID> gameIds) {
         return gameService.validateGames(gameIds);
+    }
+
+    @Override
+    public List<GameDto> getAllGames() {
+        var games = gameService.findAll();
+        return games.stream().map(GameDto::fromDomain).toList();
     }
 }
