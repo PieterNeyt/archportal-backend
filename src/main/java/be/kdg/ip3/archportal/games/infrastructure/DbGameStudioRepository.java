@@ -30,7 +30,8 @@ public class DbGameStudioRepository  implements GameStudioRepository {
     public void save(GameStudio studio) {
         var ownerEntity = jpaOwnerRepository.findById(studio.getOwnerId().id())
                 .orElseThrow(() -> new NotFoundException("Owner not found"));
+
         var jpaStudio = JpaGameStudioEntity.fromDomain(studio,ownerEntity);
-         this.jpaGameStudioRepository.save(jpaStudio);
+        this.jpaGameStudioRepository.save(jpaStudio);
     }
 }

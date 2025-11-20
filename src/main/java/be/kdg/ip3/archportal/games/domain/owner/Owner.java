@@ -13,15 +13,33 @@ public class Owner {
 
     public Owner(OwnerId id, String firstName, String lastName, String email) {
         this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
+        setFirstName(firstName);
+        setLastName(lastName);
+        setEmail(email);
     }
 
     public Owner(String firstName, String lastName, String email) {
-        this.id = OwnerId.create();
+        this(OwnerId.create(), firstName, lastName, email);
+    }
+
+    public void setFirstName(String firstName) {
+        if (firstName == null || firstName.trim().isEmpty() || firstName.isEmpty())
+            throw new IllegalArgumentException("The provided firstName is empty");
+
         this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        if (lastName == null || lastName.trim().isEmpty() || lastName.isEmpty())
+            throw new IllegalArgumentException("The provided lastName is empty");
+
         this.lastName = lastName;
+    }
+
+    public void setEmail(String email) {
+        if (email == null || email.trim().isEmpty() || email.isEmpty())
+            throw new IllegalArgumentException("The provided setEmail is empty");
+
         this.email = email;
     }
 }
