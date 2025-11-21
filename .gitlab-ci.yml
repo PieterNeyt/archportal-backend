@@ -1,5 +1,6 @@
 stages:
   - compile
+  - test
 
 variables: 
   DEFAULT_IMAGE: eclipse-temurin:25-jdk-alpine
@@ -11,3 +12,13 @@ compile:
   script: 
     - ./gradlew compileJava
     - ./gradlew compileTestJava
+      
+test:
+  stage: test
+  image: $DEFAULT_IMAGE
+  artifacts: 
+    reports:
+      junit: 
+        - build/test-results/test/TEST-*.xml
+  script:
+    - ./gradlew test
