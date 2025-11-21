@@ -1,6 +1,7 @@
 stages:
   - compile
   - test
+  - package
 
 variables:
   DEFAULT_IMAGE: eclipse-temurin:25-jdk-alpine
@@ -12,6 +13,9 @@ compile:
   script:
     - ./gradlew compileJava
     - ./gradlew compileTestJava
+#  rules: 
+#    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+#    - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH
 
 test:
   stage: test
@@ -27,3 +31,15 @@ test:
     DOCKER_TLS_CERTDIR: ""
   script:
     - ./gradlew test
+#  rules:
+#    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+#    - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH
+    
+package:
+  stage: package
+  script: 
+    - echo "packaging application"
+    - ./gradlew bootBuildImage --imageName=archportal/backend
+    - docker push registry.gitlab.com/kdg-ti/integratieproject-j3/teams-25-26/team15/archportal/archportalinfrastructure
+#  rules: 
+#    - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH && $CI_PIPELINE_SOURCE != "merge_request_event"
