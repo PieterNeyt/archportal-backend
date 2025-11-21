@@ -37,6 +37,9 @@ test:
     
 package:
   stage: package
+  image: docker:27-cli
+  services:
+    - docker:27-dind
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - ./gradlew bootBuildImage --imageName=$CI_REGISTRY_IMAGE/backend:latest
