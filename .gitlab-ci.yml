@@ -37,9 +37,9 @@ test:
     
 package:
   stage: package
-  script: 
-    - echo "packaging application"
-    - ./gradlew bootBuildImage --imageName=archportal/backend
-    - docker push registry.gitlab.com/kdg-ti/integratieproject-j3/teams-25-26/team15/archportal/archportalinfrastructure
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - ./gradlew bootBuildImage --imageName=$CI_REGISTRY_IMAGE/backend:latest
+    - docker push $CI_REGISTRY_IMAGE/backend:latest
 #  rules: 
 #    - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH && $CI_PIPELINE_SOURCE != "merge_request_event"
