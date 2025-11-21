@@ -43,9 +43,8 @@ package:
   variables:
     DOCKER_HOST: "tcp://docker:2375"
     DOCKER_TLS_CERTDIR: ""
-  before_script:
-    - echo "$PRIVATE_REGISTRY_PASSWORD" | docker login registry.gitlab.com -u "$PRIVATE_REGISTRY_USER" --password-stdin
   script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login registry.gitlab.com -u "$CI_REGISTRY_USER" --password-stdin
     - ./gradlew bootBuildImage --imageName=$CI_REGISTRY_IMAGE/backend:latest
     - docker push $CI_REGISTRY_IMAGE/backend:latest
 #  rules: 
