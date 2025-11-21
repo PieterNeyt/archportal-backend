@@ -28,5 +28,8 @@ test:
     DOCKER_HOST: "tcp://docker:2375"
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: "overlay2"
+    TESTCONTAINERS_HOST_OVERRIDE: "docker"
+  before_script:
+    - apk add --no-cache docker
   script:
     - ./gradlew test
