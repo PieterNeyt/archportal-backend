@@ -1,0 +1,13 @@
+stages:
+  - compile
+
+variables: 
+  DEFAULT_IMAGE: eclipse-temurin:25-jdk-alpine
+  
+# TODO cache dependencies in container
+compile:
+  stage: compile
+  image: $DEFAULT_IMAGE
+  script: 
+    - ./gradlew compileJava
+    - ./gradlew compileTestJava
