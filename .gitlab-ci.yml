@@ -2,27 +2,28 @@ stages:
   - compile
   - test
 
-variables: 
+variables:
   DEFAULT_IMAGE: eclipse-temurin:25-jdk-alpine
-  
+
 # TODO cache dependencies in container
 compile:
   stage: compile
   image: $DEFAULT_IMAGE
-  script: 
+  script:
     - ./gradlew compileJava
     - ./gradlew compileTestJava
-      
+
 test:
   stage: test
   image: $DEFAULT_IMAGE
-  artifacts: 
+  artifacts:
     reports:
-      junit: 
+      junit:
         - build/test-results/test/TEST-*.xml
   services:
-    - name: docker:29-dind
-  variables: 
+    - name: docker:dind
+      command: ["--tls=false"]
+  variables:
     DOCKER_HOST: "tcp://docker:2375"
     DOCKER_TLS_CERTDIR: ""
   script:
