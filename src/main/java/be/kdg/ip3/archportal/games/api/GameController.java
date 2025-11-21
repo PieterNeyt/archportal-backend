@@ -4,10 +4,12 @@ import be.kdg.ip3.archportal.games.api.dto.GameDto;
 import be.kdg.ip3.archportal.games.application.GameService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/games")
@@ -23,11 +25,5 @@ public class GameController {
         var game = gameService.createGame(gameDto);
         var location = URI.create("/api/games/" + game.getId().id());
         return ResponseEntity.created(location).body(GameDto.fromDomain(game));
-    }
-
-    @GetMapping({"", "/"})
-    public ResponseEntity<List<GameDto>> getAllGames() {
-        var games = gameService.findAll();
-        return ResponseEntity.ok(games.stream().map(GameDto::fromDomain).toList());
     }
 }

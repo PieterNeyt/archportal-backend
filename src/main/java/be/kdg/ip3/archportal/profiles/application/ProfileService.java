@@ -1,6 +1,6 @@
 package be.kdg.ip3.archportal.profiles.application;
 
-import be.kdg.ip3.archportal.games.GamesApi;
+import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.profiles.application.command.AcquireGameCommand;
 import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;

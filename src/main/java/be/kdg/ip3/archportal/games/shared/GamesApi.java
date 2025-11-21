@@ -1,9 +1,14 @@
-package be.kdg.ip3.archportal.games;
+package be.kdg.ip3.archportal.games.shared;
+
+import org.springframework.modulith.NamedInterface;
 
 import java.util.List;
 import java.util.UUID;
 
+@NamedInterface
 public interface GamesApi {
     // returnt een lijst van invalide game id's indien die er zijn
     List<UUID> validateGames(List<UUID> gameIds);
+
+    List<GameDto> getAllGames();
 }
