@@ -44,9 +44,8 @@ package:
     DOCKER_HOST: "tcp://docker:2375"
     DOCKER_TLS_CERTDIR: ""
   script:
-    - java -version
-    - docker version
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - echo "$CI_REGISTRY_PASSWORD" 
+    - docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - ./gradlew bootBuildImage --imageName=$CI_REGISTRY_IMAGE/backend:latest
     - docker push $CI_REGISTRY_IMAGE/backend:latest
 #  rules: 
