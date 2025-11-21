@@ -27,3 +27,6 @@ test:
     DOCKER_TLS_CERTDIR: ""
   script:
     - ./gradlew test
+
+include: 
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
