@@ -13,9 +13,9 @@ compile:
   script:
     - ./gradlew compileJava
     - ./gradlew compileTestJava
-#  rules: 
-#    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-#    - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH
+  rules: 
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH
 
 test:
   stage: test
@@ -31,9 +31,9 @@ test:
     DOCKER_TLS_CERTDIR: ""
   script:
     - ./gradlew test
-#  rules:
-#    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-#    - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH
     
 package:
   stage: package
@@ -47,5 +47,5 @@ package:
     - echo "$CI_REGISTRY_PASSWORD" | docker login registry.gitlab.com -u "$CI_REGISTRY_USER" --password-stdin
     - ./gradlew bootBuildImage --imageName=$CI_REGISTRY_IMAGE/backend:latest
     - docker push $CI_REGISTRY_IMAGE/backend:latest
-#  rules: 
-#    - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH && $CI_PIPELINE_SOURCE != "merge_request_event"
+  rules: 
+    - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH && $CI_PIPELINE_SOURCE != "merge_request_event"
