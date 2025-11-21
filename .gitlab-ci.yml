@@ -37,7 +37,7 @@ test:
     
 package:
   stage: package
-  image: docker:27-cli
+  image: $DEFAULT_IMAGE
   services:
     - docker:27-dind
   script:
