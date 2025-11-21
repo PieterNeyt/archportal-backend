@@ -37,10 +37,15 @@ test:
     
 package:
   stage: package
-  image: $DEFAULT_IMAGE
+  image: registry.gitlab.com/kdg-ti/integratieproject-j3/teams-25-26/team15/archportal/archportalinfrastructure/java-docker:latest
   services:
     - docker:27-dind
+  variables:
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_TLS_CERTDIR: ""
   script:
+    - java -version
+    - docker version
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - ./gradlew bootBuildImage --imageName=$CI_REGISTRY_IMAGE/backend:latest
     - docker push $CI_REGISTRY_IMAGE/backend:latest
