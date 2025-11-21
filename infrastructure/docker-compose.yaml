@@ -81,7 +81,7 @@ services:
 
   # Platform Backend
   platform_backend:
-    image: alpine:3.20 # TODO: replace with platform backend image
+    image: registry.gitlab.com/kdg-ti/integratieproject-j3/teams-25-26/team15/archportal/archportalbackend/backend # TODO: replace with platform backend image
     depends_on:
       - app_postgres
       - app_rabbitmq
