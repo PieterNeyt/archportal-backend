@@ -52,7 +52,7 @@ package:
     - echo "Building version $VERSION"
     - echo "$CI_REGISTRY_PASSWORD" | docker login registry.gitlab.com -u "$CI_REGISTRY_USER" --password-stdin
     - ./gradlew bootBuildImage --imageName=$IMAGE:$VERSION
-    - docker tag $IMAGE:latest $IMAGE:latest
+    - docker tag $IMAGE:$VERSION $IMAGE:latest
     - docker push $IMAGE:$VERSION
     - docker push $IMAGE:latest
   rules: 
