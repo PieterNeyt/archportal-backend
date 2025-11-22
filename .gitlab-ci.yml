@@ -5,6 +5,8 @@ stages:
 
 variables:
   DEFAULT_IMAGE: eclipse-temurin:25-jdk-alpine
+  MAJOR: "1"
+  MINOR: "0"
 
 # TODO cache dependencies in container
 compile:
@@ -44,8 +46,14 @@ package:
     DOCKER_HOST: "tcp://docker:2375"
     DOCKER_TLS_CERTDIR: ""
   script:
+    - DATE=$(date +%Y%m%d)
+    - VERSION="$MAJOR.$MINOR.$DATE-$CI_PIPELINE_ID"
+    - IMAGE=$CI_REGISTRY_IMAGE/backend
+    - echo "Building version $VERSION"
     - echo "$CI_REGISTRY_PASSWORD" | docker login registry.gitlab.com -u "$CI_REGISTRY_USER" --password-stdin
-    - ./gradlew bootBuildImage --imageName=$CI_REGISTRY_IMAGE/backend:latest
-    - docker push $CI_REGISTRY_IMAGE/backend:latest
+    - ./gradlew bootBuildImage --imageName=$IMAGE:$VERSION
+    - docker tag $IMAGE:latest $IMAGE:latest
+    - docker push $IMAGE:$VERSION
+    - docker push $IMAGE:latest
   rules: 
     - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH && $CI_PIPELINE_SOURCE != "merge_request_event"
