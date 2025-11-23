@@ -23,4 +23,5 @@ public class ShopController {
         var games = shopService.getAllGames();
         return ResponseEntity.ok(games);
     }
+
 }
