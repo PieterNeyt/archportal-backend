@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface CartRepository {
     Optional<Cart> findByProfileId(UUID profileId);
     Cart save(Cart cart);
+    void delete(Cart cart);
 }

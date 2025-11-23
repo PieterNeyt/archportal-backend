@@ -60,6 +60,17 @@ public class ProfileService implements ProfilesApi {
         }
     }
 
+    @Override
+    public void checkAlreadyOwnsGame(UUID profileId, UUID gameId) {
+        var profile = profileRepository.findById(profileId);
+        if (profile.hasGame(gameId)) {
+            throw new IllegalArgumentException(
+                    "Profile %s already owns the games: %s"
+                            .formatted(profileId, gameId)
+            );
+        }
+    }
+
 
     public void acquireGames(AcquireGameCommand command) {
         List<UUID> nonExistentGames = gamesApi.validateGames(command.games());

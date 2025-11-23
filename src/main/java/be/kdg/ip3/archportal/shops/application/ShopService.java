@@ -33,19 +33,23 @@ public class ShopService {
         this.orderRepo = orderRepo;
         this.mollieService = mollieService;
     }
+
     public List<GlobalGameDto> getGamesForCart(Cart cart) {
         return gameApi.getGamesByIds(cart.getCartItems());
     }
+
     public List<GlobalGameDto> getAllGames() {
         return gameApi.getAllGames();
     }
+
     public Cart getOrCreateCart(UUID profileId) {
         return cartRepo.findByProfileId(profileId)
                 .orElseGet(() -> cartRepo.save(new Cart(profileId)));
     }
 
     public Cart addToCart(UUID profileId, UUID gameId) {
-        Cart cart = getOrCreateCart(profileId);
+        var cart = getOrCreateCart(profileId);
+        profilesApi.checkAlreadyOwnsGame(profileId, gameId);
         if (cart.getCartItems().contains(gameId)) {
             throw new RuntimeException("Game with id " + gameId + " already added");
         }
@@ -54,30 +58,37 @@ public class ShopService {
     }
 
     public Cart removeFromCart(UUID profileId, UUID gameId) {
-        Cart cart = getOrCreateCart(profileId);
+
+        var cart = cartRepo.findByProfileId(profileId)
+                .orElseThrow(() -> new IllegalStateException("No cart found"));
+
+        if (!cart.getCartItems().contains(gameId)) {
+            throw new IllegalArgumentException("Game is not in cart");
+        }
+
         cart.removeFromCart(gameId);
+
         return cartRepo.save(cart);
     }
 
+
     public PaymentCreationDto checkout(UUID profileId) {
 
-        Cart cart = getOrCreateCart(profileId);
+        var cart = getOrCreateCart(profileId);
         if (cart.getCartItems().isEmpty()) {
             throw new IllegalStateException("Cart is empty");
         }
 
-        profilesApi.checkAlreadyOwnsGames(profileId, cart.getCartItems());
-
         var gamesInCart = gameApi.getGamesByIds(cart.getCartItems());
 
-        Order order = new Order(profileId);
+        var order = new Order(profileId);
 
         gamesInCart.forEach(gameDto -> {
             order.addOrderLine(gameDto.id(), gameDto.price());
         });
         orderRepo.save(order);
 
-        BigDecimal amount = order.totalPrice();
+        var amount = order.totalPrice();
         PaymentCreationDto payment = mollieService.createPayment(
                 amount,
                 "Order #" + order.getOrderId().id(),
@@ -87,19 +98,17 @@ public class ShopService {
         order.attachPayment(payment.paymentId());
         orderRepo.save(order);
 
-        cart.getCartItems().clear();
-        cartRepo.save(cart);
-
+        cartRepo.delete(cart);
         return payment;
     }
 
 
     public boolean verifyPayment(UUID orderId) {
-        Order order = orderRepo.findById(orderId);
+        var order = orderRepo.findById(orderId);
         boolean success = mollieService.verifyPayment(order.getPaymentId());
 
         if (success && !order.isCompleted()) {
-            List<UUID> gameIds = order.getOrderLines()
+            var gameIds = order.getOrderLines()
                     .stream()
                     .map(OrderLine::getGameId)
                     .toList();

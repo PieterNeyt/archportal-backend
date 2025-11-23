@@ -19,18 +19,18 @@ public class Profile {
     private List<ProfileId> friends;
     private List<UUID> platformBenefits;
 
-    public Profile(UUID profileId,List<UUID> platformBenefits, int platformPoints, String lastName, String icon, String gamerTag, List<ProfileId> friends, String firstName,List<UUID> library) {
-        this(ProfileId.create(profileId), platformBenefits, platformPoints, lastName, icon, gamerTag, friends, firstName,library);
+    public Profile(UUID profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String icon, String gamerTag, List<ProfileId> friends, String firstName, List<UUID> library) {
+        this(ProfileId.create(profileId), platformBenefits, platformPoints, lastName, icon, gamerTag, friends, firstName, library);
     }
 
     public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String icon,
                    String gamerTag, List<ProfileId> friends, String firstName, List<UUID> library) {
         this.id = profileId;
         this.platformBenefits = platformBenefits;
-       setPlatformPoints(platformPoints);
-       setLastName(lastName);
+        setPlatformPoints(platformPoints);
+        setLastName(lastName);
         this.icon = icon;
-      setGamerTag(gamerTag);
+        setGamerTag(gamerTag);
         this.friends = friends;
         setFirstName(firstName);
         this.library = library;
@@ -41,11 +41,13 @@ public class Profile {
             throw new IllegalArgumentException("The firstName provided is invalid.");
         this.firstName = firstName;
     }
+
     public void setLastName(String lastname) {
         if (lastname == null || lastname.trim().isEmpty() || lastname.isEmpty() || lastname.length() > 255)
             throw new IllegalArgumentException("The lastname provided is invalid.");
         this.lastName = lastname;
     }
+
     public void setGamerTag(String gamerTag) {
         if (gamerTag == null || gamerTag.trim().isEmpty() || gamerTag.isEmpty() || gamerTag.length() > 255)
             throw new IllegalArgumentException("The gamerTag provided is invalid.");
@@ -59,14 +61,16 @@ public class Profile {
     }
 
     public void AddPoints(int points) {
-        if(points<0){
+        if (points < 0) {
             throw new IllegalArgumentException("Points cannot be lower than 0");
         }
         this.platformPoints += points;
     }
+
     public boolean hasGame(UUID gameId) {
         return this.library.contains(gameId);
     }
+
     public void acquireGame(UUID gameId) {
         this.library.add(gameId);
     }

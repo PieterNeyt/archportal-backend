@@ -28,4 +28,9 @@ public class DbCartRepository implements CartRepository {
         JpaCartEntity saved = jpaRepo.save(JpaCartEntity.fromDomain(cart));
         return saved.toDomain();
     }
+
+    @Override
+    public void delete(Cart cart) {
+        jpaRepo.delete(JpaCartEntity.fromDomain(cart));
+    }
 }

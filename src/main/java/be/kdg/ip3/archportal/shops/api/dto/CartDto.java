@@ -10,8 +10,8 @@ import java.util.UUID;
 public record CartDto(
         UUID cartId,
         UUID profileId,
-        List<GlobalGameDto> items, // Gewijzigd van List<UUID> naar List<GameDto>
-        double totalPrice    // Toegevoegd
+        List<GlobalGameDto> items,
+        double totalPrice
 ) {
     public static CartDto from(Cart cart, List<GlobalGameDto> games) {
         double totalPrice = games.stream()
