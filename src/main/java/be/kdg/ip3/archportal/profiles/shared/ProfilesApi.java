@@ -8,4 +8,5 @@ import java.util.UUID;
 @NamedInterface
 public interface ProfilesApi {
     void addGamesToLibrary(UUID profileId, List<UUID> games);
+    void checkAlreadyOwnsGames(UUID profileId, List<UUID> games);
 }

@@ -19,18 +19,24 @@ public class Order {
     private final UUID profileId;
     private String paymentId;
     private final List<OrderLine> orderLines;
+    private boolean completed;
 
+    public void markAsCompleted() {
+        this.completed = true;
+    }
     public Order(UUID profileId) {
         orderId = OrderId.create();
         this.profileId = profileId;
         this.orderLines = new ArrayList<>();
+        this.completed = false;
     }
 
-    public Order(OrderId orderId, UUID profileId, List<OrderLine> orderLines, String paymentId) {
+    public Order(OrderId orderId, UUID profileId, List<OrderLine> orderLines, String paymentId,boolean completed) {
         this.orderId = orderId;
         this.profileId = profileId;
         this.orderLines = orderLines;
         this.paymentId = paymentId;
+        this.completed = completed;
     }
 
     public void addOrderLine(UUID gameId, BigDecimal price) {
@@ -43,7 +49,7 @@ public class Order {
                 .map(OrderLine::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-    public void createPayment(String paymentId) {
+    public void attachPayment(String paymentId) {
         this.paymentId = paymentId;
     }
 }

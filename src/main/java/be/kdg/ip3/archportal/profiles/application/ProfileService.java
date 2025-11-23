@@ -44,28 +44,36 @@ public class ProfileService implements ProfilesApi {
         return CreateProfileCommand.fromDomain(profile);
     }
 
-    public void acquireGames(AcquireGameCommand command) {
-        List<UUID> nonExistentGames = gamesApi.validateGames(command.games());
+    @Override
+    public void checkAlreadyOwnsGames(UUID profileId, List<UUID> games) {
+        var profile = profileRepository.findById(profileId);
 
-        if (!nonExistentGames.isEmpty()) {
+        List<UUID> alreadyOwned = games.stream()
+                .filter(profile::hasGame)
+                .toList();
+
+        if (!alreadyOwned.isEmpty()) {
             throw new IllegalArgumentException(
-                    "The following games do not exist: " + nonExistentGames
+                    "Profile %s already owns the following games: %s"
+                            .formatted(profileId, alreadyOwned)
             );
         }
+    }
 
-        var profile = profileRepository.findById(command.profileId());
 
-        for (UUID gameId : command.games()) {
-            if (profile.hasGame(gameId)) {
-                throw new IllegalArgumentException(
-                        "Game with id %s is already in the library".formatted(gameId)
-                );
-            }
-            profile.acquireGame(gameId);
+    public void acquireGames(AcquireGameCommand command) {
+        List<UUID> nonExistentGames = gamesApi.validateGames(command.games());
+        if (!nonExistentGames.isEmpty()) {
+            throw new IllegalArgumentException("The following games do not exist: " + nonExistentGames);
         }
 
+        checkAlreadyOwnsGames(command.profileId(), command.games());
+        var profile = profileRepository.findById(command.profileId());
+
+        command.games().forEach(profile::acquireGame);
         profileRepository.save(profile);
     }
+
 
     @Override
     public void addGamesToLibrary(UUID profileId, List<UUID> games) {

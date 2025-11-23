@@ -21,6 +21,8 @@ public class JpaOrderEntity {
     private UUID profileId;
     @Column()
     private String paymentId;
+    @Column()
+    private boolean completed;
 
     @OneToMany(
             mappedBy = "order",
@@ -31,11 +33,12 @@ public class JpaOrderEntity {
 
     protected JpaOrderEntity() {}
 
-    public JpaOrderEntity(UUID id, UUID profileId, List<JpaOrderLineEntity> orderLines, String paymentId) {
+    public JpaOrderEntity(UUID id, UUID profileId, List<JpaOrderLineEntity> orderLines, String paymentId, boolean completed) {
         this.id = id;
         this.profileId = profileId;
         this.orderLines = orderLines;
         this.paymentId = paymentId;
+        this.completed = completed;
     }
 
     public static JpaOrderEntity fromDomain(Order order) {
@@ -43,7 +46,8 @@ public class JpaOrderEntity {
                 order.getOrderId().id(),
                 order.getProfileId(),
                 new ArrayList<>(),
-                order.getPaymentId()
+                order.getPaymentId(),
+                order.isCompleted()
         );
 
         order.getOrderLines().forEach(line ->
@@ -62,7 +66,8 @@ public class JpaOrderEntity {
                 orderLines.stream()
                         .map(JpaOrderLineEntity::toDomain)
                         .toList(),
-                paymentId
+                paymentId,
+                completed
         );
     }
 }

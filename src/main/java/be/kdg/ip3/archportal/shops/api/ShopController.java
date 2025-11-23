@@ -61,10 +61,8 @@ public class ShopController {
         return ResponseEntity.ok(payment);
     }
     @GetMapping("/payment/verify")
-    public ResponseEntity<Map<String, Boolean>> verifyPayment(
-            @RequestParam UUID orderId) {
-
+    public ResponseEntity<Boolean> verifyPayment(@RequestParam UUID orderId) {
         boolean verified = shopService.verifyPayment(orderId);
-        return ResponseEntity.ok(Map.of("verified", verified, "success", verified));
+        return ResponseEntity.ok(verified);
     }
 }

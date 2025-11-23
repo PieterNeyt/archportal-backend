@@ -13,6 +13,7 @@ import be.kdg.ip3.archportal.shops.domain.order.OrderRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -61,50 +62,51 @@ public class ShopService {
     public PaymentCreationDto checkout(UUID profileId) {
 
         Cart cart = getOrCreateCart(profileId);
-
         if (cart.getCartItems().isEmpty()) {
             throw new IllegalStateException("Cart is empty");
         }
 
+        profilesApi.checkAlreadyOwnsGames(profileId, cart.getCartItems());
+
+        var gamesInCart = gameApi.getGamesByIds(cart.getCartItems());
+
         Order order = new Order(profileId);
-        var allGames = getAllGames();
 
-        cart.getCartItems().forEach(gameId -> {
-            var game = allGames.stream()
-                    .filter(g -> g.id().equals(gameId))
-                    .findFirst()
-                    .orElseThrow();
-
-            order.addOrderLine(game.id(), game.price());
+        gamesInCart.forEach(gameDto -> {
+            order.addOrderLine(gameDto.id(), gameDto.price());
         });
-
         orderRepo.save(order);
-        var amount = order.totalPrice();
 
+        BigDecimal amount = order.totalPrice();
         PaymentCreationDto payment = mollieService.createPayment(
                 amount,
                 "Order #" + order.getOrderId().id(),
                 order.getOrderId().id()
         );
 
-        order.createPayment(payment.paymentId());
+        order.attachPayment(payment.paymentId());
         orderRepo.save(order);
 
         cart.getCartItems().clear();
         cartRepo.save(cart);
+
         return payment;
     }
+
+
     public boolean verifyPayment(UUID orderId) {
         Order order = orderRepo.findById(orderId);
         boolean success = mollieService.verifyPayment(order.getPaymentId());
 
-        if (success) {
+        if (success && !order.isCompleted()) {
             List<UUID> gameIds = order.getOrderLines()
                     .stream()
                     .map(OrderLine::getGameId)
                     .toList();
 
             profilesApi.addGamesToLibrary(order.getProfileId(), gameIds);
+            order.markAsCompleted();
+            orderRepo.save(order);
         }
 
         return success;
