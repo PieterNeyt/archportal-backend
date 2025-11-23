@@ -39,4 +39,7 @@ public class GameService {
     public List<Game> findAll(){
         return gameRepository.findAll();
     }
+    public List<Game> findByIds(List<UUID> gameIds) {
+        return gameRepository.findAllById(gameIds);
+    }
 }

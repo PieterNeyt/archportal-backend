@@ -27,4 +27,10 @@ public class GamesApiFacade implements GamesApi {
         var games = gameService.findAll();
         return games.stream().map(GameDto::fromDomain).toList();
     }
+
+    @Override
+    public List<GameDto> getGamesByIds(List<UUID> gameIds) {
+        var games = gameService.findByIds(gameIds);
+        return games.stream().map(GameDto::fromDomain).toList();
+    }
 }

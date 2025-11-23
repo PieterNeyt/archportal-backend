@@ -11,4 +11,5 @@ public interface GamesApi {
     List<UUID> validateGames(List<UUID> gameIds);
 
     List<GameDto> getAllGames();
+    List<GameDto> getGamesByIds(List<UUID> gameIds);
 }

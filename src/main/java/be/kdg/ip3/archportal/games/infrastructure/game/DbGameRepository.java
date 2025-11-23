@@ -35,4 +35,12 @@ public class DbGameRepository implements GameRepository {
                 .toList();
     }
 
+    @Override
+    public List<Game> findAllById(List<UUID> gameIds) {
+        return jpaGameRepository.findAllById(gameIds)
+                .stream()
+                .map(JpaGameEntity::toDomain)
+                .toList();
+    }
+
 }
