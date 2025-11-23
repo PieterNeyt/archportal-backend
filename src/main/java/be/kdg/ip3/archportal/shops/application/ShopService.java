@@ -1,12 +1,14 @@
 package be.kdg.ip3.archportal.shops.application;
 
-import be.kdg.ip3.archportal.games.shared.GameDto;
+import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
+import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import be.kdg.ip3.archportal.shops.api.dto.PaymentCreationDto;
 import be.kdg.ip3.archportal.shops.domain.cart.Cart;
 import be.kdg.ip3.archportal.shops.domain.cart.CartRepository;
 import be.kdg.ip3.archportal.shops.domain.mollie.IMollieService;
 import be.kdg.ip3.archportal.shops.domain.order.Order;
+import be.kdg.ip3.archportal.shops.domain.order.OrderLine;
 import be.kdg.ip3.archportal.shops.domain.order.OrderRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -18,20 +20,22 @@ import java.util.UUID;
 @Transactional
 public class ShopService {
     private final GamesApi gameApi;
+    private final ProfilesApi profilesApi;
     private final CartRepository cartRepo;
     private final OrderRepository orderRepo;
     private final IMollieService mollieService;
 
-    public ShopService(GamesApi gameApi, CartRepository cartRepo, OrderRepository orderRepo, IMollieService mollieService) {
+    public ShopService(GamesApi gameApi, ProfilesApi profilesApi, CartRepository cartRepo, OrderRepository orderRepo, IMollieService mollieService) {
         this.gameApi = gameApi;
+        this.profilesApi = profilesApi;
         this.cartRepo = cartRepo;
         this.orderRepo = orderRepo;
         this.mollieService = mollieService;
     }
-    public List<GameDto> getGamesForCart(Cart cart) {
+    public List<GlobalGameDto> getGamesForCart(Cart cart) {
         return gameApi.getGamesByIds(cart.getCartItems());
     }
-    public List<GameDto> getAllGames() {
+    public List<GlobalGameDto> getAllGames() {
         return gameApi.getAllGames();
     }
     public Cart getOrCreateCart(UUID profileId) {
@@ -92,7 +96,18 @@ public class ShopService {
     }
     public boolean verifyPayment(UUID orderId) {
         Order order = orderRepo.findById(orderId);
-        // Verifieer met Mollie
-        return mollieService.verifyPayment(order.getPaymentId());
+        boolean success = mollieService.verifyPayment(order.getPaymentId());
+
+        if (success) {
+            List<UUID> gameIds = order.getOrderLines()
+                    .stream()
+                    .map(OrderLine::getGameId)
+                    .toList();
+
+            profilesApi.addGamesToLibrary(order.getProfileId(), gameIds);
+        }
+
+        return success;
     }
+
 }

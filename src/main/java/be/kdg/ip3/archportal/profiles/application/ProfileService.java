@@ -5,6 +5,7 @@ import be.kdg.ip3.archportal.profiles.application.command.AcquireGameCommand;
 import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
+import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +16,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
-public class ProfileService {
+public class ProfileService implements ProfilesApi {
     private final ProfileRepository profileRepository;
     private final GamesApi gamesApi;
 
@@ -64,5 +65,10 @@ public class ProfileService {
         }
 
         profileRepository.save(profile);
+    }
+
+    @Override
+    public void addGamesToLibrary(UUID profileId, List<UUID> games) {
+        acquireGames(new AcquireGameCommand(profileId, games));
     }
 }

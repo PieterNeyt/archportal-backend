@@ -1,6 +1,6 @@
 package be.kdg.ip3.archportal.shops.api;
 
-import be.kdg.ip3.archportal.games.shared.GameDto;
+import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.shops.api.dto.CartDto;
 import be.kdg.ip3.archportal.shops.api.dto.PaymentCreationDto;
 import be.kdg.ip3.archportal.shops.application.ShopService;
@@ -22,14 +22,14 @@ public class ShopController {
     }
 
     @GetMapping("/games")
-    public ResponseEntity<List<GameDto>> getAllGames() {
+    public ResponseEntity<List<GlobalGameDto>> getAllGames() {
         var games = shopService.getAllGames();
         return ResponseEntity.ok(games);
     }
     @GetMapping("/cart")
     public ResponseEntity<CartDto> getCart(@RequestParam UUID profileId) {
         Cart cart = shopService.getOrCreateCart(profileId);
-        List<GameDto> games = shopService.getGamesForCart(cart);
+        List<GlobalGameDto> games = shopService.getGamesForCart(cart);
         return ResponseEntity.ok(CartDto.from(cart, games));
     }
 
@@ -39,7 +39,7 @@ public class ShopController {
             @RequestParam UUID gameId) {
 
         Cart cart = shopService.addToCart(profileId, gameId);
-        List<GameDto> games = shopService.getGamesForCart(cart);
+        List<GlobalGameDto> games = shopService.getGamesForCart(cart);
         return ResponseEntity.ok(CartDto.from(cart, games));
     }
 
@@ -49,7 +49,7 @@ public class ShopController {
             @RequestParam UUID gameId) {
 
         Cart cart = shopService.removeFromCart(profileId, gameId);
-        List<GameDto> games = shopService.getGamesForCart(cart);
+        List<GlobalGameDto> games = shopService.getGamesForCart(cart);
         return ResponseEntity.ok(CartDto.from(cart, games));
     }
 

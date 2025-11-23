@@ -1,0 +1,11 @@
+package be.kdg.ip3.archportal.profiles.shared;
+
+import org.springframework.modulith.NamedInterface;
+
+import java.util.List;
+import java.util.UUID;
+
+@NamedInterface
+public interface ProfilesApi {
+    void addGamesToLibrary(UUID profileId, List<UUID> games);
+}
