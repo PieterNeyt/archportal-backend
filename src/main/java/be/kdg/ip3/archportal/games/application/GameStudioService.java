@@ -20,6 +20,7 @@ public class GameStudioService {
         this.ownerRepo = ownerRepo;
     }
 
+    // TODO dit omvormen (accounts worden aangemaakt via keycloak)
     public CreateGameStudioCommand createGameStudio(CreateGameStudioCommand studioCommand) {
         var owner = new Owner(
                 studioCommand.ownerFirstName(),

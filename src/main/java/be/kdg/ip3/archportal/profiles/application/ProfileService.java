@@ -4,7 +4,9 @@ import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.profiles.application.command.AcquireGameCommand;
 import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
+import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +54,7 @@ public class ProfileService {
             );
         }
 
-        var profile = profileRepository.findById(command.profileId());
+        var profile = profileRepository.findById(command.profileId()).orElseThrow(command.profileId()::notFound);
 
         for (UUID gameId : command.games()) {
             if (profile.hasGame(gameId)) {
@@ -64,5 +66,15 @@ public class ProfileService {
         }
 
         profileRepository.save(profile);
+    }
+
+    public Profile syncUser(Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        String firstName = token.getClaim("given_name");
+        String lastName = token.getClaim("family_name");
+
+        var profile = profileRepository.findById(profileId).orElse(Profile.createProfile(profileId, firstName, lastName));
+        profileRepository.save(profile);
+        return profile;
     }
 }
