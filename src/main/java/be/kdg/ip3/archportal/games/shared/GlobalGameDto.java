@@ -6,7 +6,7 @@ import be.kdg.ip3.archportal.games.domain.game.GameGenre;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record GameDto(
+public record GlobalGameDto(
         UUID id,
         UUID studioId,
         String title,
@@ -16,8 +16,8 @@ public record GameDto(
         BigDecimal price,
         GameGenre genre
 ) {
-    public static GameDto fromDomain(Game game) {
-        return new GameDto(game.getId().id(), game.getStudioId().id(), game.getTitle(), game.getDescription(),
+    public static GlobalGameDto fromDomain(Game game) {
+        return new GlobalGameDto(game.getId().id(), game.getStudioId().id(), game.getTitle(), game.getDescription(),
                 game.getImageUrl(), game.getGameUrl(), game.getPrice().money(), game.getGenre());
     }
 }
