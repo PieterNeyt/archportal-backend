@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.profiles.application;
 
 import be.kdg.ip3.archportal.games.shared.GamesApi;
+import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.application.command.AcquireGameCommand;
 import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
@@ -44,6 +45,8 @@ public class ProfileService implements ProfilesApi {
         return CreateProfileCommand.fromDomain(profile);
     }
 
+
+
     @Override
     public void checkAlreadyOwnsGames(UUID profileId, List<UUID> games) {
         var profile = profileRepository.findById(profileId);
@@ -85,7 +88,12 @@ public class ProfileService implements ProfilesApi {
         profileRepository.save(profile);
     }
 
+    public List<GlobalGameDto> getLibrary(UUID profileId) {
+        var profile = profileRepository.findById(profileId);
+        var gameIds = profile.getLibrary();
 
+        return gamesApi.getGamesByIds(gameIds);
+    }
     @Override
     public void addGamesToLibrary(UUID profileId, List<UUID> games) {
         acquireGames(new AcquireGameCommand(profileId, games));
