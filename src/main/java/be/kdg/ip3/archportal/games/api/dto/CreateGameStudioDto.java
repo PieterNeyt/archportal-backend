@@ -13,13 +13,7 @@ public record CreateGameStudioDto(
         @NotNull
         String description,
         @NotNull
-        String IBAN,
-        @NotNull
-        String ownerFirstName,
-        @NotNull
-        String ownerLastName,
-        @NotNull
-        String ownerEmail
+        String IBAN
 ) {
     public static CreateGameStudioDto fromDomain(CreateGameStudioCommand studioCommand) {
         return new CreateGameStudioDto(
@@ -27,10 +21,7 @@ public record CreateGameStudioDto(
                 studioCommand.ownerId().id(),
                 studioCommand.name(),
                 studioCommand.description(),
-                studioCommand.IBAN(),
-                studioCommand.ownerFirstName(),
-                studioCommand.ownerLastName(),
-                studioCommand.ownerEmail()
+                studioCommand.IBAN()
 
         );
     }

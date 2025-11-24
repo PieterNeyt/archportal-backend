@@ -10,10 +10,7 @@ public record CreateGameStudioCommand(
         OwnerId ownerId,
         String name,
         String description,
-        String IBAN,
-        String ownerFirstName,
-        String ownerLastName,
-        String ownerEmail
+        String IBAN
 ) {
     public static CreateGameStudioCommand fromDto(CreateGameStudioDto studioDto, OwnerId ownerId) {
         return new CreateGameStudioCommand(
@@ -21,10 +18,7 @@ public record CreateGameStudioCommand(
                 ownerId,
                 studioDto.name(),
                 studioDto.description(),
-                studioDto.IBAN(),
-                studioDto.ownerFirstName(),
-                studioDto.ownerLastName(),
-                studioDto.ownerEmail()
+                studioDto.IBAN()
         );
     }
 
@@ -34,10 +28,7 @@ public record CreateGameStudioCommand(
                 owner,
                 studio.getName(),
                 studio.getDescription(),
-                studio.getIBAN(),
-                "",
-                "",
-                ""
+                studio.getIBAN()
         );
     }
 }

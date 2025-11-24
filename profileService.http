@@ -1,4 +1,5 @@
 ### Create profile
+// TODO maken van een profiel gebeurt via keycloak fix dat hier
 POST http://localhost:8080/api/profile
 Content-Type: application/json
 
