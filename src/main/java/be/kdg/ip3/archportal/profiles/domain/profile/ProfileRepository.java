@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface ProfileRepository {
     void save(Profile profile);
     Optional<Profile> findById(ProfileId id);
+    boolean existsById(ProfileId id);
 }

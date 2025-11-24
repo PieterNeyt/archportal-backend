@@ -2,13 +2,12 @@ package be.kdg.ip3.archportal.games.application.command;
 
 import be.kdg.ip3.archportal.games.api.dto.CreateGameStudioDto;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudio;
-import be.kdg.ip3.archportal.games.domain.owner.Owner;
-
-import java.util.UUID;
+import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
+import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
 
 public record CreateGameStudioCommand(
-        UUID id,
-        UUID ownerId,
+        GameStudioId id,
+        OwnerId ownerId,
         String name,
         String description,
         String IBAN,
@@ -16,10 +15,10 @@ public record CreateGameStudioCommand(
         String ownerLastName,
         String ownerEmail
 ) {
-    public static CreateGameStudioCommand fromDto(CreateGameStudioDto studioDto) {
+    public static CreateGameStudioCommand fromDto(CreateGameStudioDto studioDto, OwnerId ownerId) {
         return new CreateGameStudioCommand(
-                studioDto.id(),
-                studioDto.ownerId(),
+                GameStudioId.create(),
+                ownerId,
                 studioDto.name(),
                 studioDto.description(),
                 studioDto.IBAN(),
@@ -29,16 +28,16 @@ public record CreateGameStudioCommand(
         );
     }
 
-    public static CreateGameStudioCommand fromDomain(GameStudio studio, Owner owner) {
+    public static CreateGameStudioCommand fromDomain(GameStudio studio, OwnerId owner) {
         return new CreateGameStudioCommand(
-                studio.getId().id(),
-                owner.getId().id(),
+                studio.getId(),
+                owner,
                 studio.getName(),
                 studio.getDescription(),
                 studio.getIBAN(),
-                owner.getFirstName(),
-                owner.getLastName(),
-                owner.getEmail()
+                "",
+                "",
+                ""
         );
     }
 }

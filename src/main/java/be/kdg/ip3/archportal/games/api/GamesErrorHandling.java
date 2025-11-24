@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.games.api;
 
 import be.kdg.ip3.archportal.games.domain.NotFoundException;
+import be.kdg.ip3.archportal.games.domain.owner.OwnerAlreadyHasGameStudioException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,12 @@ public class GamesErrorHandling {
     
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+    
+    @ExceptionHandler(OwnerAlreadyHasGameStudioException.class)
+    public ResponseEntity<ErrorResponse> handleOwnerAlreadyHasGameStudioException(OwnerAlreadyHasGameStudioException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }

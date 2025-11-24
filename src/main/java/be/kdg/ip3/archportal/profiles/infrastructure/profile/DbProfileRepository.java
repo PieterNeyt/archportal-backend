@@ -27,4 +27,9 @@ public class DbProfileRepository implements ProfileRepository {
     public Optional<Profile> findById(ProfileId id) {
         return jpaProfileRepository.findById(id.id()).map(JpaProfileEntity::toDomain);
     }
+
+    @Override
+    public boolean existsById(ProfileId id) {
+        return jpaProfileRepository.existsById(id.id());
+    }
 }

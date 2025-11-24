@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.games.infrastructure.owner.jpa;
 
+import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
 import be.kdg.ip3.archportal.games.domain.owner.Owner;
 import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
 import jakarta.persistence.Column;
@@ -12,43 +13,32 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Table(name = "owner",schema = "gameservice")
+@Table(name = "owner", schema = "gameservice")
 public class JpaOwnerEntity {
     @Id()
     private UUID id;
 
     @Column(nullable = false)
-    private String firstName;
+    private UUID gameStudioId;
 
-    @Column(nullable = false)
-    private String lastName;
+    public JpaOwnerEntity() {
+    }
 
-    @Column(nullable = false)
-    private String email;
-
-    public JpaOwnerEntity() {}
-
-    public JpaOwnerEntity(UUID ownerId, String firstName, String lastName, String email) {
+    public JpaOwnerEntity(UUID ownerId, UUID gameStudioId) {
         this.id = ownerId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
+        this.gameStudioId = gameStudioId;
     }
 
     public static JpaOwnerEntity fromDomain(Owner owner) {
         return new JpaOwnerEntity(
                 owner.getId().id(),
-                owner.getFirstName(),
-                owner.getLastName(),
-                owner.getEmail()
+                owner.getGameStudioId().id()
         );
     }
 
     public Owner toDomain() {
         return new Owner(
                 new OwnerId(id),
-                firstName,
-                lastName,
-                email);
+                new GameStudioId(gameStudioId));
     }
 }
