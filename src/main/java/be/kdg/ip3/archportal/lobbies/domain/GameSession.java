@@ -26,7 +26,15 @@ public class GameSession {
         this.endTime = null;
     }
 
-    public static GameSession create( GameLobbyId gameLobbyId, PlayerId playerId) {
+    public GameSession(GameSessionId gameSessionId, GameLobbyId gameLobbyId, PlayerId playerId, LocalDateTime startTime, LocalDateTime endTime) {
+        this.gameSessionId = gameSessionId;
+        this.gameLobbyId = gameLobbyId;
+        this.playerId = playerId;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    public static GameSession create(GameLobbyId gameLobbyId, PlayerId playerId) {
         return new GameSession(GameSessionId.create(), gameLobbyId, playerId);
     }
 

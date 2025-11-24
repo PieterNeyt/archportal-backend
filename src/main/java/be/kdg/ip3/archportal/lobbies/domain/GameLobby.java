@@ -25,4 +25,41 @@ public class GameLobby {
         this.maxPlayers = maxPlayers;
         this.gameLobbyStatus = GameLobbyStatus.OPEN;
     }
+
+    public GameLobby(GameLobbyId gameLobbyId, GameId gameId, int maxPlayers, GameLobbyStatus gameLobbyStatus, List<PlayerId> players, List<GameSessionId> sessions) {
+        this.gameLobbyId = gameLobbyId;
+        this.gameId = gameId;
+        this.maxPlayers = maxPlayers;
+        this.gameLobbyStatus = gameLobbyStatus;
+        this.players = players;
+        this.sessions = sessions;
+    }
+
+    public static GameLobby newSinglePlayerLobby(GameId gameId) {
+        var lobby = new GameLobby(
+                GameLobbyId.create(),
+                gameId,
+                1
+        );
+        lobby.closeLobby();
+        return lobby;
+    }
+    public static GameLobby createMultiplayerLobby() {
+        //TODO: implement multiplayer lobby creation logic
+        return null;
+    }
+
+    public void closeLobby() {
+        this.gameLobbyStatus = GameLobbyStatus.CLOSED;
+    }
+
+    public void addPlayer(PlayerId playerId) {
+        if (players.size() >= maxPlayers) {
+            throw new IllegalStateException("Lobby is full");
+        }
+        players.add(playerId);
+        if (players.size() == maxPlayers) {
+            gameLobbyStatus = GameLobbyStatus.FULL;
+        }
+    }
 }
