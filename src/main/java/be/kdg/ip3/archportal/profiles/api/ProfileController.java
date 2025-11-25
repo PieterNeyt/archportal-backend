@@ -23,17 +23,17 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
-    //TODO dit mag weg denk ik (nog eens bekijken) (als er een nieuw account aangemaakt moet worden gebeurt dat ook via de sync)
-    @PostMapping
-    public ResponseEntity<CreateProfileDto> createProfile(@Valid @RequestBody CreateProfileDto dto) {
-        var createProfileCommand = CreateProfileCommand.fromDto(dto);
-        var profile = profileService.createProfile(createProfileCommand);
-        var location = URI.create("/api/profile/" + profile.id());
-
-        return ResponseEntity
-                .created(location)
-                .body(CreateProfileDto.fromDomain(profile));
-    }
+    //TODO dit kan gebruikt worden voor updateProfile
+//    @PostMapping
+//    public ResponseEntity<CreateProfileDto> createProfile(@Valid @RequestBody CreateProfileDto dto) {
+//        var createProfileCommand = CreateProfileCommand.fromDto(dto);
+//        var profile = profileService.createProfile(createProfileCommand);
+//        var location = URI.create("/api/profile/" + profile.id());
+//
+//        return ResponseEntity
+//                .created(location)
+//                .body(CreateProfileDto.fromDomain(profile));
+//    }
 
     @GetMapping({"", "/"})
     public ResponseEntity<ProfileDto> syncUser(@AuthenticationPrincipal Jwt token) {

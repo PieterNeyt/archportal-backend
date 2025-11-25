@@ -1,15 +1,13 @@
 ### Create Game Studio
-// TODO dit ook nog omvormen
+// werkt niet omdat er geen manier is om via hier aan de access token te geraken
 POST http://localhost:8080/api/gamestudio
 Content-Type: application/json
+Authorization: Bearer {{access_token}}
 
 {
   "name": "Epic Games Studio",
   "description": "We create amazing indie games",
-  "IBAN": "BE68539007547034",
-  "ownerEmail": "dorhugomc@gmail.com",
-  "ownerFirstName": "Hugo",
-  "ownerLastName": "Dor"
+  "IBAN": "BE68539007547034"
 }
 
 > {% 
@@ -19,6 +17,7 @@ client.global.set("studioId", response.body.id)
 ### Create Game
 POST http://localhost:8080/api/games
 Content-Type: application/json
+Authorization: Bearer {{access_token}}
 
 {
   "studioId": "{{studioId}}",

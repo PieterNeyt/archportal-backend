@@ -4,9 +4,11 @@ import be.kdg.ip3.archportal.games.api.dto.GameDto;
 import be.kdg.ip3.archportal.games.domain.game.Game;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
+import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,8 +23,10 @@ public class GameService {
         this.gameStudioService = gameStudioService;
     }
 
-    public Game createGame(GameDto gameDto) {
+    public Game createGame(GameDto gameDto, OwnerId ownerId) {
         var studio = gameStudioService.findById(new GameStudioId(gameDto.studioId()));
+        studio.checkOwner(ownerId);
+        
         var game = new Game(studio.getId(), gameDto.title(), gameDto.description(),
                 gameDto.price(), gameDto.imageUrl(), gameDto.gameUrl(), gameDto.genre());
         gameRepository.save(game);
