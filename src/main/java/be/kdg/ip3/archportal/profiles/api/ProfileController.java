@@ -6,6 +6,7 @@ import be.kdg.ip3.archportal.profiles.api.dto.CreateProfileDto;
 import be.kdg.ip3.archportal.profiles.application.ProfileService;
 import be.kdg.ip3.archportal.profiles.application.command.AcquireGameCommand;
 import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
+import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

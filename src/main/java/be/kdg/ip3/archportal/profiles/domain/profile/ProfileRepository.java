@@ -7,5 +7,5 @@ import java.util.UUID;
 @Repository
 public interface ProfileRepository {
     void save(Profile profile);
-    Profile findById(UUID id);
+    Profile findById(ProfileId id);
 }

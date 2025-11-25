@@ -5,6 +5,7 @@ import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.application.command.AcquireGameCommand;
 import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
+import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.stereotype.Service;
@@ -46,10 +47,9 @@ public class ProfileService implements ProfilesApi {
     }
 
 
-
     @Override
     public void checkAlreadyOwnsGames(UUID profileId, List<UUID> games) {
-        var profile = profileRepository.findById(profileId);
+        var profile = profileRepository.findById(new  ProfileId(profileId));
 
         List<UUID> alreadyOwned = games.stream()
                 .filter(profile::hasGame)
@@ -65,7 +65,7 @@ public class ProfileService implements ProfilesApi {
 
     @Override
     public void checkAlreadyOwnsGame(UUID profileId, UUID gameId) {
-        var profile = profileRepository.findById(profileId);
+        var profile = profileRepository.findById(new ProfileId(profileId));
         if (profile.hasGame(gameId)) {
             throw new IllegalArgumentException(
                     "Profile %s already owns the games: %s"
@@ -82,18 +82,19 @@ public class ProfileService implements ProfilesApi {
         }
 
         checkAlreadyOwnsGames(command.profileId(), command.games());
-        var profile = profileRepository.findById(command.profileId());
+        var profile = profileRepository.findById(new ProfileId( command.profileId()));
 
         command.games().forEach(profile::acquireGame);
         profileRepository.save(profile);
     }
 
     public List<GlobalGameDto> getLibrary(UUID profileId) {
-        var profile = profileRepository.findById(profileId);
+        var profile = profileRepository.findById(new ProfileId(profileId));
         var gameIds = profile.getLibrary();
 
         return gamesApi.getGamesByIds(gameIds);
     }
+
     @Override
     public void addGamesToLibrary(UUID profileId, List<UUID> games) {
         acquireGames(new AcquireGameCommand(profileId, games));
