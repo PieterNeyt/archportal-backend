@@ -88,8 +88,8 @@ public class ProfileService implements ProfilesApi {
         profileRepository.save(profile);
     }
 
-    public List<GlobalGameDto> getLibrary(UUID profileId) {
-        var profile = profileRepository.findById(new ProfileId(profileId));
+    public List<GlobalGameDto> getLibrary(ProfileId profileId) {
+        var profile = profileRepository.findById(profileId);
         var gameIds = profile.getLibrary();
 
         return gamesApi.getGamesByIds(gameIds);

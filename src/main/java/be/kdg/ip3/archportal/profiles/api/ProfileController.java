@@ -43,7 +43,7 @@ public class ProfileController {
     }
     @GetMapping("/{profileId}/library")
     public ResponseEntity<List<GlobalGameDto>> getLibrary(@PathVariable UUID profileId) {
-        var library = profileService.getLibrary(profileId);
+        var library = profileService.getLibrary(new ProfileId(profileId));
         return ResponseEntity.ok(library);
     }
 
