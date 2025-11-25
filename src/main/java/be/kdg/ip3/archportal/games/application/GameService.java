@@ -5,6 +5,8 @@ import be.kdg.ip3.archportal.games.domain.game.Game;
 import be.kdg.ip3.archportal.games.domain.game.GameId;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
+import be.kdg.ip3.archportal.games.shared.GamesApi;
+import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +15,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
-public class GameService {
+public class GameService implements GamesApi {
     private final GameRepository gameRepository;
     private final GameStudioService gameStudioService;
 
@@ -36,13 +38,27 @@ public class GameService {
                 .toList();
     }
 
+    @Override
+    public List<GlobalGameDto> getAllGames() {
+        var games = findAll();
+        return games.stream().map(GlobalGameDto::fromDomain).toList();
+    }
+
+    @Override
+    public List<GlobalGameDto> getGamesByIds(List<UUID> gameIds) {
+        var games = findByIds(gameIds);
+        return games.stream().map(GlobalGameDto::fromDomain).toList();
+    }
+
 
     public List<Game> findAll() {
         return gameRepository.findAll();
     }
+    public List<Game> findByIds(List<UUID> gameIds) {
+        return gameRepository.findAllById(gameIds);
+    }
 
-
-    public String getGameUrl(GameId gameId) {
+    public String getGameUrl(UUID gameId) {
         var game = gameRepository.findAll().stream()
                 .filter(g -> g.getId().equals(gameId))
                 .findFirst();
@@ -52,4 +68,5 @@ public class GameService {
             throw new IllegalArgumentException("Game with id " + gameId + " not found"); // moet weg later
         }
     }
+
 }

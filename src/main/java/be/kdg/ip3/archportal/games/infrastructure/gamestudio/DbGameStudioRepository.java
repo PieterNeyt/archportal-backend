@@ -1,4 +1,4 @@
-package be.kdg.ip3.archportal.games.infrastructure;
+package be.kdg.ip3.archportal.games.infrastructure.gamestudio;
 
 import be.kdg.ip3.archportal.games.domain.NotFoundException;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudio;

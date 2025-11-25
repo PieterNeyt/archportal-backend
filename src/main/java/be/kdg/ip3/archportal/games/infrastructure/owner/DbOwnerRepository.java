@@ -1,4 +1,4 @@
-package be.kdg.ip3.archportal.games.infrastructure;
+package be.kdg.ip3.archportal.games.infrastructure.owner;
 
 import be.kdg.ip3.archportal.games.domain.owner.Owner;
 import be.kdg.ip3.archportal.games.domain.owner.OwnerRepository;
