@@ -22,6 +22,9 @@ VALUES ('f7b56a1e-1c63-4d0c-aa75-3b40e8253e19', '3f071d5d-5d2e-4b5f-9c12-7cf7e90
        ('9a5f6920-29e8-4d34-82ee-9df5249e8e72', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', 'Forestbound',
         'A cooperative adventure where players defend an ancient forest from encroaching corruption.', 44.99,
         'https://example.com/images/forestbound.jpg', 'https://hub.example.com/games/forestbound', 'ADVENTURE'),
+        ('1b2d89fa-bd59-4873-b568-8df26c3a047c', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', 'Tic-Tac-Toe Deluxe',
+        'Speel met kruisjes en gaatjes', 44.99,
+        'https://play-lh.googleusercontent.com/zPxLgj5nvl20ahJV7aFC6S5mD8kii5CEEDj25j1P9CYAfXL9sdDuO-8eES0r4DhJHrU', 'http://localhost:5174/', 'STRATEGY'),
        ('ab842ad3-7426-492f-bfda-4c61689ec2c4', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', 'Campfire Stories',
         'A family-friendly party game where players build stories using illustrated prompt cards.', 24.99,
         'https://example.com/images/campfire-stories.jpg', 'https://hub.example.com/games/campfire-stories', 'FAMILY');

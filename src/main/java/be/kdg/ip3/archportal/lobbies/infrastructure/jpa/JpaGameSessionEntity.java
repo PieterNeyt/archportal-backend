@@ -8,48 +8,50 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "game_sessions")
+@Getter
 public class JpaGameSessionEntity {
+
     @Id
     private UUID gameSessionId;
 
     @Column(nullable = false)
-    private UUID gameLobbyId;
-
-    @Column( nullable = false)
     private UUID playerId;
 
     @Column(nullable = false)
     private LocalDateTime startTime;
 
-    @Column(name = "end_time")
     private LocalDateTime endTime;
 
+    private String launchUrl;
 
     protected JpaGameSessionEntity() {}
 
-    public static JpaGameSessionEntity fromDomain(GameSession session) {
+    public static JpaGameSessionEntity fromDomain(GameSession s) {
         JpaGameSessionEntity e = new JpaGameSessionEntity();
-        e.gameSessionId = session.getGameSessionId().id();
-        e.gameLobbyId = session.getGameLobbyId().id();
-        e.playerId = session.getPlayerId().id();
-        e.startTime = session.getStartTime();
-        e.endTime = session.getEndTime();
+        e.gameSessionId = s.getGameSessionId().id();
+        e.playerId = s.getPlayerId().id();
+        e.startTime = s.getStartTime();
+        e.endTime = s.getEndTime();
+        e.launchUrl = s.getLaunchUrl();
         return e;
     }
 
-    public GameSession toDomain() {
+    public GameSession toDomain(GameLobbyId lobbyId) {
         return new GameSession(
                 new GameSessionId(gameSessionId),
-                new GameLobbyId(gameLobbyId),
+                lobbyId,
                 new PlayerId(playerId),
                 startTime,
-                endTime
+                endTime,
+                launchUrl
         );
     }
 }
+

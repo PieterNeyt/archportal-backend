@@ -2,7 +2,6 @@ package be.kdg.ip3.archportal.lobbies.infrastructure;
 
 import be.kdg.ip3.archportal.lobbies.domain.GameLobby;
 import be.kdg.ip3.archportal.lobbies.domain.GameLobbyRepository;
-import be.kdg.ip3.archportal.lobbies.domain.GameSession;
 import be.kdg.ip3.archportal.lobbies.domain.id.GameLobbyId;
 import be.kdg.ip3.archportal.lobbies.domain.id.GameSessionId;
 import be.kdg.ip3.archportal.lobbies.infrastructure.jpa.JpaGameLobbyEntity;
@@ -26,18 +25,18 @@ public class DbLobbyRepository implements GameLobbyRepository {
     }
 
     @Override
-    public void saveSession(GameSession session) {
-
-
-    }
-
-    @Override
     public Optional<GameLobby> findById(GameLobbyId id) {
         return jpaLobbyRepository.findById(id.id()).map(JpaGameLobbyEntity::toDomain);
     }
-
     @Override
-    public Optional<GameSession> findById(GameSessionId id) {
-        return Optional.empty();
+    public Optional<GameLobby> findLobbyBySessionId(GameSessionId sessionId) {
+        return jpaLobbyRepository.findAll().stream()
+                .filter(entity -> entity.getSessions().stream()
+                        .anyMatch(sessionEntity -> sessionEntity.getGameSessionId().equals(sessionId.id())))
+                .findFirst()
+                .map(JpaGameLobbyEntity::toDomain);
+
     }
+
+
 }

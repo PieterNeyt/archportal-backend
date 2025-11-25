@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.games.api;
 
+import be.kdg.ip3.archportal.games.domain.game.GameId;
 import be.kdg.ip3.archportal.games.shared.GameDto;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.application.GameService;
@@ -20,6 +21,11 @@ public class GamesApiFacade implements GamesApi {
     @Override
     public List<UUID> validateGames(List<UUID> gameIds) {
         return gameService.validateGames(gameIds);
+    }
+
+    @Override
+    public String getGameUrl(UUID gameId) {
+        return gameService.getGameUrl(new GameId(gameId));
     }
 
     @Override

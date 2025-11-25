@@ -9,10 +9,7 @@ import java.util.Optional;
 @Repository
 public interface GameLobbyRepository {
     void save(GameLobby lobby);
-    void saveSession(GameSession session);
     Optional<GameLobby> findById(GameLobbyId id);
-    Optional<GameSession> findById(GameSessionId id);
-
-
+    Optional<GameLobby> findLobbyBySessionId(GameSessionId sessionId);
 
 }
