@@ -18,6 +18,7 @@ public class DbProfileRepository implements ProfileRepository {
         this.jpaProfileRepository = jpaProfileRepository;
     }
 
+
     @Override
     public void save(Profile profile) {
         this.jpaProfileRepository.save(JpaProfileEntity.fromDomain(profile));

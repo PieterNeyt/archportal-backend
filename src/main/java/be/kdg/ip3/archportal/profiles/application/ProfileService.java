@@ -1,12 +1,14 @@
 package be.kdg.ip3.archportal.profiles.application;
 
 import be.kdg.ip3.archportal.games.shared.GamesApi;
+import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.application.command.AcquireGameCommand;
 import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
 import org.springframework.security.oauth2.jwt.Jwt;
+import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +19,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
-public class ProfileService {
+public class ProfileService implements ProfilesApi {
     private final ProfileRepository profileRepository;
     private final GamesApi gamesApi;
 
@@ -45,26 +47,45 @@ public class ProfileService {
         return CreateProfileCommand.fromDomain(profile);
     }
 
-    public void acquireGames(AcquireGameCommand command) {
-        List<UUID> nonExistentGames = gamesApi.validateGames(command.games());
 
-        if (!nonExistentGames.isEmpty()) {
+    @Override
+    public void checkAlreadyOwnsGames(UUID profileId, List<UUID> games) {
+        var profile = profileRepository.findById(new  ProfileId(profileId));
+
+        List<UUID> alreadyOwned = games.stream()
+                .filter(profile::hasGame)
+                .toList();
+
+        if (!alreadyOwned.isEmpty()) {
             throw new IllegalArgumentException(
-                    "The following games do not exist: " + nonExistentGames
+                    "Profile %s already owns the following games: %s"
+                            .formatted(profileId, alreadyOwned)
             );
         }
+    }
 
-        var profile = profileRepository.findById(command.profileId()).orElseThrow(command.profileId()::notFound);
+    @Override
+    public void checkAlreadyOwnsGame(UUID profileId, UUID gameId) {
+        var profile = profileRepository.findById(new ProfileId(profileId));
+        if (profile.hasGame(gameId)) {
+            throw new IllegalArgumentException(
+                    "Profile %s already owns the games: %s"
+                            .formatted(profileId, gameId)
+            );
+        }
+    }
 
-        for (UUID gameId : command.games()) {
-            if (profile.hasGame(gameId)) {
-                throw new IllegalArgumentException(
-                        "Game with id %s is already in the library".formatted(gameId)
-                );
-            }
-            profile.acquireGame(gameId);
+
+    public void acquireGames(AcquireGameCommand command) {
+        List<UUID> nonExistentGames = gamesApi.validateGames(command.games());
+        if (!nonExistentGames.isEmpty()) {
+            throw new IllegalArgumentException("The following games do not exist: " + nonExistentGames);
         }
 
+        checkAlreadyOwnsGames(command.profileId(), command.games());
+        var profile = profileRepository.findById(new ProfileId( command.profileId())).orElseThrow(command.profileId()::notFound);;
+
+        command.games().forEach(profile::acquireGame);
         profileRepository.save(profile);
     }
 
@@ -76,5 +97,17 @@ public class ProfileService {
         var profile = profileRepository.findById(profileId).orElse(Profile.createProfile(profileId, firstName, lastName));
         profileRepository.save(profile);
         return profile;
+    }
+
+    public List<GlobalGameDto> getLibrary(ProfileId profileId) {
+        var profile = profileRepository.findById(profileId);
+        var gameIds = profile.getLibrary();
+
+        return gamesApi.getGamesByIds(gameIds);
+    }
+
+    @Override
+    public void addGamesToLibrary(UUID profileId, List<UUID> games) {
+        acquireGames(new AcquireGameCommand(profileId, games));
     }
 }

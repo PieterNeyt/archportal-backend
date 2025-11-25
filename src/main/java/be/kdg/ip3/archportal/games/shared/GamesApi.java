@@ -10,5 +10,6 @@ public interface GamesApi {
     // returnt een lijst van invalide game id's indien die er zijn
     List<UUID> validateGames(List<UUID> gameIds);
 
-    List<GameDto> getAllGames();
+    List<GlobalGameDto> getAllGames();
+    List<GlobalGameDto> getGamesByIds(List<UUID> gameIds);
 }

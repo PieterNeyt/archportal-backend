@@ -11,4 +11,5 @@ public interface GameRepository {
     void save(Game game);
     boolean existsById(UUID gameId);
     List<Game> findAll();
+    List<Game> findAllById(List<UUID> gameIds);
 }
