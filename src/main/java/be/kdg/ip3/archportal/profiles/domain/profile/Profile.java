@@ -77,6 +77,15 @@ public class Profile {
         return this.library.contains(gameId);
     }
 
+    public void hasGameCheck(UUID gameId) {
+        if (this.library.contains(gameId)) {
+            throw new IllegalArgumentException(
+                    "Profile %s already owns the games: %s"
+                            .formatted(id, gameId)
+            );
+        }
+    }
+
     public void acquireGame(UUID gameId) {
         this.library.add(gameId);
     }

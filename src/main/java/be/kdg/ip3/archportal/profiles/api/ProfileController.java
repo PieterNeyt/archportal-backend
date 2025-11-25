@@ -1,20 +1,17 @@
 package be.kdg.ip3.archportal.profiles.api;
 
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
-import be.kdg.ip3.archportal.profiles.api.dto.AcquireGameDto;
-import be.kdg.ip3.archportal.profiles.api.dto.CreateProfileDto;
 import be.kdg.ip3.archportal.profiles.api.dto.ProfileDto;
 import be.kdg.ip3.archportal.profiles.application.ProfileService;
-import be.kdg.ip3.archportal.profiles.application.command.AcquireGameCommand;
-import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,17 +42,9 @@ public class ProfileController {
         return ResponseEntity.ok(ProfileDto.from(profile));
     }
 
-    @PutMapping("/acquire")
-    public ResponseEntity<Void> acquireGame(@Valid @RequestBody AcquireGameDto dto) {
-        var acquireGameCommand = AcquireGameCommand.fromDto(dto);
-        profileService.acquireGames(acquireGameCommand);
-        return ResponseEntity.ok().build();
-    }
     @GetMapping("/{profileId}/library")
     public ResponseEntity<List<GlobalGameDto>> getLibrary(@PathVariable UUID profileId) {
         var library = profileService.getLibrary(new ProfileId(profileId));
         return ResponseEntity.ok(library);
     }
-
-
 }
