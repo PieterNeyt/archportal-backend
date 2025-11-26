@@ -1,0 +1,18 @@
+package be.kdg.ip3.archportal.lobbies.infrastructure.jpa;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.Optional;
+import java.util.UUID;
+
+public interface JpaGameLobbyRepository extends JpaRepository<JpaGameLobbyEntity, UUID> {
+
+    @Query("""
+        SELECT lobby
+        FROM JpaGameLobbyEntity lobby
+        JOIN lobby.sessions session
+        WHERE session.gameSessionId = :sessionId
+    """)
+    Optional<JpaGameLobbyEntity> findBySessionId(UUID sessionId);
+}

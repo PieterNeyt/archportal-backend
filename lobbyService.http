@@ -1,0 +1,10 @@
+### Start game
+POST http://localhost:8080/api/lobbies/singleplayer/start
+Content-Type: application/json
+
+{
+  "playerId": "8f14e45f-ea07-4f5b-9bdd-66e123abcf02",
+  "gameId": "1b2d89fa-bd59-4873-b568-8df26c3a047c"
+}
+
+###

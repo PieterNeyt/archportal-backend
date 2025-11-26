@@ -2,6 +2,7 @@ package be.kdg.ip3.archportal.games.application;
 
 import be.kdg.ip3.archportal.games.api.dto.GameDto;
 import be.kdg.ip3.archportal.games.domain.game.Game;
+import be.kdg.ip3.archportal.games.domain.game.GameId;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -50,10 +52,16 @@ public class GameService implements GamesApi {
     }
 
 
-    public List<Game> findAll(){
+    public List<Game> findAll() {
         return gameRepository.findAll();
     }
     public List<Game> findByIds(List<UUID> gameIds) {
         return gameRepository.findAllById(gameIds);
     }
+
+    public String getGameUrl(UUID gameId) {
+        var game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Game with id " + gameId + " not found"));
+        return game.getGameUrl();
+    }
+
 }
