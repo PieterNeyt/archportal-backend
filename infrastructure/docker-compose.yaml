@@ -3,7 +3,7 @@ version: '3.9'
 name: archPortal
 
 services:
-  # PostgreSQL database
+  # PostgreSQL database ARCHPORTAL
   app_postgres:
     image: postgres:17.6-alpine
     restart: always
