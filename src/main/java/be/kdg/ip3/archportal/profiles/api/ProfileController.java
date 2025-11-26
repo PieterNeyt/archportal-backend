@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,9 +41,10 @@ public class ProfileController {
         return ResponseEntity.ok(ProfileDto.from(profile));
     }
 
-    @GetMapping("/{profileId}/library")
-    public ResponseEntity<List<GlobalGameDto>> getLibrary(@PathVariable UUID profileId) {
-        var library = profileService.getLibrary(new ProfileId(profileId));
+    @GetMapping("/library")
+    public ResponseEntity<List<GlobalGameDto>> getLibrary(@AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var library = profileService.getLibrary(profileId);
         return ResponseEntity.ok(library);
     }
 }

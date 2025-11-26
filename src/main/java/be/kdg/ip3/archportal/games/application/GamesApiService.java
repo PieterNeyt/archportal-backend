@@ -36,4 +36,10 @@ public class GamesApiService implements GamesApi {
                 .filter(gameId -> !gameRepository.existsById(gameId))
                 .toList();
     }
+    
+    @Override
+    public String getGameUrl(UUID gameId) {
+        var game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Game with id " + gameId + " not found"));
+        return game.getGameUrl();
+    }
 }
