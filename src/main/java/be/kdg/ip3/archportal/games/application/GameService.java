@@ -59,9 +59,9 @@ public class GameService implements GamesApi {
         return gameRepository.findAllById(gameIds);
     }
 
-    public Optional<String> getGameUrl(UUID gameId) {
-        var game = gameRepository.findById(gameId);
-        return game.map(Game::getGameUrl);
+    public String getGameUrl(UUID gameId) {
+        var game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Game with id " + gameId + " not found"));
+        return game.getGameUrl();
     }
 
 }

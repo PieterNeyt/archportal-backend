@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface GamesApi {
     // returnt een lijst van invalide game id's indien die er zijn
     List<UUID> validateGames(List<UUID> gameIds);
-    Optional<String> getGameUrl(UUID gameId);
+    String getGameUrl(UUID gameId);
 
     List<GlobalGameDto> getAllGames();
     List<GlobalGameDto> getGamesByIds(List<UUID> gameIds);

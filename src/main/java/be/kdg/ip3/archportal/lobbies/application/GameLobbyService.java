@@ -32,8 +32,7 @@ public class GameLobbyService {
         GameLobby lobby = gameLobbies.findById(lobbyId)
                 .orElseThrow(() -> new IllegalArgumentException("No lobby found for id: " + lobbyId));
 
-        String baseLaunchUrl = gamesApi.getGameUrl(lobby.getGameId().id())
-                .orElseThrow(() -> new IllegalStateException("Game URL not configured!"));
+        String baseLaunchUrl = gamesApi.getGameUrl(lobby.getGameId().id());
 
         var session = GameSession.create(
                 lobby.getGameLobbyId(),

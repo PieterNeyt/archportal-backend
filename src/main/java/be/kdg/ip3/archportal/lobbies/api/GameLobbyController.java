@@ -70,7 +70,7 @@ public class GameLobbyController {
                         session.getGameSessionId().id(),
                         lobby.getGameLobbyId().id(),
                         session.getPlayerId().id(),
-                        lobby.getGameId().id().toString()
+                        lobby.getGameId().id()
                 )
         );
     }
