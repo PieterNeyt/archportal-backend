@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "game_sessions")
+@Table(name = "game_sessions", schema = "lobbyservice")
 @Getter
 public class JpaGameSessionEntity {
 

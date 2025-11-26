@@ -7,6 +7,7 @@ import be.kdg.ip3.archportal.games.infrastructure.game.jpa.JpaGameRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -33,6 +34,11 @@ public class DbGameRepository implements GameRepository {
                 .stream()
                 .map(JpaGameEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Optional<Game> findById(UUID gameId) {
+        return jpaGameRepository.findById(gameId).map(JpaGameEntity::toDomain);
     }
 
     @Override

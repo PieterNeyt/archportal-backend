@@ -30,13 +30,10 @@ public class DbLobbyRepository implements GameLobbyRepository {
     }
     @Override
     public Optional<GameLobby> findLobbyBySessionId(GameSessionId sessionId) {
-        return jpaLobbyRepository.findAll().stream()
-                .filter(entity -> entity.getSessions().stream()
-                        .anyMatch(sessionEntity -> sessionEntity.getGameSessionId().equals(sessionId.id())))
-                .findFirst()
+        return jpaLobbyRepository.findBySessionId(sessionId.id())
                 .map(JpaGameLobbyEntity::toDomain);
-
     }
+
 
 
 }

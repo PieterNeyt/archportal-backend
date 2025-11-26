@@ -5,12 +5,14 @@ import be.kdg.ip3.archportal.lobbies.domain.id.GameSessionId;
 import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.Entity;
+import org.jmolecules.ddd.annotation.Identity;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
 public class GameSession {
+    @Identity
     private GameSessionId gameSessionId;
     private GameLobbyId gameLobbyId;
     private PlayerId playerId;

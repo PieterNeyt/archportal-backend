@@ -5,6 +5,7 @@ import be.kdg.ip3.archportal.lobbies.domain.id.GameLobbyId;
 import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
+import org.jmolecules.ddd.annotation.Identity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @AggregateRoot
 public class GameLobby {
+    @Identity
     private GameLobbyId gameLobbyId;
     private GameId gameId;
     private int maxPlayers;

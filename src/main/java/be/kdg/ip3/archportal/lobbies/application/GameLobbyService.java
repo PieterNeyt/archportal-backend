@@ -4,10 +4,7 @@ import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.lobbies.domain.GameLobby;
 import be.kdg.ip3.archportal.lobbies.domain.GameLobbyRepository;
 import be.kdg.ip3.archportal.lobbies.domain.GameSession;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameId;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameLobbyId;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameSessionId;
-import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.id.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,9 +30,10 @@ public class GameLobbyService {
     public GameSession startSession(PlayerId playerId, GameLobbyId lobbyId) {
 
         GameLobby lobby = gameLobbies.findById(lobbyId)
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalArgumentException("No lobby found for id: " + lobbyId));
 
-        String baseLaunchUrl = gamesApi.getGameUrl(lobby.getGameId().id());
+        String baseLaunchUrl = gamesApi.getGameUrl(lobby.getGameId().id())
+                .orElseThrow(() -> new IllegalStateException("Game URL not configured!"));
 
         var session = GameSession.create(
                 lobby.getGameLobbyId(),
@@ -54,6 +52,17 @@ public class GameLobbyService {
         return gameLobbies.findLobbyBySessionId(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("No lobby found for sessionId: " + sessionId));
     }
+
+    public GameSession getSession(GameSessionId sessionId) {
+
+        GameLobby lobby = validateSession(sessionId);
+
+        return lobby.getSessions().stream()
+                .filter(s -> s.getGameSessionId().equals(sessionId))
+                .findFirst()
+                .orElseThrow(() -> new SessionNotFoundException(sessionId));
+    }
+
 
 
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -58,15 +59,9 @@ public class GameService implements GamesApi {
         return gameRepository.findAllById(gameIds);
     }
 
-    public String getGameUrl(UUID gameId) {
-        var game = gameRepository.findAll().stream()
-                .filter(g -> g.getId().equals(gameId))
-                .findFirst();
-        if (game.isPresent()) {
-            return game.get().getGameUrl();
-        } else {
-            throw new IllegalArgumentException("Game with id " + gameId + " not found"); // moet weg later
-        }
+    public Optional<String> getGameUrl(UUID gameId) {
+        var game = gameRepository.findById(gameId);
+        return game.map(Game::getGameUrl);
     }
 
 }

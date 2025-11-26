@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "game_lobbies")
+@Table(name = "game_lobbies", schema = "lobbyservice")
 @Getter
 public class JpaGameLobbyEntity {
     @Id

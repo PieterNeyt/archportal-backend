@@ -16,11 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URI;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/lobbies")
-@CrossOrigin(origins = "*")
 public class GameLobbyController {
 
     private final GameLobbyService gameLobbyService;
@@ -50,18 +51,19 @@ public class GameLobbyController {
                 session.getLaunchUrl()
         );
 
-        return ResponseEntity.ok(response);
+        var location = URI.create("/api/lobbies/sessions/" + session.getGameSessionId().id());
+
+        return ResponseEntity.created(location).body(response);
     }
+
+
 
     @GetMapping("/sessions/{sessionId}")
     public ResponseEntity<SessionInfo> validateSession(@PathVariable UUID sessionId) {
 
         GameLobby lobby = gameLobbyService.validateSession(new GameSessionId(sessionId));
 
-        GameSession session = lobby.getSessions().stream()
-                .filter(s -> s.getGameSessionId().equals(new GameSessionId(sessionId)))
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        GameSession session = gameLobbyService.getSession(new GameSessionId(sessionId));
 
         return ResponseEntity.ok(
                 new SessionInfo(
