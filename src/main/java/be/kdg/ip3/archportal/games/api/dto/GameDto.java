@@ -11,8 +11,6 @@ import java.util.UUID;
 
 public record GameDto(
         UUID id,
-        @NotNull
-        UUID studioId,
         @Size(min = 1, max = 100)
         @NotNull
         String title,
@@ -29,7 +27,7 @@ public record GameDto(
         GameGenre genre
 ) {
     public static GameDto fromDomain(Game game) {
-        return new GameDto(game.getId().id(), game.getStudioId().id(), game.getTitle(), game.getDescription(),
+        return new GameDto(game.getId().id(), game.getTitle(), game.getDescription(),
                 game.getImageUrl(), game.getGameUrl(), game.getPrice().money(), game.getGenre());
     }
 }

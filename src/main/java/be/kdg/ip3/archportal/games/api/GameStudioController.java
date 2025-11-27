@@ -39,7 +39,7 @@ public class GameStudioController {
     @GetMapping("/me")
     public ResponseEntity<OwnerStudioStatusDto> getMyStudio(@AuthenticationPrincipal Jwt token) {
         var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
-        var studio = gameStudioService.findByOwnerId(ownerId);
+        var studio = gameStudioService.findGameStudioStatusByOwnerId(ownerId);
         return ResponseEntity.ok(studio);
     }
 

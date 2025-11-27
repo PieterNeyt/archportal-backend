@@ -3,7 +3,6 @@ package be.kdg.ip3.archportal.games.application;
 import be.kdg.ip3.archportal.games.api.dto.GameDto;
 import be.kdg.ip3.archportal.games.domain.game.Game;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
-import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
 import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,7 @@ public class GameService {
     }
 
     public Game createGame(GameDto gameDto, OwnerId ownerId) {
-        var studio = gameStudioService.findById(new GameStudioId(gameDto.studioId()));
+        var studio = gameStudioService.findByOwnerId(ownerId);
         studio.checkOwner(ownerId);
         
         var game = new Game(studio.getId(), gameDto.title(), gameDto.description(),

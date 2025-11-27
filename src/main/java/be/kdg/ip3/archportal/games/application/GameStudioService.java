@@ -53,8 +53,12 @@ public class GameStudioService {
     public GameStudio findById(GameStudioId id) {
         return this.gameStudioRepo.findById(id).orElseThrow(id::notFound);
     }
+    
+    public GameStudio findByOwnerId(OwnerId ownerId) {
+        return this.gameStudioRepo.findByOwnerId(ownerId).orElseThrow(ownerId::notFound);
+    }
 
-    public OwnerStudioStatusDto findByOwnerId(OwnerId ownerId) {
+    public OwnerStudioStatusDto findGameStudioStatusByOwnerId(OwnerId ownerId) {
         return this.gameStudioRepo.findByOwnerId(ownerId).map(OwnerStudioStatusDto::from).orElseGet(OwnerStudioStatusDto::noStudio);
     }
 }
