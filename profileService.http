@@ -8,7 +8,8 @@ Content-Type: application/json
   "games": [
     "f7b56a1e-1c63-4d0c-aa75-3b40e8253e19",
     "7aefc340-96ed-4bb9-8262-34b50aa55420",
-    "9a5f6920-29e8-4d34-82ee-9df5249e8e72"
+    "9a5f6920-29e8-4d34-82ee-9df5249e8e72",
+    "1b2d89fa-bd59-4873-b568-8df26c3a047c"
   ]
 }
 
