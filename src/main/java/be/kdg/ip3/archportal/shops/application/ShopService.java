@@ -13,7 +13,6 @@ import be.kdg.ip3.archportal.shops.domain.order.OrderRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,7 +50,7 @@ public class ShopService {
         var cart = getOrCreateCart(profileId);
         profilesApi.checkAlreadyOwnsGame(profileId, gameId);
         if (cart.getCartItems().contains(gameId)) {
-            throw new RuntimeException("Game with id " + gameId + " already added");
+            throw new IllegalArgumentException("Game already added to cart.");
         }
         cart.addToCart(gameId);
         return cartRepo.save(cart);
