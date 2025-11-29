@@ -1,6 +1,6 @@
 package be.kdg.ip3.archportal.shops.api;
 
-import be.kdg.ip3.archportal.games.domain.NotFoundException;
+import be.kdg.ip3.archportal.shops.domain.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,11 +29,12 @@ public class ShopsErrorHandling {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex) {
-        ErrorResponse errorResponse = new ErrorResponse("An unexpected error occurred.");
+        ErrorResponse errorResponse = new ErrorResponse("An unexpected error occurred." + ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
-    public record ErrorResponse(String message) {}
+    public record ErrorResponse(String message) {
+    }
 }
 
 

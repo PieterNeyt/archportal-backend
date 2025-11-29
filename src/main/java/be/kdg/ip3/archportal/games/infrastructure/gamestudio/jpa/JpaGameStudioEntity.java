@@ -3,8 +3,10 @@ package be.kdg.ip3.archportal.games.infrastructure.gamestudio.jpa;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudio;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
 import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
-import be.kdg.ip3.archportal.games.infrastructure.owner.jpa.JpaOwnerEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 
 import java.util.UUID;
@@ -16,9 +18,8 @@ public class JpaGameStudioEntity {
     @Id
     private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "owner_id", nullable = false, unique = true)
-    private JpaOwnerEntity owner;
+    @Column(nullable = false)
+    private UUID ownerId;
 
     @Column(nullable = false)
     private String name;
@@ -33,18 +34,18 @@ public class JpaGameStudioEntity {
     protected JpaGameStudioEntity() {
     }
 
-    public JpaGameStudioEntity(UUID id, JpaOwnerEntity owner, String name, String description, String IBAN) {
+    public JpaGameStudioEntity(UUID id, UUID ownerId, String name, String description, String IBAN) {
         this.id = id;
-        this.owner = owner;
+        this.ownerId = ownerId;
         this.name = name;
         this.description = description;
         this.IBAN = IBAN;
     }
 
-    public static JpaGameStudioEntity fromDomain(GameStudio studio, JpaOwnerEntity owner) {
+    public static JpaGameStudioEntity fromDomain(GameStudio studio) {
         return new JpaGameStudioEntity(
                 studio.getId().id(),
-                owner,
+                studio.getOwnerId().id(),
                 studio.getName(),
                 studio.getDescription(),
                 studio.getIBAN()
@@ -53,7 +54,7 @@ public class JpaGameStudioEntity {
 
     public GameStudio toDomain() {
         return new GameStudio(new GameStudioId(id),
-                new OwnerId(owner.getId()),
+                new OwnerId(ownerId),
                 name,
                 description,
                 IBAN);

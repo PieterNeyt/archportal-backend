@@ -1,24 +1,21 @@
 package be.kdg.ip3.archportal.games.infrastructure.gamestudio;
 
-import be.kdg.ip3.archportal.games.domain.NotFoundException;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudio;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioRepository;
+import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
 import be.kdg.ip3.archportal.games.infrastructure.gamestudio.jpa.JpaGameStudioEntity;
 import be.kdg.ip3.archportal.games.infrastructure.gamestudio.jpa.JpaGameStudioRepository;
-import be.kdg.ip3.archportal.games.infrastructure.owner.jpa.JpaOwnerRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public class DbGameStudioRepository  implements GameStudioRepository {
+public class DbGameStudioRepository implements GameStudioRepository {
     private final JpaGameStudioRepository jpaGameStudioRepository;
-    private final JpaOwnerRepository jpaOwnerRepository;
 
-    public DbGameStudioRepository(JpaGameStudioRepository jpaGameStudioRepository, JpaOwnerRepository jpaOwnerRepository) {
+    public DbGameStudioRepository(JpaGameStudioRepository jpaGameStudioRepository) {
         this.jpaGameStudioRepository = jpaGameStudioRepository;
-        this.jpaOwnerRepository = jpaOwnerRepository;
     }
 
     @Override
@@ -27,11 +24,13 @@ public class DbGameStudioRepository  implements GameStudioRepository {
     }
 
     @Override
-    public void save(GameStudio studio) {
-        var ownerEntity = jpaOwnerRepository.findById(studio.getOwnerId().id())
-                .orElseThrow(() -> new NotFoundException("Owner not found"));
+    public Optional<GameStudio> findByOwnerId(OwnerId ownerId) {
+        return this.jpaGameStudioRepository.findByOwnerId(ownerId.id()).map(JpaGameStudioEntity::toDomain);
+    }
 
-        var jpaStudio = JpaGameStudioEntity.fromDomain(studio,ownerEntity);
+    @Override
+    public void save(GameStudio studio) {
+        var jpaStudio = JpaGameStudioEntity.fromDomain(studio);
         this.jpaGameStudioRepository.save(jpaStudio);
     }
 }
