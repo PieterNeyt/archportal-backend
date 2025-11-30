@@ -1,16 +1,4 @@
-### Create profile
-POST http://localhost:8080/api/profile
-Content-Type: application/json
-
-{
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "firstName": "Pieter",
-  "lastName": "Neyt",
-  "gamerTag": "Kwibus",
-  "icon": "https://assets.manutd.com/AssetPicker/images/0/0/10/126/687707/Legends-Profile_Cristiano-Ronaldo1523460877263.jpg"
-}
-
-
+// werkt niet omdat je niet aan de access token kan gerkan via hier 
 ### Add game to library
 PUT http://localhost:8080/api/profile/acquire
 Content-Type: application/json

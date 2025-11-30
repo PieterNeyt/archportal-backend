@@ -1,6 +1,5 @@
 package be.kdg.ip3.archportal.profiles.infrastructure.profile;
 
-import be.kdg.ip3.archportal.games.domain.NotFoundException;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
@@ -8,7 +7,7 @@ import be.kdg.ip3.archportal.profiles.infrastructure.profile.jpa.JpaProfileEntit
 import be.kdg.ip3.archportal.profiles.infrastructure.profile.jpa.JpaProfileRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.UUID;
+import java.util.Optional;
 
 @Repository
 public class DbProfileRepository implements ProfileRepository {
@@ -26,10 +25,12 @@ public class DbProfileRepository implements ProfileRepository {
     }
 
     @Override
-    public Profile findById(ProfileId id) {
-        return jpaProfileRepository.findById(id.id())
-                .map(JpaProfileEntity::toDomain)
-                .orElseThrow(() -> new NotFoundException("No profile found with id: "+id));
+    public Optional<Profile> findById(ProfileId id) {
+        return jpaProfileRepository.findById(id.id()).map(JpaProfileEntity::toDomain);
     }
 
+    @Override
+    public boolean existsById(ProfileId id) {
+        return jpaProfileRepository.existsById(id.id());
+    }
 }

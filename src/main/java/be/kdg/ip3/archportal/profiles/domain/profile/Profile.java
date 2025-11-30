@@ -3,6 +3,7 @@ package be.kdg.ip3.archportal.profiles.domain.profile;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +35,11 @@ public class Profile {
         this.friends = friends;
         setFirstName(firstName);
         this.library = library;
+    }
+
+    public static Profile createProfile(ProfileId profileId, String firstName, String lastName) {
+        return new Profile(profileId, new ArrayList<>(), 0, lastName, "", profileId.id().toString(), new ArrayList<>(), firstName, new ArrayList<>());
+
     }
 
     public void setFirstName(String firstName) {
@@ -69,6 +75,15 @@ public class Profile {
 
     public boolean hasGame(UUID gameId) {
         return this.library.contains(gameId);
+    }
+
+    public void hasGameCheck(UUID gameId) {
+        if (this.library.contains(gameId)) {
+            throw new IllegalArgumentException(
+                    "Profile %s already owns the games: %s"
+                            .formatted(id, gameId)
+            );
+        }
     }
 
     public void acquireGame(UUID gameId) {

@@ -5,4 +5,6 @@ import org.jmolecules.ddd.annotation.Repository;
 @Repository
 public interface OwnerRepository {
     void save(Owner owner);
+
+    boolean existsById(OwnerId ownerId);
 }
