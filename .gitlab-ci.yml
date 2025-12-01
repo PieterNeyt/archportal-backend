@@ -14,8 +14,6 @@ variables:
   DEFAULT_IMAGE: eclipse-temurin:21-jdk-alpine
   MAJOR: "1"
   MINOR: "0"
-  DS_GRADLE_SCAN: "true"
-  DS_DISABLE_MAVEN: "true"
 
 # TODO cache dependencies in container
 compile:
