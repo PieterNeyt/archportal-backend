@@ -21,10 +21,11 @@ public class Game {
     private String imageUrl;
     private String gameUrl;
     private GameGenre genre;
+    private int maxLobbySize;
     private List<Achievement> achievements;
     private List<Update> updates;
 
-    public Game(GameId id, GameStudioId studioId, String title, String description, BigDecimal price, String imageUrl, String gameUrl, GameGenre genre) {
+    public Game(GameId id, GameStudioId studioId, String title, String description, BigDecimal price, String imageUrl, String gameUrl, GameGenre genre,int maxLobbySize) {
         this.id = id;
         this.studioId = studioId;
         setTitle(title);
@@ -33,14 +34,21 @@ public class Game {
         this.imageUrl = imageUrl;
         setGameUrl(gameUrl);
         setGenre(genre);
+        setMaxLobbySize(maxLobbySize);
     }
 
-    public Game(GameStudioId studioId, String title, String description, BigDecimal price, String imageUrl, String gameUrl, GameGenre genre) {
-        this(GameId.create(), studioId, title, description, price, imageUrl, gameUrl, genre);
+    public Game(GameStudioId studioId, String title, String description, BigDecimal price, String imageUrl, String gameUrl, GameGenre genre,int maxLobbySize) {
+        this(GameId.create(), studioId, title, description, price, imageUrl, gameUrl, genre,maxLobbySize);
+    }
+
+    private void setMaxLobbySize(int maxLobbySize) {
+        if (maxLobbySize < 0)
+            throw new IllegalArgumentException("The provided lobby size is invalid");
+        this.maxLobbySize = maxLobbySize;
     }
 
     private void setGameUrl(String gameUrl) {
-        if (title == null || title.trim().isEmpty() || title.isEmpty())
+        if (gameUrl == null || gameUrl.trim().isEmpty() || gameUrl.isEmpty())
             throw new IllegalArgumentException("The provided game url is invalid");
         this.gameUrl = gameUrl;
     }
