@@ -18,6 +18,7 @@ variables:
   DS_DISABLE_MAVEN: "true"
   DS_PROJECT_DIR: $CI_PROJECT_DIR
   CI_DEBUG_TRACE: "true"
+  GITLAB_CI: "true"
 
 # TODO cache dependencies in container
 compile:
