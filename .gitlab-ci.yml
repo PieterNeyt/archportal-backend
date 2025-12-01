@@ -8,7 +8,6 @@
 stages:
   - compile
   - test
-  - secret-detection
   - package
 
 variables:
@@ -17,7 +16,7 @@ variables:
   MINOR: "0"
   DS_GRADLE_SCAN: "true"
   DS_DISABLE_MAVEN: "true"
-  DS_PROJECT_DIR: "$CI_PROJECT_DIR"
+  DS_PROJECT_DIR: $CI_PROJECT_DIR
 
 # TODO cache dependencies in container
 compile:
@@ -69,9 +68,6 @@ package:
   rules:
     - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH && $CI_PIPELINE_SOURCE != "merge_request_event"
 
-secret_detection:
-  stage: secret-detection
-
 include:
   - template: Security/Secret-Detection.gitlab-ci.yml
-  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
