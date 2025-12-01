@@ -28,12 +28,14 @@ public class JpaGameEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private GameGenre genre;
+    @Column(nullable = false)
+    private int maxLobbySize;
     // TODO connection to achievement and updates
 
     protected JpaGameEntity() {
     }
 
-    public JpaGameEntity(UUID id, UUID studioId, String title, String description, BigDecimal price, String imageUrl, String gameUrl, GameGenre genre) {
+    public JpaGameEntity(UUID id, UUID studioId, String title, String description, BigDecimal price, String imageUrl, String gameUrl, GameGenre genre,int maxLobbySize) {
         this.id = id;
         this.studioId = studioId;
         this.title = title;
@@ -42,14 +44,15 @@ public class JpaGameEntity {
         this.imageUrl = imageUrl;
         this.gameUrl = gameUrl;
         this.genre = genre;
+        this.maxLobbySize = maxLobbySize;
     }
 
     public static JpaGameEntity fromDomain(Game game) {
         return new JpaGameEntity(game.getId().id(), game.getStudioId().id(), game.getTitle(), game.getDescription(),
-                game.getPrice().money(), game.getImageUrl(), game.getGameUrl(), game.getGenre());
+                game.getPrice().money(), game.getImageUrl(), game.getGameUrl(), game.getGenre(),game.getMaxLobbySize());
     }
 
     public Game toDomain() {
-        return new Game(new GameId(id), new GameStudioId(studioId), title, description, price, imageUrl, gameUrl, genre);
+        return new Game(new GameId(id), new GameStudioId(studioId), title, description, price, imageUrl, gameUrl, genre, maxLobbySize);
     }
 }
