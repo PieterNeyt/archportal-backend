@@ -17,6 +17,7 @@ variables:
   DS_GRADLE_SCAN: "true"
   DS_DISABLE_MAVEN: "true"
   DS_PROJECT_DIR: $CI_PROJECT_DIR
+  CI_DEBUG_TRACE: "true"
 
 # TODO cache dependencies in container
 compile:
