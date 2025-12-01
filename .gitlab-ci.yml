@@ -17,7 +17,6 @@ variables:
   MINOR: "0"
   DS_GRADLE_SCAN: "true"
 
-
 # TODO cache dependencies in container
 compile:
   stage: compile
@@ -73,4 +72,4 @@ secret_detection:
 
 include:
   - template: Security/Secret-Detection.gitlab-ci.yml
-  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.v2.gitlab-ci.yml
