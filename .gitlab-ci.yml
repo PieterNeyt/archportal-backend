@@ -1,6 +1,14 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/user/application_security/secret_detection/pipeline/configure
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
   - compile
   - test
+  - secret-detection
   - package
 
 variables:
@@ -15,7 +23,7 @@ compile:
   script:
     - ./gradlew compileJava
     - ./gradlew compileTestJava
-  rules: 
+  rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH
 
@@ -36,7 +44,7 @@ test:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH
-    
+
 package:
   stage: package
   image: registry.gitlab.com/kdg-ti/integratieproject-j3/teams-25-26/team15/archportal/archportalbackend/java-docker:latest
@@ -55,5 +63,11 @@ package:
     - docker tag $IMAGE:$VERSION $IMAGE:latest
     - docker push $IMAGE:$VERSION
     - docker push $IMAGE:latest
-  rules: 
+  rules:
     - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH && $CI_PIPELINE_SOURCE != "merge_request_event"
+
+secret_detection:
+  stage: secret-detection
+
+include:
+  - template: Security/Secret-Detection.gitlab-ci.yml
