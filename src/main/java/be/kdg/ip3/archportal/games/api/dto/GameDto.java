@@ -27,7 +27,7 @@ public record GameDto(
         GameGenre genre,
         @NotNull
         @Min(1)
-        int MaxLobbySize
+        int maxlobbysize
 ) {
     public static GameDto fromDomain(Game game) {
         return new GameDto(game.getId().id(), game.getTitle(), game.getDescription(),

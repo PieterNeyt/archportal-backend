@@ -23,7 +23,7 @@ public class GameService {
         studio.checkOwner(ownerId);
         
         var game = new Game(studio.getId(), gameDto.title(), gameDto.description(),
-                gameDto.price(), gameDto.imageUrl(), gameDto.gameUrl(), gameDto.genre(),gameDto.MaxLobbySize());
+                gameDto.price(), gameDto.imageUrl(), gameDto.gameUrl(), gameDto.genre(),gameDto.maxlobbysize());
 
         gameRepository.save(game);
         return game;
