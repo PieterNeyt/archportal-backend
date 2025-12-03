@@ -34,9 +34,9 @@ public class NotificationServices {
     }
 
     public void sendEmailNotification(Notification notification) {
-        SimpleMailMessage message = new SimpleMailMessage(template);
+        var message = new SimpleMailMessage(template);
 
-        String recieverEmail = profilesApi.getProfileEmail(notification.getRecieverId().id());
+        var recieverEmail = profilesApi.getProfileEmail(notification.getRecieverId().id());
 
         message.setTo(recieverEmail);
 
