@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 public class NotificationSettings {
     private final ProfileId profileId;
-    private final List<ChannelType> channelType;
+    private List<ChannelType> channelType;
 
     public NotificationSettings(ProfileId profileId, List<ChannelType> channelType) {
         this.channelType = channelType;
@@ -23,29 +23,19 @@ public class NotificationSettings {
         this(profileId, List.of(ChannelType.EMAIL, ChannelType.IN_PLATFORM));
     }
 
-    public List<ChannelType> getChannelType() {
-        return Collections.unmodifiableList(channelType);
-    }
-
     public void addChannelType(ChannelType channelType) {
-        var alreadyExist = this.channelType.stream().
-                anyMatch(c -> c.equals(channelType));
-
-        if (alreadyExist) {
+        if (this.channelType.contains(channelType)) {
             throw new IllegalArgumentException("Cant add the same channel type to preferences twice!");
         }
-
+        IO.println(channelType);
         this.channelType.add(channelType);
     }
 
     public void removeChannelType(ChannelType channelType) {
-        var alreadyExist = this.channelType.stream().
-                noneMatch(c -> c.equals(channelType));
-
-        if (alreadyExist) {
-            throw new IllegalArgumentException("Cant remove a channel type that is not in youre preferences!");
+        if (!this.channelType.contains(channelType)) {
+            throw new IllegalArgumentException("Cant remove a channel type that is not in your preferences!");
         }
-
+        IO.println(channelType);
         this.channelType.remove(channelType);
     }
 }

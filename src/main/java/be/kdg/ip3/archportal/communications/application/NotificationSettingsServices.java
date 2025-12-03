@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.communications.application;
 
 
+import be.kdg.ip3.archportal.communications.api.dto.NotificationSettingsDto;
 import be.kdg.ip3.archportal.communications.domain.notification.ChannelType;
 import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettings;
 import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettingsRepository;
@@ -20,7 +21,7 @@ public class NotificationSettingsServices {
         this.repository = repository;
     }
 
-    public List<ChannelType> addChannelType(ChannelType addChannelType, ProfileId profileId) {
+    public NotificationSettingsDto addChannelType(ChannelType addChannelType, ProfileId profileId) {
         var settings = repository.findById(profileId)
                 .orElse(new NotificationSettings(profileId));
 
@@ -28,10 +29,10 @@ public class NotificationSettingsServices {
 
         this.repository.save(settings);
 
-        return settings.getChannelType();
+        return new NotificationSettingsDto(settings.getChannelType());
     }
 
-    public List<ChannelType> removeChannelType(ChannelType removeChannelType, ProfileId profileId) {
+    public NotificationSettingsDto removeChannelType(ChannelType removeChannelType, ProfileId profileId) {
         var settings = repository.findById(profileId)
                 .orElse(new NotificationSettings(profileId));
 
@@ -39,12 +40,19 @@ public class NotificationSettingsServices {
 
         this.repository.save(settings);
 
-        return settings.getChannelType();
+        return new NotificationSettingsDto(settings.getChannelType());
     }
 
     public void createNotificationSettings(UUID profileId) {
         var settings = new NotificationSettings(new ProfileId(profileId));
         this.repository.save(settings);
+    }
+
+    public NotificationSettingsDto getNotificationSettings(ProfileId profileId) {
+        var settings = repository.findById(profileId)
+                .orElse(new NotificationSettings(profileId));
+
+        return new NotificationSettingsDto(settings.getChannelType());
     }
 }
 

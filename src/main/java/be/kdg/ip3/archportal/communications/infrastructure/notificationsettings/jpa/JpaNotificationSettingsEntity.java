@@ -5,6 +5,7 @@ import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettings
 import be.kdg.ip3.archportal.communications.domain.settings.ProfileId;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,10 +16,14 @@ public class JpaNotificationSettingsEntity {
     @Column(nullable = false)
     private UUID profileId;
 
-    @ElementCollection(targetClass = ChannelType.class)
-    @CollectionTable(name = "notification_channel_types", joinColumns = @JoinColumn(name = "notification_settings_id"))
-    @Column(name = "channel_type")
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
+    @CollectionTable(
+            name = "notification_channel_types",
+            schema = "communicationservice",
+            joinColumns = @JoinColumn(name = "profile_id")
+    )
+    @Column(name = "channel_type")
     private List<ChannelType> channelTypes;
 
     protected JpaNotificationSettingsEntity() {
