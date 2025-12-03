@@ -9,7 +9,6 @@ import be.kdg.ip3.archportal.communications.domain.settings.ProfileId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,7 +22,7 @@ public class NotificationSettingsServices {
 
     public NotificationSettingsDto addChannelType(ChannelType addChannelType, ProfileId profileId) {
         var settings = repository.findById(profileId)
-                .orElse(new NotificationSettings(profileId));
+                .orElseThrow(profileId::notFound);
 
         settings.addChannelType(addChannelType);
 
@@ -34,7 +33,7 @@ public class NotificationSettingsServices {
 
     public NotificationSettingsDto removeChannelType(ChannelType removeChannelType, ProfileId profileId) {
         var settings = repository.findById(profileId)
-                .orElse(new NotificationSettings(profileId));
+                .orElseThrow(profileId::notFound);
 
         settings.removeChannelType(removeChannelType);
 
@@ -50,7 +49,7 @@ public class NotificationSettingsServices {
 
     public NotificationSettingsDto getNotificationSettings(ProfileId profileId) {
         var settings = repository.findById(profileId)
-                .orElse(new NotificationSettings(profileId));
+                .orElseThrow(profileId::notFound);
 
         return new NotificationSettingsDto(settings.getChannelType());
     }

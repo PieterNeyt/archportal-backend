@@ -18,16 +18,19 @@ public class JpaProfileEntity {
     @Id
     private UUID id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String firstName;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String lastName;
 
-    @Column(length = 255)
+    @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
     private String icon;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String gamerTag;
 
     @Column(nullable = false)
@@ -50,11 +53,12 @@ public class JpaProfileEntity {
 
     public JpaProfileEntity() {}
 
-    public JpaProfileEntity(UUID id, String firstName, String lastName, String icon, String gamerTag,
-                            int platformPoints, List<UUID> friends, List<UUID> platformBenefits, List<UUID> library) {
+    public JpaProfileEntity(UUID id, String firstName, String lastName ,String email, String icon, String gamerTag,
+                            int platformPoints,  List<UUID> friends, List<UUID> platformBenefits, List<UUID> library) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
         this.icon = icon;
         this.gamerTag = gamerTag;
         this.platformPoints = platformPoints;
@@ -72,6 +76,7 @@ public class JpaProfileEntity {
                 profile.getId().id(),
                 profile.getFirstName(),
                 profile.getLastName(),
+                profile.getEmail(),
                 profile.getIcon(),
                 profile.getGamerTag(),
                 profile.getPlatformPoints(),
@@ -91,6 +96,7 @@ public class JpaProfileEntity {
                 platformBenefits,
                 platformPoints,
                 lastName,
+                email,
                 icon,
                 gamerTag,
                 friendIds,

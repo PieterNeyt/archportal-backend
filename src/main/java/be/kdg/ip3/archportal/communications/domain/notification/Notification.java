@@ -1,8 +1,10 @@
 package be.kdg.ip3.archportal.communications.domain.notification;
 
+import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.Entity;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Entity
@@ -25,8 +27,8 @@ public class Notification {
         this.recieverId = recieverId;
         this.id = id;
     }
-    public Notification(boolean isRead, Date createdAt, NotificationType type, String body, String title, RecieverId recieverId) {
-        this(isRead,createdAt,type,body,title,recieverId, NotificationId.create());
+    public Notification(NotificationType type, String body, String title, RecieverId recieverId) {
+        this(false,Date.from(Instant.now()),type,body,title,recieverId, NotificationId.create());
     }
 
     public void read(){
