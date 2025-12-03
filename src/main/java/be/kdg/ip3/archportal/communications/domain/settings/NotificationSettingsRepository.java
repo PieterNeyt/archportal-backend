@@ -6,7 +6,7 @@ import java.util.Optional;
 
 @Repository
 public interface NotificationSettingsRepository {
-    Optional<NotificationSettings> findById(SettingId settingId);
+    Optional<NotificationSettings> findById(ProfileId profileId);
 
     void save(NotificationSettings settings);
 }

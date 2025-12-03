@@ -2,7 +2,7 @@ package be.kdg.ip3.archportal.communications.infrastructure.notificationsettings
 
 import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettings;
 import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettingsRepository;
-import be.kdg.ip3.archportal.communications.domain.settings.SettingId;
+import be.kdg.ip3.archportal.communications.domain.settings.ProfileId;
 import be.kdg.ip3.archportal.communications.infrastructure.notificationsettings.jpa.JpaNotificationSettingsEntity;
 import be.kdg.ip3.archportal.communications.infrastructure.notificationsettings.jpa.JpaNotificationSettingsRepository;
 import org.springframework.stereotype.Repository;
@@ -17,8 +17,8 @@ public class DbNotificationSettingsRepository implements NotificationSettingsRep
     }
 
     @Override
-    public Optional<NotificationSettings> findById(SettingId settingId) {
-        return this.repository.findById(settingId.id()).map(JpaNotificationSettingsEntity::toDomain);
+    public Optional<NotificationSettings> findById(ProfileId profileId) {
+        return this.repository.findById(profileId.id()).map(JpaNotificationSettingsEntity::toDomain);
     }
 
     @Override

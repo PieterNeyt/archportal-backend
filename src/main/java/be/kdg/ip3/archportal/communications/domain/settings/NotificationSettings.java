@@ -11,18 +11,16 @@ import java.util.List;
 @Entity
 @Getter
 public class NotificationSettings {
-    private final SettingId id;
     private final ProfileId profileId;
     private final List<ChannelType> channelType;
 
-    public NotificationSettings(SettingId id, ProfileId profileId, List<ChannelType> channelType) {
-        this.id = id;
+    public NotificationSettings(ProfileId profileId, List<ChannelType> channelType) {
         this.channelType = channelType;
         this.profileId = profileId;
     }
 
     public NotificationSettings(ProfileId profileId) {
-        this(SettingId.create(), profileId, List.of(ChannelType.EMAIL, ChannelType.IN_PLATFORM));
+        this(profileId, List.of(ChannelType.EMAIL, ChannelType.IN_PLATFORM));
     }
 
     public List<ChannelType> getChannelType() {
