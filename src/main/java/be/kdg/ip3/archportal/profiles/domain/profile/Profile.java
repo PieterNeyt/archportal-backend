@@ -37,8 +37,8 @@ public class Profile {
         this.library = library;
     }
 
-    public static Profile createProfile(ProfileId profileId, String firstName, String lastName) {
-        return new Profile(profileId, new ArrayList<>(), 0, lastName, "", profileId.id().toString(), new ArrayList<>(), firstName, new ArrayList<>());
+    public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag) {
+        return new Profile(profileId, new ArrayList<>(), 0, lastName, "", gamerTag, new ArrayList<>(), firstName, new ArrayList<>());
 
     }
 

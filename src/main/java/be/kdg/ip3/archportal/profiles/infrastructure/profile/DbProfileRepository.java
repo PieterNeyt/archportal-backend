@@ -7,6 +7,7 @@ import be.kdg.ip3.archportal.profiles.infrastructure.profile.jpa.JpaProfileEntit
 import be.kdg.ip3.archportal.profiles.infrastructure.profile.jpa.JpaProfileRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,5 +33,10 @@ public class DbProfileRepository implements ProfileRepository {
     @Override
     public boolean existsById(ProfileId id) {
         return jpaProfileRepository.existsById(id.id());
+    }
+
+    @Override
+    public List<Profile> findAllFriends(ProfileId id) {
+        return jpaProfileRepository.findAllFriendsOfProfileId(id.id()).stream().map(JpaProfileEntity::toDomain).toList();
     }
 }

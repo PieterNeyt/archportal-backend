@@ -1,6 +1,8 @@
 package be.kdg.ip3.archportal.profiles;
 
 import be.kdg.ip3.archportal.profiles.application.FriendRequestService;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAlreadyExistsException;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.InvalidFriendRequestException;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.*;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
