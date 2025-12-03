@@ -56,11 +56,13 @@ public class ProfileService {
         String lastName = token.getClaim("family_name");
         String email = token.getClaim("email");
 
-        var profile = profileRepository.findById(profileId).orElse(Profile.createProfile(profileId, firstName, lastName,email));
+        var profile = profileRepository.findById(profileId).orElseGet(() -> {
+            Profile newProfile = Profile.createProfile(profileId, firstName, lastName, email);
+            eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
+            return newProfile;
+        });
+
         profileRepository.save(profile);
-
-        eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
-
 
         return profile;
     }
