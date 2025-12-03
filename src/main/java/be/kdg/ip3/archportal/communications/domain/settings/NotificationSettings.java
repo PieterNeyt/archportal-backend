@@ -30,7 +30,7 @@ public class NotificationSettings {
     }
 
     public void addChannelType(ChannelType channelType) {
-        boolean alreadyExist = this.channelType.stream().
+        var alreadyExist = this.channelType.stream().
                 anyMatch(c -> c.equals(channelType));
 
         if (alreadyExist) {
@@ -38,5 +38,16 @@ public class NotificationSettings {
         }
 
         this.channelType.add(channelType);
+    }
+
+    public void removeChannelType(ChannelType channelType) {
+        var alreadyExist = this.channelType.stream().
+                noneMatch(c -> c.equals(channelType));
+
+        if (alreadyExist) {
+            throw new IllegalArgumentException("Cant remove a channel type that is not in youre preferences!");
+        }
+
+        this.channelType.remove(channelType);
     }
 }
