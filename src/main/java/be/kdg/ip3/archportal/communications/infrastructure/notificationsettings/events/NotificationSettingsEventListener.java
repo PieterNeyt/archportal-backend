@@ -1,4 +1,4 @@
-package be.kdg.ip3.archportal.communications.infrastructure.notificationsettings.applicationevents;
+package be.kdg.ip3.archportal.communications.infrastructure.notificationsettings.events;
 
 import be.kdg.ip3.archportal.communications.application.NotificationSettingsServices;
 import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEvent;

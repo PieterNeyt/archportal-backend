@@ -35,4 +35,12 @@ public class NotificationSettings {
         }
         this.channelType.remove(channelType);
     }
+
+    public boolean containsEmail() {
+        return this.getChannelType().contains(ChannelType.EMAIL);
+    }
+
+    public boolean containsInPlatform() {
+        return this.getChannelType().contains(ChannelType.IN_PLATFORM);
+    }
 }
