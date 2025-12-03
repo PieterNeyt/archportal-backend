@@ -8,6 +8,7 @@ import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettings
 import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettingsRepository;
 import be.kdg.ip3.archportal.communications.domain.settings.ProfileId;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
+import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -20,18 +21,28 @@ public class NotificationServices {
     private final SimpleMailMessage template;
     private final NotificationSettingsRepository settingsRepository;
     private final NotificationRepository repository;
+    private final ProfilesApi profilesApi;
 
     public NotificationServices(JavaMailSender mailSender,
                                 SimpleMailMessage template
-            , NotificationSettingsRepository settingsRepository, NotificationRepository repository) {
+            , NotificationSettingsRepository settingsRepository, NotificationRepository repository, ProfilesApi profilesApi) {
         this.mailSender = mailSender;
         this.template = template;
         this.settingsRepository = settingsRepository;
         this.repository = repository;
+        this.profilesApi = profilesApi;
     }
 
     public void sendEmailNotification(Notification notification) {
         SimpleMailMessage message = new SimpleMailMessage(template);
+
+        String recieverEmail = profilesApi.getProfileEmail(notification.getRecieverId().id());
+
+        message.setTo(recieverEmail);
+
+        message.setSubject(notification.getTitle());
+        message.setText(notification.getBody());
+        message.setSentDate(notification.getCreatedAt());
 
         mailSender.send(message);
     }

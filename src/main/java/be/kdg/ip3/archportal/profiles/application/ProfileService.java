@@ -37,6 +37,7 @@ public class ProfileService {
                 new ArrayList<>(),
                 0,
                 command.lastName(),
+                "",
                 command.icon(),
                 command.gamerTag(),
                 new ArrayList<>(),
@@ -53,8 +54,9 @@ public class ProfileService {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
         String firstName = token.getClaim("given_name");
         String lastName = token.getClaim("family_name");
+        String email = token.getClaim("email");
 
-        var profile = profileRepository.findById(profileId).orElse(Profile.createProfile(profileId, firstName, lastName));
+        var profile = profileRepository.findById(profileId).orElse(Profile.createProfile(profileId, firstName, lastName,email));
         profileRepository.save(profile);
 
         eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));

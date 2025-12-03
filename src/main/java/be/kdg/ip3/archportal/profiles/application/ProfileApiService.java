@@ -28,6 +28,15 @@ public class ProfileApiService implements ProfilesApi {
     }
 
     @Override
+    public String getProfileEmail(UUID id) {
+        var profileId = new ProfileId(id);
+        var profile = profileRepository.findById(profileId)
+                .orElseThrow(profileId::notFound);
+
+        return profile.getEmail();
+    }
+
+    @Override
     public void checkAlreadyOwnsGames(UUID profileId, List<UUID> games) {
         var profile = profileRepository.findById(new ProfileId(profileId)).orElseThrow(new ProfileId(profileId)::notFound);
 
