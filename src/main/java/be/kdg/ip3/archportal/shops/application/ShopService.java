@@ -50,7 +50,7 @@ public class ShopService {
         var cart = getOrCreateCart(profileId);
         profilesApi.checkAlreadyOwnsGame(profileId, gameId);
         if (cart.getCartItems().contains(gameId)) {
-            throw new RuntimeException("Game with id " + gameId + " already added");
+            throw new IllegalArgumentException("Game already added to cart.");
         }
         cart.addToCart(gameId);
         return cartRepo.save(cart);

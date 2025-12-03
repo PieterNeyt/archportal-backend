@@ -28,3 +28,7 @@ Authorization: Bearer {{access_token}}
   "imageUrl": "https://static.vecteezy.com/system/resources/previews/027/141/194/large_2x/tic-tac-toe-illustration-design-free-png.png",
   "genre": "ABSTRACT"
 }
+
+
+### Create Game
+POST http://localhost:8080/api/notification

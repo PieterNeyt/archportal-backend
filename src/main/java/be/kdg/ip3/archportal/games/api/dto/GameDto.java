@@ -24,10 +24,13 @@ public record GameDto(
         @Min(0)
         BigDecimal price,
         @NotNull
-        GameGenre genre
+        GameGenre genre,
+        @NotNull
+        @Min(1)
+        int maxlobbysize
 ) {
     public static GameDto fromDomain(Game game) {
         return new GameDto(game.getId().id(), game.getTitle(), game.getDescription(),
-                game.getImageUrl(), game.getGameUrl(), game.getPrice().money(), game.getGenre());
+                game.getImageUrl(), game.getGameUrl(), game.getPrice().money(), game.getGenre(),game.getMaxLobbySize());
     }
 }

@@ -34,9 +34,7 @@ public class ShopsErrorHandling {
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(errorResponse);
     }
 
-
-    public record ErrorResponse(String message) {
-    }
+    public record ErrorResponse(String message) {}
 }
 
 
