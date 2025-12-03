@@ -1,17 +1,19 @@
 package be.kdg.ip3.archportal.shops.domain.mollie;
 
 import be.kdg.ip3.archportal.shops.api.dto.PaymentCreationDto;
-import be.woutschoovaerts.mollie.Client;
-import be.woutschoovaerts.mollie.data.common.Amount;
-import be.woutschoovaerts.mollie.data.payment.PaymentRequest;
-import be.woutschoovaerts.mollie.data.payment.PaymentResponse;
-import be.woutschoovaerts.mollie.data.payment.PaymentStatus;
+import be.kdg.ip3.archportal.shops.domain.PaymentException;
+import com.mollie.mollie.Client;
+import com.mollie.mollie.models.components.Amount;
+import com.mollie.mollie.models.components.PaymentRequest;
+import com.mollie.mollie.models.components.PaymentResponseStatus;
+import com.mollie.mollie.models.operations.CreatePaymentResponse;
+import com.mollie.mollie.models.operations.GetPaymentRequest;
+import com.mollie.mollie.models.operations.GetPaymentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -25,40 +27,56 @@ public class MollieService implements IMollieService {
 
     public PaymentCreationDto createPayment(BigDecimal amount, String description, UUID orderId) {
         try {
-            Amount paymentAmount = Amount.builder()
-                    .currency("EUR")
-                    .value(amount)
-                    .build();
-
             String redirectUrlWithOrderId = redirectUrl + "?orderId=" + orderId;
 
             PaymentRequest request = PaymentRequest.builder()
-                    .amount(paymentAmount)
+                    .amount(Amount.builder()
+                            .currency("EUR")
+                            .value(amount.toString())
+                            .build())
                     .description(description)
                     .redirectUrl(redirectUrlWithOrderId)
-                    .metadata(Map.of("orderId", orderId.toString()))
                     .build();
 
-            PaymentResponse paymentResponse = mollieClient.payments().createPayment(request);
+            CreatePaymentResponse response = mollieClient.payments().create()
+                    .paymentRequest(request)
+                    .call();
 
-            return new PaymentCreationDto(
-                    paymentResponse.getLinks().getCheckout().getHref(),
-                    paymentResponse.getId()
-            );
+            if (response.paymentResponse().isPresent()) {
+                var payment = response.paymentResponse().get();
+                String paymentUrl = payment.links().checkout().orElseThrow().href();
+                return new PaymentCreationDto(
+                        paymentUrl,
+                        payment.id()
+                );
+            }
+
+            throw new PaymentException("Payment creation failed: no response");
 
         } catch (Exception e) {
-            throw new RuntimeException("Payment creation failed", e);
+            throw new PaymentException("Payment creation failed", e);
         }
     }
 
-
     public boolean verifyPayment(String paymentId) {
         try {
-            PaymentResponse payment = mollieClient.payments().getPayment(paymentId);
-            return payment.getStatus() == PaymentStatus.PAID;
+            GetPaymentRequest request = GetPaymentRequest.builder()
+                    .paymentId(paymentId)
+                    .build();
+
+            GetPaymentResponse response = mollieClient.payments().get()
+                    .request(request)
+                    .call();
+
+            if (response.paymentResponse().isPresent()) {
+                var payment = response.paymentResponse().get();
+                return payment.status() == PaymentResponseStatus.PAID;
+            }
+
+            return false;
+
         } catch (Exception e) {
             return false;
         }
     }
-
 }
