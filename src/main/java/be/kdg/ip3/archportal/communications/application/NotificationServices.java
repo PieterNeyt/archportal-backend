@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.communications.application;
 
 
+import be.kdg.ip3.archportal.communications.domain.NotFoundException;
 import be.kdg.ip3.archportal.communications.domain.notification.Notification;
 import be.kdg.ip3.archportal.communications.domain.notification.NotificationRepository;
 import be.kdg.ip3.archportal.communications.domain.notification.RecieverId;
@@ -13,6 +14,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -65,6 +68,17 @@ public class NotificationServices {
         if (settings.containsInPlatform()) {
             repository.save(newNotification);
         }
+    }
+
+    public List<Notification> getNotifications(RecieverId recieverId) {
+
+        return repository.findByRecieverId(recieverId)
+                .orElseThrow(() -> new NotFoundException("No notifications found for current reciever"));
+    }
+
+    public List<Notification> getFirst5Notifications(RecieverId recieverId) {
+        return repository.findByRecieverIdFirst5(recieverId)
+                .orElseThrow(() -> new NotFoundException("No notifications found for current reciever"));
     }
 }
 

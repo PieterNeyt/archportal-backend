@@ -2,9 +2,15 @@ package be.kdg.ip3.archportal.communications.infrastructure.notification;
 
 import be.kdg.ip3.archportal.communications.domain.notification.Notification;
 import be.kdg.ip3.archportal.communications.domain.notification.NotificationRepository;
+import be.kdg.ip3.archportal.communications.domain.notification.RecieverId;
 import be.kdg.ip3.archportal.communications.infrastructure.notification.jpa.JpaNotificationEntity;
 import be.kdg.ip3.archportal.communications.infrastructure.notification.jpa.JpaNotificationRepository;
+import org.hibernate.query.spi.Limit;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class DbNotificationRepository implements NotificationRepository {
@@ -18,4 +24,19 @@ public class DbNotificationRepository implements NotificationRepository {
         var jpaNotification = JpaNotificationEntity.fromDomain(newNotification);
         this.repository.save(jpaNotification);
     }
+
+    @Override
+    public Optional<List<Notification>> findByRecieverId(RecieverId recieverId) {
+        return this.repository.findByReceiverId(recieverId.id())
+                .map(list -> list.stream()
+                        .map(JpaNotificationEntity::toDomain)
+                        .toList());
+    }
+
+    @Override
+    public Optional<List<Notification>> findByRecieverIdFirst5(RecieverId recieverId) {
+        return this.repository.findByReceiverId(recieverId.id(), Pageable.ofSize(5))
+                .map(list -> list.stream()
+                        .map(JpaNotificationEntity::toDomain)
+                        .toList());    }
 }
