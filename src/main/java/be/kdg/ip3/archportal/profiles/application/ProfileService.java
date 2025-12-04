@@ -54,16 +54,16 @@ public class ProfileService {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
         String firstName = token.getClaim("given_name");
         String lastName = token.getClaim("family_name");
+        String gamerTag = token.getClaim("preferred_username");
         String email = token.getClaim("email");
 
         var profile = profileRepository.findById(profileId).orElseGet(() -> {
-            Profile newProfile = Profile.createProfile(profileId, firstName, lastName, email);
+            Profile newProfile = Profile.createProfile(profileId, firstName, lastName, gamerTag, email);
             eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
             return newProfile;
         });
 
         profileRepository.save(profile);
-
         return profile;
     }
 
@@ -72,5 +72,9 @@ public class ProfileService {
         var gameIds = profile.getLibrary();
 
         return gamesApi.getGamesByIds(gameIds);
+    }
+
+    public List<Profile> getAllFriends(ProfileId profileId) {
+        return profileRepository.findAllFriends(profileId);
     }
 }
