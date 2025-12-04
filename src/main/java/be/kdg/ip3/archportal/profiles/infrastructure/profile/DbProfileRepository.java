@@ -19,7 +19,6 @@ public class DbProfileRepository implements ProfileRepository {
         this.jpaProfileRepository = jpaProfileRepository;
     }
 
-
     @Override
     public void save(Profile profile) {
         this.jpaProfileRepository.save(JpaProfileEntity.fromDomain(profile));
@@ -43,5 +42,10 @@ public class DbProfileRepository implements ProfileRepository {
     @Override
     public List<Profile> findAllFriends(ProfileId id) {
         return jpaProfileRepository.findAllFriendsOfProfileId(id.id()).stream().map(JpaProfileEntity::toDomain).toList();
+    }
+
+    @Override
+    public List<Profile> findFromIds(List<ProfileId> profileIds) {
+        return jpaProfileRepository.findByIdIn(profileIds.stream().map(ProfileId::id).toList()).stream().map(JpaProfileEntity::toDomain).toList();
     }
 }

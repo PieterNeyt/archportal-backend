@@ -8,6 +8,7 @@ import be.kdg.ip3.archportal.profiles.infrastructure.friendRequest.jpa.JpaFriend
 import be.kdg.ip3.archportal.profiles.infrastructure.friendRequest.jpa.JpaFriendRequestRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,6 +17,11 @@ public class DbFriendRequestRepository implements FriendRequestRepository {
 
     public DbFriendRequestRepository(JpaFriendRequestRepository jpaFriendRequestRepository) {
         this.jpaFriendRequestRepository = jpaFriendRequestRepository;
+    }
+
+    @Override
+    public List<FriendRequest> findAllFromReceiver(ProfileId profileId) {
+        return jpaFriendRequestRepository.findAllByReceiverId(profileId.id()).stream().map(JpaFriendRequestEntity::toDomain).toList();
     }
 
     @Override

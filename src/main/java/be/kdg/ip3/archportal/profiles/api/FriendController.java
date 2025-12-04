@@ -17,11 +17,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/friends")
-public class FriendRequestController {
+public class FriendController {
     private final FriendRequestService friendRequestService;
     private final ProfileService profileService;
 
-    public FriendRequestController(FriendRequestService friendRequestService, ProfileService profileService) {
+    public FriendController(FriendRequestService friendRequestService, ProfileService profileService) {
         this.friendRequestService = friendRequestService;
         this.profileService = profileService;
     }
@@ -40,5 +40,12 @@ public class FriendRequestController {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
         var friends = profileService.getAllFriends(profileId).stream().map(ProfileDto::from).toList();
         return ResponseEntity.ok(friends);
+    }
+
+    @GetMapping("/requests")
+    public ResponseEntity<List<ProfileDto>> getProfilesHasSendRequest(@AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var profiles = friendRequestService.findAllProfilesHasSendRequest(profileId).stream().map(ProfileDto::from).toList();
+        return ResponseEntity.ok(profiles);
     }
 }

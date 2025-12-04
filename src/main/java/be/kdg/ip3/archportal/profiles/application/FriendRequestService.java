@@ -5,10 +5,13 @@ import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAlreadyExistsException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestRepository;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.InvalidFriendRequestException;
+import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -36,5 +39,10 @@ public class FriendRequestService {
         var friendRequest = new FriendRequest(senderId, receiverId);
         friendRequestRepository.save(friendRequest);
         return friendRequest;
+    }
+
+    public List<Profile> findAllProfilesHasSendRequest(ProfileId profileId) {
+        var requests = friendRequestRepository.findAllFromReceiver(profileId);
+        return profileRepository.findFromIds(requests.stream().map(FriendRequest::getSenderId).toList());
     }
 }

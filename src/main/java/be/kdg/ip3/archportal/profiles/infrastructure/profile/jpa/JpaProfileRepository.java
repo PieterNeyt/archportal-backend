@@ -19,4 +19,6 @@ public interface JpaProfileRepository extends JpaRepository<JpaProfileEntity, UU
     List<JpaProfileEntity> findAllFriendsOfProfileId(@Param("profileId") UUID profileId);
 
     Optional<JpaProfileEntity> findByGamerTag(String gamerTag);
+
+    List<JpaProfileEntity> findByIdIn(List<UUID> profileIds);
 }

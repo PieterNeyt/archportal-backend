@@ -45,6 +45,9 @@ INSERT INTO profileservice.profile_friends (profile_id, friend_id)
 VALUES ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', '09bcb315-b8ac-4376-a501-8249e5fd34fb'),
        ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', '09bcb315-b8ac-4376-a501-8249e5fd34fc');
 
+INSERT INTO profileservice.friend_requests (id, sender_id, receiver_id)
+VALUES ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', '09bcb315-b8ac-4376-a501-8249e5fd34fd', 'fdb74a46-98e2-403a-bfeb-22fa10d11bf2');
+
 INSERT INTO communicationservice.notification_settings (profile_id)
 VALUES ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2');
 
