@@ -10,18 +10,15 @@ public class FriendRequest {
     private final FriendRequestId id;
     private final ProfileId senderId;
     private final ProfileId receiverId;
-    private FriendRequestState state;
 
     public FriendRequest(ProfileId senderId, ProfileId receiverId) {
         this.id = FriendRequestId.create();
         this.senderId = senderId;
         this.receiverId = receiverId;
-        this.state = FriendRequestState.PENDING;
     }
 
-    public FriendRequest(FriendRequestId id, ProfileId senderId, ProfileId receiverId, FriendRequestState state) {
+    public FriendRequest(FriendRequestId id, ProfileId senderId, ProfileId receiverId) {
         this.id = id;
-        this.state = state;
         this.receiverId = receiverId;
         this.senderId = senderId;
     }

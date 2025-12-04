@@ -3,7 +3,6 @@ package be.kdg.ip3.archportal.profiles.infrastructure.friendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestId;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestRepository;
-import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestState;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.infrastructure.friendRequest.jpa.JpaFriendRequestEntity;
 import be.kdg.ip3.archportal.profiles.infrastructure.friendRequest.jpa.JpaFriendRequestRepository;
@@ -31,6 +30,6 @@ public class DbFriendRequestRepository implements FriendRequestRepository {
 
     @Override
     public boolean existsPending(ProfileId senderId, ProfileId receiverId) {
-        return jpaFriendRequestRepository.existsBySenderIdAndReceiverIdAndState(senderId.id(), receiverId.id(), FriendRequestState.PENDING);
+        return jpaFriendRequestRepository.existsBySenderIdAndReceiverId(senderId.id(), receiverId.id());
     }
 }

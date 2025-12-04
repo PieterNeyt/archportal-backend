@@ -99,8 +99,7 @@ class CreateFriendRequestSociableTest {
         
         assertThat(service.createFriendRequest(senderId, gamerTag))
                 .returns(senderId, FriendRequest::getSenderId)
-                .returns(receiverId, FriendRequest::getReceiverId)
-                .returns(FriendRequestState.PENDING, FriendRequest::getState);
+                .returns(receiverId, FriendRequest::getReceiverId);
         verify(friendRequestRepository).save(any(FriendRequest.class));
     }
 }
