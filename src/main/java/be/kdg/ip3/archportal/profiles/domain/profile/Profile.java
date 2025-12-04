@@ -13,6 +13,7 @@ public class Profile {
     private final ProfileId id;
     private String firstName;
     private String lastName;
+    private String email;
     private String icon;
     private String gamerTag;
     private List<UUID> library;
@@ -20,13 +21,17 @@ public class Profile {
     private List<ProfileId> friends;
     private List<UUID> platformBenefits;
 
-    public Profile(UUID profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String icon, String gamerTag, List<ProfileId> friends, String firstName, List<UUID> library) {
-        this(ProfileId.create(profileId), platformBenefits, platformPoints, lastName, icon, gamerTag, friends, firstName, library);
+    public Profile(UUID profileId, List<UUID> platformBenefits, int platformPoints,
+                   String lastName,String email ,String icon,
+                   String gamerTag, List<ProfileId> friends,
+                   String firstName, List<UUID> library) {
+        this(ProfileId.create(profileId), platformBenefits, platformPoints, lastName,email, icon, gamerTag,friends, firstName, library);
     }
 
-    public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String icon,
+    public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName,String email, String icon,
                    String gamerTag, List<ProfileId> friends, String firstName, List<UUID> library) {
         this.id = profileId;
+        setEmail(email);
         this.platformBenefits = platformBenefits;
         setPlatformPoints(platformPoints);
         setLastName(lastName);
@@ -36,11 +41,18 @@ public class Profile {
         setFirstName(firstName);
         this.library = library;
     }
-
-    public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag) {
-        return new Profile(profileId, new ArrayList<>(), 0, lastName, "", gamerTag, new ArrayList<>(), firstName, new ArrayList<>());
+    public static Profile createProfile(ProfileId profileId, String firstName, String lastName,String gamerTag, String email) {
+        return new Profile(profileId, new ArrayList<>(), 0, lastName,email, "", gamerTag, new ArrayList<>(), firstName, new ArrayList<>());
 
     }
+
+    private void setEmail(String email) {
+        if (email == null || email.trim().isEmpty() || email.isEmpty() || email.length() > 255)
+            throw new IllegalArgumentException("The email provided is invalid.");
+
+        this.email = email;
+    }
+
 
     public void setFirstName(String firstName) {
         if (firstName == null || firstName.trim().isEmpty() || firstName.isEmpty() || firstName.length() > 255)

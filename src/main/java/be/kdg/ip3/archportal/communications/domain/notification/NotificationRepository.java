@@ -4,4 +4,5 @@ import org.jmolecules.ddd.annotation.Repository;
 
 @Repository
 public interface NotificationRepository {
+    void save(Notification newNotification);
 }

@@ -8,11 +8,10 @@
 stages:
   - compile
   - test
-  - secret-detection
   - package
 
 variables:
-  DEFAULT_IMAGE: eclipse-temurin:25-jdk-alpine
+  DEFAULT_IMAGE: eclipse-temurin:21-jdk-alpine
   MAJOR: "1"
   MINOR: "0"
 
@@ -66,8 +65,6 @@ package:
   rules:
     - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH && $CI_PIPELINE_SOURCE != "merge_request_event"
 
-secret_detection:
-  stage: secret-detection
-
 include:
   - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml

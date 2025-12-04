@@ -1,11 +1,13 @@
 package be.kdg.ip3.archportal.profiles.application;
 
+import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEvent;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +22,12 @@ import java.util.UUID;
 public class ProfileService {
     private final ProfileRepository profileRepository;
     private final GamesApi gamesApi;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ProfileService(ProfileRepository profileRepository, GamesApi gamesApi) {
+    public ProfileService(ProfileRepository profileRepository, GamesApi gamesApi, ApplicationEventPublisher eventPublisher) {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
+        this.eventPublisher = eventPublisher;
     }
 
     public CreateProfileCommand createProfile(CreateProfileCommand command) {
@@ -33,6 +37,7 @@ public class ProfileService {
                 new ArrayList<>(),
                 0,
                 command.lastName(),
+                "",
                 command.icon(),
                 command.gamerTag(),
                 new ArrayList<>(),
@@ -50,8 +55,14 @@ public class ProfileService {
         String firstName = token.getClaim("given_name");
         String lastName = token.getClaim("family_name");
         String gamerTag = token.getClaim("preferred_username");
+        String email = token.getClaim("email");
 
-        var profile = profileRepository.findById(profileId).orElse(Profile.createProfile(profileId, firstName, lastName, gamerTag));
+        var profile = profileRepository.findById(profileId).orElseGet(() -> {
+            Profile newProfile = Profile.createProfile(profileId, firstName, lastName, gamerTag, email);
+            eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
+            return newProfile;
+        });
+
         profileRepository.save(profile);
         return profile;
     }

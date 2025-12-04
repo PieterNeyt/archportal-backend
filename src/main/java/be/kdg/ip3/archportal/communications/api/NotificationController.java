@@ -13,10 +13,4 @@ public class NotificationController {
     public NotificationController(NotificationServices notificationServices) {
         this.notificationServices = notificationServices;
     }
-
-    @PostMapping()
-    public ResponseEntity<?> sendNotifactionExample() {
-        notificationServices.sendNotification();
-        return ResponseEntity.ok("");
-    }
 }

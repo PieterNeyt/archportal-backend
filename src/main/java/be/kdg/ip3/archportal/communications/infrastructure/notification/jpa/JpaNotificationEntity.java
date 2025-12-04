@@ -3,7 +3,7 @@ package be.kdg.ip3.archportal.communications.infrastructure.notification.jpa;
 
 import be.kdg.ip3.archportal.communications.domain.notification.Notification;
 import be.kdg.ip3.archportal.communications.domain.notification.NotificationId;
-import be.kdg.ip3.archportal.communications.domain.notification.NotificationType;
+import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.communications.domain.notification.RecieverId;
 import jakarta.persistence.*;
 
