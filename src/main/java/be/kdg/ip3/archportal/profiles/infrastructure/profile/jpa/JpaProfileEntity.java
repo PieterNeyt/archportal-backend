@@ -18,16 +18,16 @@ public class JpaProfileEntity {
     @Id
     private UUID id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String firstName;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String lastName;
 
-    @Column(length = 255)
+    @Column
     private String icon;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, unique = true)
     private String gamerTag;
 
     @Column(nullable = false)

@@ -1,6 +1,8 @@
 package be.kdg.ip3.archportal.profiles.api.dto;
 
-import java.util.UUID;
+import jakarta.validation.constraints.NotBlank;
 
-public record SendFriendRequestDto(UUID receiverId) {
+public record SendFriendRequestDto(
+        @NotBlank
+        String gamerTag) {
 }

@@ -21,11 +21,13 @@ public class FriendRequestService {
         this.profileRepository = profileRepository;
     }
 
-    public FriendRequest createFriendRequest(ProfileId senderId, ProfileId receiverId) {
+    public FriendRequest createFriendRequest(ProfileId senderId, String gamerTag) {
+        var receiver = profileRepository.findByGamerTag(gamerTag).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
+        var receiverId = receiver.getId();
         if (senderId.equals(receiverId))
             throw new InvalidFriendRequestException("Sender and receiver profiles cannot be the same profile.");
-        
-        if (!profileRepository.existsById(senderId) || !profileRepository.existsById(receiverId))
+
+        if (!profileRepository.existsById(senderId))
             throw new NotFoundException("Sender or receiver profile does not exist.");
 
         if (friendRequestRepository.existsPending(senderId, receiverId) || friendRequestRepository.existsPending(receiverId, senderId))

@@ -29,8 +29,7 @@ public class FriendRequestController {
     @PostMapping("/request")
     public ResponseEntity<Void> sendFriendRequest(@Valid @RequestBody SendFriendRequestDto dto, @AuthenticationPrincipal Jwt token) {
         var senderId = new ProfileId(UUID.fromString(token.getSubject()));
-        var receiverId = new ProfileId(dto.receiverId());
-        var request = friendRequestService.createFriendRequest(senderId, receiverId);
+        var request = friendRequestService.createFriendRequest(senderId, dto.gamerTag());
 
         var location = URI.create("/api/friends/request/" + request.getId().id());
         return ResponseEntity.created(location).build();

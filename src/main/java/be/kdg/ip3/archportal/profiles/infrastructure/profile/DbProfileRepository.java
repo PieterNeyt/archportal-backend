@@ -36,6 +36,11 @@ public class DbProfileRepository implements ProfileRepository {
     }
 
     @Override
+    public Optional<Profile> findByGamerTag(String username) {
+        return jpaProfileRepository.findByGamerTag(username).map(JpaProfileEntity::toDomain);
+    }
+
+    @Override
     public List<Profile> findAllFriends(ProfileId id) {
         return jpaProfileRepository.findAllFriendsOfProfileId(id.id()).stream().map(JpaProfileEntity::toDomain).toList();
     }

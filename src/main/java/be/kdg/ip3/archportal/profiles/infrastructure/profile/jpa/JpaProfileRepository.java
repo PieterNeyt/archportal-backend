@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface JpaProfileRepository extends JpaRepository<JpaProfileEntity, UUID> {
@@ -16,4 +17,6 @@ public interface JpaProfileRepository extends JpaRepository<JpaProfileEntity, UU
                            WHERE prof.id = :profileId)
             """)
     List<JpaProfileEntity> findAllFriendsOfProfileId(@Param("profileId") UUID profileId);
+
+    Optional<JpaProfileEntity> findByGamerTag(String gamerTag);
 }
