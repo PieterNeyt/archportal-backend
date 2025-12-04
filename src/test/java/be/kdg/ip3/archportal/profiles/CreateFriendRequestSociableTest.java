@@ -44,7 +44,7 @@ class CreateFriendRequestSociableTest {
         void createFriendRequest_equalSenderAndReceiverIds_throwsExpected() {
             var profileId = new ProfileId(UUID.randomUUID());
             var gamerTag = "gamerTag";
-            var profile = new Profile(profileId, null, 0, "Van Acker", null, gamerTag, null, "Cian", null);
+            var profile = Profile.createProfile(profileId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be");
             
             when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(profile));
 
@@ -70,7 +70,7 @@ class CreateFriendRequestSociableTest {
             var senderId = new ProfileId(UUID.randomUUID());
             var receiverId = new ProfileId(UUID.randomUUID());
             var gamerTag = "gamerTag";
-            var profile = new Profile(receiverId, null, 0, "Van Acker", null, gamerTag, null, "Cian", null);
+            var profile = Profile.createProfile(receiverId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be");
 
             when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(profile));
 
@@ -90,7 +90,7 @@ class CreateFriendRequestSociableTest {
         var senderId = new ProfileId(UUID.randomUUID());
         var receiverId = new ProfileId(UUID.randomUUID());
         var gamerTag = "gamerTag";
-        var profile = new Profile(receiverId, null, 0, "Van Acker", null, gamerTag, null, "Cian", null);
+        var profile = Profile.createProfile(receiverId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be");
 
         when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(profile));
 

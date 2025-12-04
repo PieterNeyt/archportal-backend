@@ -32,15 +32,22 @@ VALUES ('f7b56a1e-1c63-4d0c-aa75-3b40e8253e19', '3f071d5d-5d2e-4b5f-9c12-7cf7e90
         'A family-friendly party game where players build stories using illustrated prompt cards.', 24.99,
         'https://i.kickstarter.com/assets/026/491/434/3d8e598174acdbebfbf2e3348a5b0ff3_original.jpg?anim=false&fit=cover&gravity=auto&height=873&origin=ugc&q=92&v=1568619866&width=1552&sig=w7B94mmyjQcUBHpfytD9pVa5h8Cm9ilkmNnW9hvYoOI%3D', 'https://hub.example.com/games/campfire-stories', 'FAMILY',20);
 
-INSERT INTO profileservice.profile (id, first_name, last_name, gamer_tag, icon, platform_points)
-VALUES ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', 'Cian', 'Van Acker', 'naic56', null, 0),
-       ('09bcb315-b8ac-4376-a501-8249e5fd34fb', 'Axel', 'Peeters', 'lexa', null, 0),
-       ('09bcb315-b8ac-4376-a501-8249e5fd34fc', 'Pieter', 'Neyt', 'reteip', null, 0),
-       ('09bcb315-b8ac-4376-a501-8249e5fd34fd', 'Hugo', 'Dor', 'oguh', null, 0);
+INSERT INTO profileservice.profile (id, first_name, last_name, gamer_tag, icon, platform_points, email)
+VALUES ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', 'Cian', 'Van Acker', 'naic56', null, 0, 'cian'),
+       ('09bcb315-b8ac-4376-a501-8249e5fd34fb', 'Axel', 'Peeters', 'lexa', null, 0, 'axel'),
+       ('09bcb315-b8ac-4376-a501-8249e5fd34fc', 'Pieter', 'Neyt', 'reteip', null, 0, 'pieter'),
+       ('09bcb315-b8ac-4376-a501-8249e5fd34fd', 'Hugo', 'Dor', 'oguh', null, 0, 'hugo');
 
 INSERT INTO profileservice.profile_library (game_id, profile_id) 
 VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', 'fdb74a46-98e2-403a-bfeb-22fa10d11bf2');
 
 INSERT INTO profileservice.profile_friends (profile_id, friend_id)
 VALUES ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', '09bcb315-b8ac-4376-a501-8249e5fd34fb'),
-       ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', '09bcb315-b8ac-4376-a501-8249e5fd34fc')
+       ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', '09bcb315-b8ac-4376-a501-8249e5fd34fc');
+
+INSERT INTO communicationservice.notification_settings (profile_id)
+VALUES ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2');
+
+INSERT INTO communicationservice.notification_channel_types (profile_id, channel_type) 
+VALUES ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', 'EMAIL'),
+       ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', 'IN_PLATFORM')

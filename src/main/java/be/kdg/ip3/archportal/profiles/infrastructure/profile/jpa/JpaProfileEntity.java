@@ -27,7 +27,6 @@ public class JpaProfileEntity {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String icon;
 
     @Column(nullable = false, unique = true)
