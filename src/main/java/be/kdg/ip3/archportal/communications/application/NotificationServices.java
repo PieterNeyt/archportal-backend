@@ -80,5 +80,9 @@ public class NotificationServices {
         return repository.findByRecieverIdFirst5(recieverId)
                 .orElseThrow(() -> new NotFoundException("No notifications found for current reciever"));
     }
+
+    public int getTotalNotifications(RecieverId recieverId) {
+        return repository.getTotalNotificationFromRecieverId(recieverId);
+    }
 }
 

@@ -44,4 +44,12 @@ public class NotificationController {
                         .map(NotificationDto::fromDomain)
                         .toList());
     }
+
+    @GetMapping("/total")
+    public ResponseEntity<Integer> getTotalNotifications(@AuthenticationPrincipal Jwt jwt) {
+        var recieverId = new RecieverId(UUID.fromString(jwt.getSubject()));
+        var totalNotifications = notificationServices.getTotalNotifications(recieverId);
+
+        return ResponseEntity.ok(totalNotifications);
+    }
 }
