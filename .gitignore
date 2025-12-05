@@ -33,6 +33,7 @@ out/
 /nbdist/
 /.nb-gradle/
 Se/src/main/resources/secret.properties
+src/main/resources/secret.properties
 
 ### VS Code ###
 .vscode/

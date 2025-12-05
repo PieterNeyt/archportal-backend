@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.shops.infrastructure.mollie;
 
-import be.woutschoovaerts.mollie.Client;
+import com.mollie.mollie.Client;
+import com.mollie.mollie.models.components.Security;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,10 @@ public class MollieConfig {
 
     @Bean
     public Client mollieClient() {
-        return new Client(apiKey);
+        return Client.builder()
+                .security(Security.builder()
+                        .apiKey(apiKey)
+                        .build())
+                .build();
     }
 }

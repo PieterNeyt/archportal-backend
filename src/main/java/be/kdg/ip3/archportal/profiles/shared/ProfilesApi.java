@@ -10,4 +10,7 @@ public interface ProfilesApi {
     void addGamesToLibrary(UUID profileId, List<UUID> games);
     void checkAlreadyOwnsGames(UUID profileId, List<UUID> games);
     void checkAlreadyOwnsGame(UUID profileId, UUID  gameId);
+    boolean existsById(UUID id);
+
+    String getProfileEmail(UUID id);
 }

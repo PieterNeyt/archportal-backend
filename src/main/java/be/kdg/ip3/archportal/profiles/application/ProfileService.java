@@ -1,16 +1,14 @@
 package be.kdg.ip3.archportal.profiles.application;
 
-import be.kdg.ip3.archportal.analytics.shared.AnalyticsApi;
-import be.kdg.ip3.archportal.analytics.shared.CreateGameStatsDto;
+import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEvent;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
-import be.kdg.ip3.archportal.profiles.application.command.AcquireGameCommand;
 import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
-import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,18 +17,17 @@ import java.util.List;
 import java.util.UUID;
 
 
-@Slf4j
 @Service
 @Transactional
-public class ProfileService implements ProfilesApi {
+public class ProfileService {
     private final ProfileRepository profileRepository;
     private final GamesApi gamesApi;
-    private final AnalyticsApi analyticsApi;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ProfileService(ProfileRepository profileRepository, GamesApi gamesApi, AnalyticsApi analyticsApi) {
+    public ProfileService(ProfileRepository profileRepository, GamesApi gamesApi, ApplicationEventPublisher eventPublisher) {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
-        this.analyticsApi = analyticsApi;
+        this.eventPublisher = eventPublisher;
     }
 
     public CreateProfileCommand createProfile(CreateProfileCommand command) {
@@ -40,6 +37,7 @@ public class ProfileService implements ProfilesApi {
                 new ArrayList<>(),
                 0,
                 command.lastName(),
+                "",
                 command.icon(),
                 command.gamerTag(),
                 new ArrayList<>(),
@@ -52,61 +50,31 @@ public class ProfileService implements ProfilesApi {
         return CreateProfileCommand.fromDomain(profile);
     }
 
+    public Profile syncUser(Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        String firstName = token.getClaim("given_name");
+        String lastName = token.getClaim("family_name");
+        String gamerTag = token.getClaim("preferred_username");
+        String email = token.getClaim("email");
 
-    @Override
-    public void checkAlreadyOwnsGames(UUID profileId, List<UUID> games) {
-        var profile = profileRepository.findById(new  ProfileId(profileId));
+        var profile = profileRepository.findById(profileId).orElseGet(() -> {
+            Profile newProfile = Profile.createProfile(profileId, firstName, lastName, gamerTag, email);
+            eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
+            return newProfile;
+        });
 
-        List<UUID> alreadyOwned = games.stream()
-                .filter(profile::hasGame)
-                .toList();
-
-        if (!alreadyOwned.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Profile %s already owns the following games: %s"
-                            .formatted(profileId, alreadyOwned)
-            );
-        }
-    }
-
-    @Override
-    public void checkAlreadyOwnsGame(UUID profileId, UUID gameId) {
-        var profile = profileRepository.findById(new ProfileId(profileId));
-        if (profile.hasGame(gameId)) {
-            throw new IllegalArgumentException(
-                    "Profile %s already owns the games: %s"
-                            .formatted(profileId, gameId)
-            );
-        }
-    }
-
-
-    public void acquireGames(AcquireGameCommand command) {
-        List<UUID> nonExistentGames = gamesApi.validateGames(command.games());
-        if (!nonExistentGames.isEmpty()) {
-            throw new IllegalArgumentException("The following games do not exist: " + nonExistentGames);
-        }
-
-        checkAlreadyOwnsGames(command.profileId(), command.games());
-        var profile = profileRepository.findById(new ProfileId( command.profileId()));
-
-        command.games().forEach(profile::acquireGame);
         profileRepository.save(profile);
-        for (var game: command.games()){
-            analyticsApi.instantiateGameStatistics(new CreateGameStatsDto(game, command.profileId()));
-        }
-
+        return profile;
     }
 
     public List<GlobalGameDto> getLibrary(ProfileId profileId) {
-        var profile = profileRepository.findById(profileId);
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
         var gameIds = profile.getLibrary();
 
         return gamesApi.getGamesByIds(gameIds);
     }
 
-    @Override
-    public void addGamesToLibrary(UUID profileId, List<UUID> games) {
-        acquireGames(new AcquireGameCommand(profileId, games));
+    public List<Profile> getAllFriends(ProfileId profileId) {
+        return profileRepository.findAllFriends(profileId);
     }
 }

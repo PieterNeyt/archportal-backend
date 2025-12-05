@@ -6,10 +6,11 @@ import be.kdg.ip3.archportal.shops.api.dto.PaymentCreationDto;
 import be.kdg.ip3.archportal.shops.application.ShopService;
 import be.kdg.ip3.archportal.shops.domain.cart.Cart;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -26,40 +27,37 @@ public class ShopController {
         var games = shopService.getAllGames();
         return ResponseEntity.ok(games);
     }
+
     @GetMapping("/cart")
-    public ResponseEntity<CartDto> getCart(@RequestParam UUID profileId) {
-        Cart cart = shopService.getOrCreateCart(profileId);
+    public ResponseEntity<CartDto> getCart(@AuthenticationPrincipal Jwt token) {
+        Cart cart = shopService.getOrCreateCart(UUID.fromString(token.getSubject()));
         List<GlobalGameDto> games = shopService.getGamesForCart(cart);
         return ResponseEntity.ok(CartDto.from(cart, games));
     }
 
     @PutMapping("/cart/add")
-    public ResponseEntity<CartDto> addToCart(
-            @RequestParam UUID profileId,
-            @RequestParam UUID gameId) {
-
-        Cart cart = shopService.addToCart(profileId, gameId);
+    public ResponseEntity<CartDto> addToCart(@RequestParam UUID gameId, @AuthenticationPrincipal Jwt token) {
+        Cart cart = shopService.addToCart(UUID.fromString(token.getSubject()), gameId);
         List<GlobalGameDto> games = shopService.getGamesForCart(cart);
         return ResponseEntity.ok(CartDto.from(cart, games));
     }
 
     @PutMapping("/cart/remove")
     public ResponseEntity<CartDto> removeFromCart(
-            @RequestParam UUID profileId,
-            @RequestParam UUID gameId) {
-
-        Cart cart = shopService.removeFromCart(profileId, gameId);
+            @RequestParam UUID gameId,
+            @AuthenticationPrincipal Jwt token) {
+        Cart cart = shopService.removeFromCart(UUID.fromString(token.getSubject()), gameId);
         List<GlobalGameDto> games = shopService.getGamesForCart(cart);
         return ResponseEntity.ok(CartDto.from(cart, games));
     }
 
     @PostMapping("/checkout")
     public ResponseEntity<PaymentCreationDto> checkout(
-            @RequestParam UUID profileId) {
-
-        PaymentCreationDto payment = shopService.checkout(profileId);
+            @AuthenticationPrincipal Jwt token) {
+        PaymentCreationDto payment = shopService.checkout(UUID.fromString(token.getSubject()));
         return ResponseEntity.ok(payment);
     }
+
     @GetMapping("/payment/verify")
     public ResponseEntity<Boolean> verifyPayment(@RequestParam UUID orderId) {
         boolean verified = shopService.verifyPayment(orderId);

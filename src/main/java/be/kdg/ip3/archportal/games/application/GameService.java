@@ -1,67 +1,48 @@
 package be.kdg.ip3.archportal.games.application;
 
+import be.kdg.ip3.archportal.communications.shared.NotificationType;
+import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.games.api.dto.GameDto;
 import be.kdg.ip3.archportal.games.domain.game.Game;
-import be.kdg.ip3.archportal.games.domain.game.GameId;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
-import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
-import be.kdg.ip3.archportal.games.shared.GamesApi;
-import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
+import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 @Service
 @Transactional
-public class GameService implements GamesApi {
+public class GameService {
     private final GameRepository gameRepository;
     private final GameStudioService gameStudioService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public GameService(GameRepository gameRepository, GameStudioService gameStudioService) {
+    public GameService(GameRepository gameRepository, GameStudioService gameStudioService, ApplicationEventPublisher eventPublisher) {
         this.gameRepository = gameRepository;
         this.gameStudioService = gameStudioService;
+        this.eventPublisher = eventPublisher;
     }
 
-    public Game createGame(GameDto gameDto) {
-        var studio = gameStudioService.findById(new GameStudioId(gameDto.studioId()));
+    public Game createGame(GameDto gameDto, OwnerId ownerId) {
+        var studio = gameStudioService.findByOwnerId(ownerId);
+        studio.checkOwner(ownerId);
+        
         var game = new Game(studio.getId(), gameDto.title(), gameDto.description(),
-                gameDto.price(), gameDto.imageUrl(), gameDto.gameUrl(), gameDto.genre());
+                gameDto.price(), gameDto.imageUrl(), gameDto.gameUrl(), gameDto.genre(),gameDto.maxlobbysize());
+
         gameRepository.save(game);
+
+        eventPublisher.publishEvent(new AddNotificationEvent(ownerId.id(),
+                String.format("Congrats! You have successfully created your own game %s",game.getTitle()),
+                "Now that your project is live, you can head over to the Game Studio page to continue building your experience.\n" +
+                        "From there, you can add new features, update existing content, customize your game world, or even create your own achievements and updates to share with your players.\n" +
+                        "\n" +
+                        "Feel free to explore, experiment, and shape your game exactly the way you imagine it.\n" +
+                        "\n" +
+                        "Kind regards,\n" +
+                        "The Arch Portal Team",
+                NotificationType.SYSTEM
+        ));
         return game;
     }
-
-    public List<UUID> validateGames(List<UUID> gameIds) {
-        return gameIds.stream()
-                .filter(gameId -> !gameRepository.existsById(gameId))
-                .toList();
-    }
-
-    @Override
-    public List<GlobalGameDto> getAllGames() {
-        var games = findAll();
-        return games.stream().map(GlobalGameDto::fromDomain).toList();
-    }
-
-    @Override
-    public List<GlobalGameDto> getGamesByIds(List<UUID> gameIds) {
-        var games = findByIds(gameIds);
-        return games.stream().map(GlobalGameDto::fromDomain).toList();
-    }
-
-
-    public List<Game> findAll() {
-        return gameRepository.findAll();
-    }
-    public List<Game> findByIds(List<UUID> gameIds) {
-        return gameRepository.findAllById(gameIds);
-    }
-
-    public String getGameUrl(UUID gameId) {
-        var game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Game with id " + gameId + " not found"));
-        return game.getGameUrl();
-    }
-
 }

@@ -3,6 +3,7 @@ package be.kdg.ip3.archportal.games.domain.gamestudio;
 import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
+import org.springframework.security.access.AccessDeniedException;
 
 @Getter
 @AggregateRoot
@@ -43,5 +44,10 @@ public class GameStudio {
         if (IBAN == null || IBAN.trim().isEmpty() || IBAN.isEmpty())
             throw new IllegalArgumentException("The provided IBAN is empty");
         this.IBAN = IBAN;
+    }
+    
+    public void checkOwner(OwnerId ownerId) {
+        if (!this.ownerId.equals(ownerId))
+            throw new AccessDeniedException("This is not your game studio");
     }
 }

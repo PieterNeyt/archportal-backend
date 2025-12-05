@@ -1,7 +1,7 @@
 package be.kdg.ip3.archportal.shops.application;
 
-import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
+import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import be.kdg.ip3.archportal.shops.api.dto.PaymentCreationDto;
 import be.kdg.ip3.archportal.shops.domain.cart.Cart;
@@ -10,10 +10,9 @@ import be.kdg.ip3.archportal.shops.domain.mollie.IMollieService;
 import be.kdg.ip3.archportal.shops.domain.order.Order;
 import be.kdg.ip3.archportal.shops.domain.order.OrderLine;
 import be.kdg.ip3.archportal.shops.domain.order.OrderRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,7 +50,7 @@ public class ShopService {
         var cart = getOrCreateCart(profileId);
         profilesApi.checkAlreadyOwnsGame(profileId, gameId);
         if (cart.getCartItems().contains(gameId)) {
-            throw new RuntimeException("Game with id " + gameId + " already added");
+            throw new IllegalArgumentException("Game already added to cart.");
         }
         cart.addToCart(gameId);
         return cartRepo.save(cart);
@@ -83,9 +82,7 @@ public class ShopService {
 
         var order = new Order(profileId);
 
-        gamesInCart.forEach(gameDto -> {
-            order.addOrderLine(gameDto.id(), gameDto.price());
-        });
+        gamesInCart.forEach(gameDto -> order.addOrderLine(gameDto.id(), gameDto.price()));
         orderRepo.save(order);
 
         var amount = order.totalPrice();

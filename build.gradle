@@ -8,9 +8,11 @@ group = 'be.kdg.ip3'
 version = '0.0.1-SNAPSHOT'
 description = 'ArchPortal'
 
+def isCI = System.getenv("GITLAB_CI") != null
+
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(isCI ? 21 : 25)
     }
 }
 
@@ -37,8 +39,12 @@ dependencies {
 
     implementation("be.woutschoovaerts:mollie:4.6.2")
 
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+    implementation 'com.mollie:mollie:0.23.6'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.modulith:spring-modulith-starter-core'
+    implementation 'org.springframework.modulith:spring-modulith-events-api:2.0.0'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     testImplementation 'org.testcontainers:postgresql'
@@ -54,6 +60,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.modulith:spring-modulith-starter-test'
+    testImplementation "org.springframework.security:spring-security-test"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
