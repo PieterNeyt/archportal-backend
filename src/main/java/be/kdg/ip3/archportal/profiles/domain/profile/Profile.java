@@ -1,6 +1,8 @@
 package be.kdg.ip3.archportal.profiles.domain.profile;
 
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.InvalidFriendRequestException;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
@@ -47,7 +49,6 @@ public class Profile {
 
         this.email = email;
     }
-
 
     public void setFirstName(String firstName) {
         if (firstName == null || firstName.trim().isEmpty() || firstName.isEmpty() || firstName.length() > 255)
@@ -116,6 +117,16 @@ public class Profile {
             throw new IllegalArgumentException("Points cannot be lower than 0");
         }
         this.platformPoints += points;
+    }
+    
+    public void validateNotSameProfile(Profile receiver) {
+        if (this.id.equals(receiver.getId()))
+            throw new InvalidFriendRequestException("Sender and receiver profiles cannot be the same profile.");
+    }
+    
+    public void validateNotAlreadyFriends(Profile receiver) {
+        if (this.friends.contains(receiver.getId()))
+            throw new AlreadyFriendException(receiver.getGamerTag());
     }
 
     public boolean hasGame(UUID gameId) {
