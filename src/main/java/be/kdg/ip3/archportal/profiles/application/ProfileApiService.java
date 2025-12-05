@@ -1,5 +1,7 @@
 package be.kdg.ip3.archportal.profiles.application;
 
+import be.kdg.ip3.archportal.analytics.shared.AnalyticsApi;
+import be.kdg.ip3.archportal.analytics.shared.CreateGameStatsDto;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
@@ -15,10 +17,12 @@ import java.util.UUID;
 public class ProfileApiService implements ProfilesApi {
     private final ProfileRepository profileRepository;
     private final GamesApi gamesApi;
+    private final AnalyticsApi analyticsApi;
 
-    public ProfileApiService(ProfileRepository profileRepository, GamesApi gamesApi) {
+    public ProfileApiService(ProfileRepository profileRepository, GamesApi gamesApi, AnalyticsApi analyticsApi) {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
+        this.analyticsApi = analyticsApi;
     }
 
     @Override
@@ -71,5 +75,10 @@ public class ProfileApiService implements ProfilesApi {
 
         games.forEach(profile::acquireGame);
         profileRepository.save(profile);
+
+        for (var game: games){
+            analyticsApi.instantiateGameStatistics(new CreateGameStatsDto(game, profileId));
+        }
+
     }
 }
