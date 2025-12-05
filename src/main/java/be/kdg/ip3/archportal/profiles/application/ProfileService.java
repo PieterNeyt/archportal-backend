@@ -3,7 +3,11 @@ package be.kdg.ip3.archportal.profiles.application;
 import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEvent;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
-import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
+import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAlreadyExistsException;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.InvalidFriendRequestException;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
@@ -12,7 +16,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,26 +31,6 @@ public class ProfileService {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
         this.eventPublisher = eventPublisher;
-    }
-
-    public CreateProfileCommand createProfile(CreateProfileCommand command) {
-
-        var profile = new Profile(
-                command.id(),
-                new ArrayList<>(),
-                0,
-                command.lastName(),
-                "",
-                command.icon(),
-                command.gamerTag(),
-                new ArrayList<>(),
-                command.firstName(),
-                new ArrayList<>()
-        );
-
-        profileRepository.save(profile);
-
-        return CreateProfileCommand.fromDomain(profile);
     }
 
     public Profile syncUser(Jwt token) {
@@ -76,5 +59,49 @@ public class ProfileService {
 
     public List<Profile> getAllFriends(ProfileId profileId) {
         return profileRepository.findAllFriends(profileId);
+    }
+
+    public FriendRequest createFriendRequest(ProfileId senderId, String gamerTag) {
+        var receiver = profileRepository.findByGamerTag(gamerTag).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
+        var receiverId = receiver.getId();
+        if (senderId.equals(receiverId))
+            throw new InvalidFriendRequestException("Sender and receiver profiles cannot be the same profile.");
+
+        var sender = profileRepository.findById(senderId).orElseThrow(() -> new NotFoundException("Sender with id " + senderId + " is not found."));
+        if (sender.getFriends().contains(receiver.getId()))
+            throw new AlreadyFriendException(gamerTag);
+
+        boolean exists = receiver.getIncomingFriendRequests().stream()
+                .anyMatch(r -> r.senderId().equals(senderId)) ||
+                sender.getIncomingFriendRequests().stream()
+                        .anyMatch(r -> r.senderId().equals(receiverId));
+        if (exists)
+            throw new FriendRequestAlreadyExistsException("A pending friend request already exists between these profiles.");
+
+        var friendRequest = new FriendRequest(senderId);
+        receiver.addIncomingFriendRequest(friendRequest);
+
+        profileRepository.save(sender);
+        profileRepository.save(receiver);
+        return friendRequest;
+    }
+
+    public List<Profile> findAllProfilesIncomingRequests(ProfileId receiverId) {
+        var receiver = profileRepository.findById(receiverId).orElseThrow(receiverId::notFound);
+        var senderIds = receiver.getIncomingFriendRequests().stream().map(FriendRequest::senderId).toList();
+        return profileRepository.findFromIds(senderIds);
+    }
+
+    public void acceptFriendRequest(ProfileId receiverId, String gamerTag) {
+        var sender = profileRepository.findByGamerTag(gamerTag).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
+        var receiver = profileRepository.findById(receiverId).orElseThrow(receiverId::notFound);
+
+        var request = receiver.getIncomingFriendRequests().stream().filter(r -> r.senderId().equals(sender.getId()))
+                .findFirst().orElseThrow(() -> new NotFoundException("Friend request not found."));
+
+        receiver.acceptFriendRequest(request);
+
+        profileRepository.save(receiver);
+        profileRepository.save(sender);
     }
 }

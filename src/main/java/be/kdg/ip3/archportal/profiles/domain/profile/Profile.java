@@ -1,11 +1,10 @@
 package be.kdg.ip3.archportal.profiles.domain.profile;
 
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @AggregateRoot
@@ -18,18 +17,12 @@ public class Profile {
     private String gamerTag;
     private List<UUID> library;
     private int platformPoints;
-    private List<ProfileId> friends;
+    private Set<ProfileId> friends;
     private List<UUID> platformBenefits;
+    private final Set<FriendRequest> incomingFriendRequests;
 
-    public Profile(UUID profileId, List<UUID> platformBenefits, int platformPoints,
-                   String lastName,String email ,String icon,
-                   String gamerTag, List<ProfileId> friends,
-                   String firstName, List<UUID> library) {
-        this(ProfileId.create(profileId), platformBenefits, platformPoints, lastName,email, icon, gamerTag,friends, firstName, library);
-    }
-
-    public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName,String email, String icon,
-                   String gamerTag, List<ProfileId> friends, String firstName, List<UUID> library) {
+    public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String email, String icon,
+                   String gamerTag, Set<ProfileId> friends, String firstName, List<UUID> library, Set<FriendRequest> incomingFriendRequests) {
         this.id = profileId;
         setEmail(email);
         this.platformBenefits = platformBenefits;
@@ -40,9 +33,11 @@ public class Profile {
         this.friends = friends;
         setFirstName(firstName);
         this.library = library;
+        this.incomingFriendRequests = incomingFriendRequests;
     }
-    public static Profile createProfile(ProfileId profileId, String firstName, String lastName,String gamerTag, String email) {
-        return new Profile(profileId, new ArrayList<>(), 0, lastName,email, "", gamerTag, new ArrayList<>(), firstName, new ArrayList<>());
+
+    public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag, String email) {
+        return new Profile(profileId, new ArrayList<>(), 0, lastName, email, "", gamerTag, new HashSet<>(), firstName, new ArrayList<>(), new HashSet<>());
 
     }
 
@@ -76,6 +71,36 @@ public class Profile {
         if (platformPoints < 0)
             throw new IllegalArgumentException("The platformPoints provided are invalid.");
         this.platformPoints = platformPoints;
+    }
+
+    private void addFriend(ProfileId friendId) {
+        if (friendId == null)
+            throw new IllegalArgumentException("The friend id provided is invalid.");
+
+        if (friends.contains(friendId))
+            throw new IllegalArgumentException("Friend already exists.");
+
+        friends.add(friendId);
+    }
+
+    public void addIncomingFriendRequest(FriendRequest friendRequest) {
+        if (friendRequest == null)
+            throw new IllegalArgumentException("The friend request provided is invalid.");
+        if (incomingFriendRequests.contains(friendRequest))
+            throw new IllegalArgumentException("Friend request already exists.");
+
+        incomingFriendRequests.add(friendRequest);
+    }
+
+    public void acceptFriendRequest(FriendRequest friendRequest) {
+        if (friendRequest == null)
+            throw new IllegalArgumentException("The friend request provided is invalid.");
+        if (!incomingFriendRequests.contains(friendRequest))
+            throw new IllegalArgumentException("Friend request does not exists.");
+
+        addFriend(friendRequest.senderId());
+
+        incomingFriendRequests.remove(friendRequest);
     }
 
     public void AddPoints(int points) {

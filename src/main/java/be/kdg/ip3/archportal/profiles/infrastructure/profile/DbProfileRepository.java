@@ -46,6 +46,8 @@ public class DbProfileRepository implements ProfileRepository {
 
     @Override
     public List<Profile> findFromIds(List<ProfileId> profileIds) {
-        return jpaProfileRepository.findByIdIn(profileIds.stream().map(ProfileId::id).toList()).stream().map(JpaProfileEntity::toDomain).toList();
+        return jpaProfileRepository.findByIdIn(profileIds.stream().map(ProfileId::id).toList()).stream()
+                .map(JpaProfileEntity::toDomain)
+                .toList();
     }
 }

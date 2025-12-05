@@ -2,15 +2,16 @@ package be.kdg.ip3.archportal.profiles.api;
 
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.ProfileDto;
+import be.kdg.ip3.archportal.profiles.api.dto.FriendRequestDto;
 import be.kdg.ip3.archportal.profiles.application.ProfileService;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,18 +24,6 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
-    //TODO dit kan gebruikt worden voor updateProfile
-//    @PostMapping
-//    public ResponseEntity<CreateProfileDto> createProfile(@Valid @RequestBody CreateProfileDto dto) {
-//        var createProfileCommand = CreateProfileCommand.fromDto(dto);
-//        var profile = profileService.createProfile(createProfileCommand);
-//        var location = URI.create("/api/profile/" + profile.id());
-//
-//        return ResponseEntity
-//                .created(location)
-//                .body(CreateProfileDto.fromDomain(profile));
-//    }
-
     @GetMapping({"", "/"})
     public ResponseEntity<ProfileDto> syncUser(@AuthenticationPrincipal Jwt token) {
         var profile = profileService.syncUser(token);
@@ -46,5 +35,36 @@ public class ProfileController {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
         var library = profileService.getLibrary(profileId);
         return ResponseEntity.ok(library);
+    }
+
+    // TODO zorge da er ook een notification wordt gestuurd naar de ontvanger
+    @PostMapping("/friend-request")
+    public ResponseEntity<Void> sendFriendRequest(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {
+        var senderId = new ProfileId(UUID.fromString(token.getSubject()));
+        var request = profileService.createFriendRequest(senderId, dto.gamerTag());
+
+        var location = URI.create("/api/profile/" + dto.gamerTag() + "/friend-request");
+        return ResponseEntity.created(location).build();
+    }
+
+    @GetMapping("/friends")
+    public ResponseEntity<List<ProfileDto>> getFriends(@AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var friends = profileService.getAllFriends(profileId).stream().map(ProfileDto::from).toList();
+        return ResponseEntity.ok(friends);
+    }
+
+    @GetMapping("/friend-requests/incoming")
+    public ResponseEntity<List<ProfileDto>> getProfilesIncomingRequests(@AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var profiles = profileService.findAllProfilesIncomingRequests(profileId).stream().map(ProfileDto::from).toList();
+        return ResponseEntity.ok(profiles);
+    }
+
+    @PutMapping("/friend-request/accept")
+    public ResponseEntity<Void> acceptFriendRequest(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        profileService.acceptFriendRequest(profileId, dto.gamerTag());
+        return ResponseEntity.noContent().build();
     }
 }
