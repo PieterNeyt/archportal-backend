@@ -63,25 +63,28 @@ public class ProfileService {
     public FriendRequest createFriendRequest(ProfileId senderId, String gamerTag) {
         var receiver = profileRepository.findByGamerTag(gamerTag).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
         var sender = profileRepository.findById(senderId).orElseThrow(() -> new NotFoundException("Sender with id " + senderId + " is not found."));
-        var receiverId = receiver.getId();
-        if (senderId.equals(receiverId))
-            throw new InvalidFriendRequestException("Sender and receiver profiles cannot be the same profile.");
-        
-        if (sender.getFriends().contains(receiver.getId()))
-            throw new AlreadyFriendException(gamerTag);
 
-        boolean exists = receiver.getIncomingFriendRequests().stream()
-                .anyMatch(r -> r.senderId().equals(senderId)) ||
-                sender.getIncomingFriendRequests().stream()
-                        .anyMatch(r -> r.senderId().equals(receiverId));
-        if (exists)
-            throw new FriendRequestAlreadyExistsException("A pending friend request already exists between these profiles.");
+        sender.validateNotSameProfile(receiver);
+        sender.validateNotAlreadyFriends(receiver);
+        sender.validateNoExistingRequestBetween(receiver);
 
         var friendRequest = new FriendRequest(senderId);
         receiver.addIncomingFriendRequest(friendRequest);
 
         profileRepository.save(sender);
         profileRepository.save(receiver);
+
+        eventPublisher.publishEvent(new AddNotificationEvent(receiver.getId().id(),
+                String.format("Friend request sent to %s", receiver.getGamerTag()),
+                """
+                        Your invite is on its way!
+                        
+                        You’ve successfully sent a friend request. Once it’s accepted, you’ll be able to start chatting, playing together, and sharing new experiences.
+                        
+                        Until then, feel free to keep exploring and connecting with other players across the platform.
+                        
+                        Kind regards,
+                        The Arch Portal Team""", NotificationType.FRIEND_REQUEST));
         return friendRequest;
     }
 
@@ -111,6 +114,7 @@ public class ProfileService {
         switch (action) {
             case ACCEPT -> {
                 receiver.acceptFriendRequest(request);
+                sender.addFriend(receiverId);
                 title = String.format("Great news! %s accepted your invite", receiver.getGamerTag());
                 body = """
                         You’re officially connected!

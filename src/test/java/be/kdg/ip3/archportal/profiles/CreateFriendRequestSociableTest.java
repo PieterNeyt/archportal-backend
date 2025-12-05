@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.profiles;
 
+import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.profiles.application.ProfileService;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
@@ -14,24 +15,29 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CreateFriendRequestSociableTest {
     @Mock
     ProfileRepository profileRepository;
+    @Mock
+    ApplicationEventPublisher applicationEventPublisher;
 
     ProfileService service;
 
     @BeforeEach
     void setUp() {
-        service = new ProfileService(profileRepository, null, null);
+        service = new ProfileService(profileRepository, null, applicationEventPublisher);
     }
 
     @Nested
@@ -43,6 +49,7 @@ class CreateFriendRequestSociableTest {
             var profile = Profile.createProfile(profileId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be");
             
             when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(profile));
+            when(profileRepository.findById(profileId)).thenReturn(Optional.of(profile));
 
             assertThatThrownBy(() -> service.createFriendRequest(profileId, gamerTag))
                     .isInstanceOf(InvalidFriendRequestException.class)
@@ -76,7 +83,7 @@ class CreateFriendRequestSociableTest {
 
             assertThatThrownBy(() -> service.createFriendRequest(senderId, gamerTag))
                     .isInstanceOf(FriendRequestAlreadyExistsException.class)
-                    .hasMessage("A pending friend request already exists between these profiles.");
+                    .hasMessage("Friend request already exists.");
         }
     }
 
@@ -93,5 +100,8 @@ class CreateFriendRequestSociableTest {
         
         assertThat(service.createFriendRequest(senderId, gamerTag))
                 .returns(senderId, FriendRequest::senderId);
+        verify(profileRepository).save(sender);
+        verify(profileRepository).save(receiver);
+        verify(applicationEventPublisher).publishEvent(any(AddNotificationEvent.class));
     }
 }
