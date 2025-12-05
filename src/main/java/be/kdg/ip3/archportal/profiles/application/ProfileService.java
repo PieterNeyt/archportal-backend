@@ -4,10 +4,7 @@ import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEve
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
-import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
-import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
-import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAlreadyExistsException;
-import be.kdg.ip3.archportal.profiles.domain.friendRequest.InvalidFriendRequestException;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.*;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
@@ -93,13 +90,24 @@ public class ProfileService {
     }
 
     public void acceptFriendRequest(ProfileId receiverId, String gamerTag) {
+        handleFriendRequest(receiverId, gamerTag, FriendRequestAction.ACCEPT);
+    }
+
+    public void declineFriendRequest(ProfileId receiverId, String gamerTag) {
+        handleFriendRequest(receiverId, gamerTag, FriendRequestAction.DECLINE);
+    }
+
+    private void handleFriendRequest(ProfileId receiverId, String gamerTag, FriendRequestAction action) {
         var sender = profileRepository.findByGamerTag(gamerTag).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
         var receiver = profileRepository.findById(receiverId).orElseThrow(receiverId::notFound);
 
         var request = receiver.getIncomingFriendRequests().stream().filter(r -> r.senderId().equals(sender.getId()))
                 .findFirst().orElseThrow(() -> new NotFoundException("Friend request not found."));
 
-        receiver.acceptFriendRequest(request);
+        switch (action) {
+            case ACCEPT -> receiver.acceptFriendRequest(request);
+            case DECLINE -> receiver.declineFriendRequest(request);
+        }
 
         profileRepository.save(receiver);
         profileRepository.save(sender);

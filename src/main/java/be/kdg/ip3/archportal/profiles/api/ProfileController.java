@@ -67,4 +67,11 @@ public class ProfileController {
         profileService.acceptFriendRequest(profileId, dto.gamerTag());
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/friend-request/decline")
+    public ResponseEntity<Void> declineFriendRequest(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        profileService.declineFriendRequest(profileId, dto.gamerTag());
+        return ResponseEntity.noContent().build();
+    }
 }

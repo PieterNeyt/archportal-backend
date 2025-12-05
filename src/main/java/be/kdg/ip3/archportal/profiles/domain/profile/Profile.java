@@ -102,6 +102,14 @@ public class Profile {
 
         incomingFriendRequests.remove(friendRequest);
     }
+    
+    public void declineFriendRequest(FriendRequest friendRequest) {
+        if (friendRequest == null)
+            throw new IllegalArgumentException("The friend request provided is invalid.");
+        if (!incomingFriendRequests.contains(friendRequest))
+            throw new IllegalArgumentException("Friend request does not exists.");
+        incomingFriendRequests.remove(friendRequest);
+    }
 
     public void AddPoints(int points) {
         if (points < 0) {
