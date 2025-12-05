@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.analytics.infrastructure.gameStatistics.jpa;
 
+import be.kdg.ip3.archportal.analytics.domain.records.GameStatisticsId;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 
@@ -19,7 +20,7 @@ public class JpaGameStatisticsId implements Serializable {
         this.profileId = profileId;
     }
 
-    public static JpaGameStatisticsId fromDomain(be.kdg.ip3.archportal.analytics.domain.records.GameStatisticsId gameStatisticsId) {
+    public static JpaGameStatisticsId fromDomain(GameStatisticsId gameStatisticsId) {
         return new JpaGameStatisticsId(
                 gameStatisticsId.gameId().id(),
                 gameStatisticsId.profileId().id()

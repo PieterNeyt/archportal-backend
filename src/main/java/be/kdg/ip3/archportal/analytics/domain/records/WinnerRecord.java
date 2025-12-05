@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 
 public record WinnerRecord(
         LocalDateTime PlayedAt,
-        String Winner,            // "X" / "O" / "DRAW"
-        SessionId SessionId      // Optional
+        String Winner,
+        SessionId SessionId
 ){
 
 }

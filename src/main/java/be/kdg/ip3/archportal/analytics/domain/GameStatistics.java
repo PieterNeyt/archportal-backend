@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+
+//TODO: verder uitwerken, dit is skelly, buiten dan voor winnerrecords
 @AggregateRoot
 @Getter
 public class GameStatistics {

@@ -6,14 +6,12 @@ import be.kdg.ip3.archportal.analytics.domain.records.*;
 import be.kdg.ip3.archportal.analytics.shared.AnalyticsApi;
 import be.kdg.ip3.archportal.analytics.shared.CreateGameStatsDto;
 import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Slf4j
 @Service
 @Transactional
 public class AnalyticsService implements AnalyticsApi {
@@ -51,7 +49,6 @@ public class AnalyticsService implements AnalyticsApi {
 
         GameStatistics gameStatistics = new GameStatistics(new GameStatisticsId(gameId, profileId));
         this.gameStatisticsRepository.save(gameStatistics);
-        log.info( "Game statistics instantiated for game id: {} and profile id: {}", dto.gID(), dto.proID());
     }
     public GameStatistics getGameStatistics(UUID profileId, UUID gameId) {
         ProfileId pId = new ProfileId(profileId);

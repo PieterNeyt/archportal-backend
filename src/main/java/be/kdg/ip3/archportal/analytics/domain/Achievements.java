@@ -16,4 +16,6 @@ public class Achievements {
         this.achievementId = achievementId;
         this.timeUnlocked = timeUnlocked;
     }
+
+    //TODO: verder uitwerken, dit is skelly
 }
