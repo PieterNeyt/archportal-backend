@@ -23,7 +23,6 @@ public class AnalyticsController {
     public ResponseEntity<GameStatisticsDto> getGameStatistics(@PathVariable UUID profileId, @PathVariable UUID gameId) {
         GameStatistics gameStatistics = analyticsService.getGameStatistics(profileId, gameId);
         return ResponseEntity.ok(GameStatisticsDto.fromDomain(gameStatistics));
-
     }
 
 

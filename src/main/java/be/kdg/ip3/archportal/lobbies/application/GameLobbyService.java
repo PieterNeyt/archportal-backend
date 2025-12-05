@@ -32,6 +32,14 @@ public class GameLobbyService implements LobbiesApi {
                 .orElseThrow(() -> new IllegalArgumentException("No player found for sessionId: " + sessionId));
     }
 
+    @Override
+    public UUID getGameIdBySessionId(UUID sessionId) {
+        GameSessionId sessionIdObj = new GameSessionId(sessionId);
+
+        GameLobby lobby = validateSession(sessionIdObj);
+        return lobby.getGameId().id();
+    }
+
 
     public GameLobby createSinglePlayerLobby(PlayerId playerId, GameId gameId) {
         var lobby = GameLobby.newSinglePlayerLobby(gameId);

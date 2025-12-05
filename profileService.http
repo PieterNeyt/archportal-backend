@@ -12,7 +12,7 @@ Content-Type: application/json
 
 
 ### Add game to library
-PUT http://localhost:8080/api/profile/acq2uire
+PUT http://localhost:8080/api/profile/acquire
 Content-Type: application/json
 
 {

@@ -25,10 +25,12 @@ public class AnalyticsService implements AnalyticsApi {
         this.lobbiesApi = lobbiesApi;
     }
 
-    public void recordGameResult(SessionId sessionId, GameId gameId, String winner, LocalDateTime timestamp) {
+    public void recordGameResult(SessionId sessionId,  String winner, LocalDateTime timestamp) {
         var proUuid =  lobbiesApi.getPlayerIdBySessionId(sessionId.id());
+        var gameUUid = lobbiesApi.getGameIdBySessionId(sessionId.id());
 
-        ProfileId profileId = new ProfileId(proUuid);
+        var profileId = new ProfileId(proUuid);
+        var gameId = new GameId(gameUUid);
         GameStatistics gameStats = gameStatisticsRepository.findById(new GameStatisticsId(gameId, profileId))
                 .orElseThrow(() -> new IllegalArgumentException("No gameStatistic found for id: " + new GameStatisticsId(gameId, profileId)));
         ;

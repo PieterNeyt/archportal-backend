@@ -26,8 +26,8 @@ public class GameStatistics {
         this.gameStatisticsId = gameStatisticsId;
         this.TotalPlayTimeMinutes = totalPlayTimeMinutes;
         this.lastPlayedAt = lastPlayedAt;
-        this.achievements = achievements;
-        this.winnerRecords = winnerRecords;
+        this.achievements = new ArrayList<>(achievements);
+        this.winnerRecords = new ArrayList<>(winnerRecords);
     }
 
     public GameStatistics(GameStatisticsId gameStatisticsId) {

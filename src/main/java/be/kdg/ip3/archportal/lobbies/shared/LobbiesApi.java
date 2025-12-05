@@ -7,4 +7,5 @@ import java.util.UUID;
 @NamedInterface
 public interface LobbiesApi {
     UUID getPlayerIdBySessionId(UUID sessionId);
+    UUID getGameIdBySessionId(UUID sessionId);
 }
