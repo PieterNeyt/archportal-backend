@@ -2,6 +2,7 @@ package be.kdg.ip3.archportal.analytics.infrastructure.messaging.receiver;
 
 import be.kdg.ip3.archportal.analytics.application.AnalyticsService;
 import be.kdg.ip3.archportal.analytics.domain.records.GameId;
+import be.kdg.ip3.archportal.analytics.domain.records.ProfileId;
 import be.kdg.ip3.archportal.analytics.domain.records.SessionId;
 import be.kdg.ip3.archportal.analytics.infrastructure.messaging.config.RabbitMQTopology;
 import be.kdg.ip3.archportal.analytics.infrastructure.messaging.config.TttGameResultMessage;

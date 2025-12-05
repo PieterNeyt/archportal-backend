@@ -5,11 +5,13 @@ import be.kdg.ip3.archportal.lobbies.domain.id.GameSessionId;
 import org.jmolecules.ddd.annotation.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface GameLobbyRepository {
     void save(GameLobby lobby);
     Optional<GameLobby> findById(GameLobbyId id);
     Optional<GameLobby> findLobbyBySessionId(GameSessionId sessionId);
+    Optional<UUID> findPlayerBySessionId(GameSessionId sessionId);
 
 }

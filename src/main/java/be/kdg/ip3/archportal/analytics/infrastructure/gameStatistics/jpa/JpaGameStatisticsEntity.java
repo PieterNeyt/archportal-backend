@@ -15,12 +15,9 @@ import java.util.UUID;
 @Getter
 @Table(name = "game_statistics", schema = "analyticsservice")
 public class JpaGameStatisticsEntity {
-
-    @Id
+    @EmbeddedId
     @Column(name = "game_id")
-    private UUID gameId;
-
-    private UUID profileId;
+    private JpaGameStatisticsId gameStatisticsId;
 
     @Column(name = "total_playtime_minutes")
     private long totalPlayTimeMinutes;
@@ -32,7 +29,10 @@ public class JpaGameStatisticsEntity {
     @CollectionTable(
             name = "game_statistics_achievements",
             schema = "analyticsservice",
-            joinColumns = @JoinColumn(name = "game_id")
+            joinColumns = {
+                    @JoinColumn(name = "game_id", referencedColumnName = "gameId"),
+                    @JoinColumn(name = "profile_id", referencedColumnName = "profileId")
+            }
     )
     private List<JpaAchievement> achievements;
 
@@ -41,18 +41,20 @@ public class JpaGameStatisticsEntity {
     @CollectionTable(
             name = "game_statistics_winner_records",
             schema = "analyticsservice",
-            joinColumns = @JoinColumn(name = "game_id")
+            joinColumns = {
+                    @JoinColumn(name = "game_id", referencedColumnName = "gameId"),
+                    @JoinColumn(name = "profile_id", referencedColumnName = "profileId")
+            }
     )
     private List<JpaWinnerRecord> winnerRecords;
-
     protected JpaGameStatisticsEntity() { }
 
 
     public static JpaGameStatisticsEntity fromDomain(GameStatistics stats) {
         JpaGameStatisticsEntity entity = new JpaGameStatisticsEntity();
 
-        entity.gameId = stats.getGameId().id();
-        entity.profileId = stats.getProfileId().id();
+
+        entity.gameStatisticsId = JpaGameStatisticsId.fromDomain(stats.getGameStatisticsId());
         entity.totalPlayTimeMinutes = stats.getTotalPlayTimeMinutes().toMinutes();
         entity.lastPlayedAt = stats.getLastPlayedAt();
         entity.achievements = stats.getAchievements().stream()
@@ -76,8 +78,11 @@ public class JpaGameStatisticsEntity {
 
     public GameStatistics toDomain() {
         return new GameStatistics(
-                new GameId(gameId),
-                new ProfileId(profileId),
+
+                new GameStatisticsId(
+                        new GameId(gameStatisticsId.getGameId()),
+                        new ProfileId(gameStatisticsId.getProfileId())
+                ),
                 Duration.ofMinutes(totalPlayTimeMinutes),
                 lastPlayedAt,
                 achievements.stream()

@@ -5,12 +5,16 @@ import be.kdg.ip3.archportal.lobbies.domain.GameLobby;
 import be.kdg.ip3.archportal.lobbies.domain.GameLobbyRepository;
 import be.kdg.ip3.archportal.lobbies.domain.GameSession;
 import be.kdg.ip3.archportal.lobbies.domain.id.*;
+import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @Transactional
-public class GameLobbyService {
+public class GameLobbyService implements LobbiesApi {
+
     private final GameLobbyRepository gameLobbies;
     private final GamesApi gamesApi;
 
@@ -18,6 +22,16 @@ public class GameLobbyService {
         this.gameLobbies = gameLobbies;
         this.gamesApi = gamesApi;
     }
+
+    @Override
+    public UUID getPlayerIdBySessionId(UUID sessionId) {
+        GameSessionId sessionIdObj = new GameSessionId(sessionId);
+
+        GameLobby lobby = validateSession(sessionIdObj);
+        return gameLobbies.findPlayerBySessionId(sessionIdObj)
+                .orElseThrow(() -> new IllegalArgumentException("No player found for sessionId: " + sessionId));
+    }
+
 
     public GameLobby createSinglePlayerLobby(PlayerId playerId, GameId gameId) {
         var lobby = GameLobby.newSinglePlayerLobby(gameId);

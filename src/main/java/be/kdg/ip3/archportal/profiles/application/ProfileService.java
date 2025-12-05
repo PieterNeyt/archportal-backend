@@ -10,6 +10,7 @@ import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 
+@Slf4j
 @Service
 @Transactional
 public class ProfileService implements ProfilesApi {
