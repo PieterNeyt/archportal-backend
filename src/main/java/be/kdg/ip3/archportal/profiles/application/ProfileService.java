@@ -1,5 +1,7 @@
 package be.kdg.ip3.archportal.profiles.application;
 
+import be.kdg.ip3.archportal.analytics.shared.AnalyticsApi;
+import be.kdg.ip3.archportal.analytics.shared.CreateGameStatsDto;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.application.command.AcquireGameCommand;
@@ -21,10 +23,12 @@ import java.util.UUID;
 public class ProfileService implements ProfilesApi {
     private final ProfileRepository profileRepository;
     private final GamesApi gamesApi;
+    private final AnalyticsApi analyticsApi;
 
-    public ProfileService(ProfileRepository profileRepository, GamesApi gamesApi) {
+    public ProfileService(ProfileRepository profileRepository, GamesApi gamesApi, AnalyticsApi analyticsApi) {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
+        this.analyticsApi = analyticsApi;
     }
 
     public CreateProfileCommand createProfile(CreateProfileCommand command) {
@@ -86,6 +90,10 @@ public class ProfileService implements ProfilesApi {
 
         command.games().forEach(profile::acquireGame);
         profileRepository.save(profile);
+        for (var game: command.games()){
+            analyticsApi.instantiateGameStatistics(new CreateGameStatsDto(game, command.profileId()));
+        }
+
     }
 
     public List<GlobalGameDto> getLibrary(ProfileId profileId) {

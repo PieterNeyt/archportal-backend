@@ -2,10 +2,7 @@ package be.kdg.ip3.archportal.analytics.infrastructure.gameStatistics.jpa;
 
 import be.kdg.ip3.archportal.analytics.domain.Achievements;
 import be.kdg.ip3.archportal.analytics.domain.GameStatistics;
-import be.kdg.ip3.archportal.analytics.domain.records.AchievementId;
-import be.kdg.ip3.archportal.analytics.domain.records.GameId;
-import be.kdg.ip3.archportal.analytics.domain.records.SessionId;
-import be.kdg.ip3.archportal.analytics.domain.records.WinnerRecord;
+import be.kdg.ip3.archportal.analytics.domain.records.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -22,6 +19,8 @@ public class JpaGameStatisticsEntity {
     @Id
     @Column(name = "game_id")
     private UUID gameId;
+
+    private UUID profileId;
 
     @Column(name = "total_playtime_minutes")
     private long totalPlayTimeMinutes;
@@ -48,13 +47,12 @@ public class JpaGameStatisticsEntity {
 
     protected JpaGameStatisticsEntity() { }
 
-    // ----------------------------
-    //      FROM DOMAIN
-    // ----------------------------
+
     public static JpaGameStatisticsEntity fromDomain(GameStatistics stats) {
         JpaGameStatisticsEntity entity = new JpaGameStatisticsEntity();
 
         entity.gameId = stats.getGameId().id();
+        entity.profileId = stats.getProfileId().id();
         entity.totalPlayTimeMinutes = stats.getTotalPlayTimeMinutes().toMinutes();
         entity.lastPlayedAt = stats.getLastPlayedAt();
         entity.achievements = stats.getAchievements().stream()
@@ -76,12 +74,10 @@ public class JpaGameStatisticsEntity {
         return entity;
     }
 
-    // ----------------------------
-    //      TO DOMAIN
-    // ----------------------------
     public GameStatistics toDomain() {
         return new GameStatistics(
                 new GameId(gameId),
+                new ProfileId(profileId),
                 Duration.ofMinutes(totalPlayTimeMinutes),
                 lastPlayedAt,
                 achievements.stream()
