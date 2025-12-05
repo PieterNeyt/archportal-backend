@@ -21,4 +21,6 @@ public interface JpaProfileRepository extends JpaRepository<JpaProfileEntity, UU
     Optional<JpaProfileEntity> findByGamerTag(String gamerTag);
 
     List<JpaProfileEntity> findByIdIn(List<UUID> profileIds);
+    
+    List<JpaProfileEntity> findByIncomingRequests_SenderId(UUID senderId);
 }

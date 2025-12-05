@@ -18,4 +18,5 @@ public interface ProfileRepository {
     List<Profile> findAllFriends(ProfileId id);
 
     List<Profile> findFromIds(List<ProfileId> profileIds);
+    List<Profile> findByIncomingRequestHasId(ProfileId senderId);
 }

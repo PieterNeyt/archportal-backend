@@ -50,4 +50,9 @@ public class DbProfileRepository implements ProfileRepository {
                 .map(JpaProfileEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<Profile> findByIncomingRequestHasId(ProfileId senderId) {
+        return jpaProfileRepository.findByIncomingRequests_SenderId(senderId.id()).stream().map(JpaProfileEntity::toDomain).toList();
+    }
 }

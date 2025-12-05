@@ -94,6 +94,10 @@ public class ProfileService {
         return profileRepository.findFromIds(senderIds);
     }
 
+    public List<Profile> findAllProfilesOutgoingRequests(ProfileId senderId) {
+        return profileRepository.findByIncomingRequestHasId(senderId);
+    }
+
     public void acceptFriendRequest(ProfileId receiverId, String gamerTag) {
         handleFriendRequest(receiverId, gamerTag, FriendRequestAction.ACCEPT);
     }

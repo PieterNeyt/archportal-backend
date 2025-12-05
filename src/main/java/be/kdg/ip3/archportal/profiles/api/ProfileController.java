@@ -61,6 +61,13 @@ public class ProfileController {
         return ResponseEntity.ok(profiles);
     }
 
+    @GetMapping("/friend-requests/outgoing")
+    public ResponseEntity<List<ProfileDto>> getProfilesOutgoingRequests(@AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var profiles = profileService.findAllProfilesOutgoingRequests(profileId).stream().map(ProfileDto::from).toList();
+        return ResponseEntity.ok(profiles);
+    }
+
     @PutMapping("/friend-request/accept")
     public ResponseEntity<Void> acceptFriendRequest(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
