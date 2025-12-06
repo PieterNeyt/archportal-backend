@@ -1,9 +1,12 @@
 package be.kdg.ip3.archportal.profiles.application;
 
+import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEvent;
+import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
-import be.kdg.ip3.archportal.profiles.application.command.CreateProfileCommand;
+import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.*;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
@@ -12,7 +15,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,26 +30,6 @@ public class ProfileService {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
         this.eventPublisher = eventPublisher;
-    }
-
-    public CreateProfileCommand createProfile(CreateProfileCommand command) {
-
-        var profile = new Profile(
-                command.id(),
-                new ArrayList<>(),
-                0,
-                command.lastName(),
-                "",
-                command.icon(),
-                command.gamerTag(),
-                new ArrayList<>(),
-                command.firstName(),
-                new ArrayList<>()
-        );
-
-        profileRepository.save(profile);
-
-        return CreateProfileCommand.fromDomain(profile);
     }
 
     public Profile syncUser(Jwt token) {
@@ -76,5 +58,96 @@ public class ProfileService {
 
     public List<Profile> getAllFriends(ProfileId profileId) {
         return profileRepository.findAllFriends(profileId);
+    }
+
+    public FriendRequest createFriendRequest(ProfileId senderId, String gamerTag) {
+        var receiver = profileRepository.findByGamerTag(gamerTag).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
+        var sender = profileRepository.findById(senderId).orElseThrow(() -> new NotFoundException("Sender with id " + senderId + " is not found."));
+
+        sender.validateNotSameProfile(receiver);
+        sender.validateNotAlreadyFriends(receiver);
+        sender.validateNoExistingRequestBetween(receiver);
+
+        var friendRequest = new FriendRequest(senderId);
+        receiver.addIncomingFriendRequest(friendRequest);
+
+        profileRepository.save(sender);
+        profileRepository.save(receiver);
+
+        eventPublisher.publishEvent(new AddNotificationEvent(receiver.getId().id(),
+                String.format("Friend request sent to %s", receiver.getGamerTag()),
+                """
+                        Your invite is on its way!
+                        
+                        You’ve successfully sent a friend request. Once it’s accepted, you’ll be able to start chatting, playing together, and sharing new experiences.
+                        
+                        Until then, feel free to keep exploring and connecting with other players across the platform.
+                        
+                        Kind regards,
+                        The Arch Portal Team""", NotificationType.FRIEND_REQUEST));
+        return friendRequest;
+    }
+
+    public List<Profile> findAllProfilesIncomingRequests(ProfileId receiverId) {
+        var receiver = profileRepository.findById(receiverId).orElseThrow(receiverId::notFound);
+        var senderIds = receiver.getIncomingFriendRequests().stream().map(FriendRequest::senderId).toList();
+        return profileRepository.findFromIds(senderIds);
+    }
+
+    public List<Profile> findAllProfilesOutgoingRequests(ProfileId senderId) {
+        return profileRepository.findByIncomingRequestHasId(senderId);
+    }
+
+    public void acceptFriendRequest(ProfileId receiverId, String gamerTag) {
+        handleFriendRequest(receiverId, gamerTag, FriendRequestAction.ACCEPT);
+    }
+
+    public void declineFriendRequest(ProfileId receiverId, String gamerTag) {
+        handleFriendRequest(receiverId, gamerTag, FriendRequestAction.DECLINE);
+    }
+
+    private void handleFriendRequest(ProfileId receiverId, String gamerTag, FriendRequestAction action) {
+        var sender = profileRepository.findByGamerTag(gamerTag).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
+        var receiver = profileRepository.findById(receiverId).orElseThrow(receiverId::notFound);
+
+        var request = receiver.getIncomingFriendRequests().stream().filter(r -> r.senderId().equals(sender.getId()))
+                .findFirst().orElseThrow(() -> new NotFoundException("Friend request not found."));
+
+        String title = "";
+        String body = "";
+        switch (action) {
+            case ACCEPT -> {
+                receiver.acceptFriendRequest(request);
+                sender.addFriend(receiverId);
+                title = String.format("Great news! %s accepted your invite", receiver.getGamerTag());
+                body = """
+                        You’re officially connected!
+                        
+                        Your friend invite has been accepted, and you can now start chatting, teaming up, and sharing experiences together.
+                        Explore new games, compete, cooperate, and build great moments on the platform.
+                        
+                        Have fun and game on!
+                        
+                        Kind regards,
+                        The Arch Portal Team""";
+            }
+            case DECLINE -> {
+                receiver.declineFriendRequest(request);
+                title = String.format("Your invite to %s was declined", receiver.getGamerTag());
+                body = """
+                        Thanks for reaching out and trying to connect.
+                        
+                        Unfortunately, your friend invite was declined this time. Don’t let that stop you—there are plenty of other players waiting to team up and explore new adventures with you.
+                        
+                        Keep playing, keep connecting, and new opportunities will come.
+                        
+                        Kind regards,
+                        The Arch Portal Team""";
+            }
+        }
+        eventPublisher.publishEvent(new AddNotificationEvent(sender.getId().id(), title, body, NotificationType.FRIEND_REQUEST));
+
+        profileRepository.save(receiver);
+        profileRepository.save(sender);
     }
 }
