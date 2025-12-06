@@ -3,10 +3,11 @@ package be.kdg.ip3.archportal.analytics.domain;
 import be.kdg.ip3.archportal.analytics.domain.records.AchievementId;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.Entity;
+import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.time.LocalDateTime;
 
-@Entity
+@ValueObject
 @Getter
 public class Achievements {
     private final AchievementId achievementId;

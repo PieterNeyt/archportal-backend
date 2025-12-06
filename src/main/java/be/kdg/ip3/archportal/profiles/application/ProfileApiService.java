@@ -9,6 +9,7 @@ import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -77,7 +78,10 @@ public class ProfileApiService implements ProfilesApi {
         profileRepository.save(profile);
 
         for (var game: games){
-            analyticsApi.instantiateGameStatistics(new CreateGameStatsDto(game, profileId));
+            List<CreateGameStatsDto> createGameStatsDtos = new ArrayList<>();
+            createGameStatsDtos.add(new CreateGameStatsDto(game, profileId));
+
+            analyticsApi.instantiateGameStatistics(createGameStatsDtos);
         }
 
     }

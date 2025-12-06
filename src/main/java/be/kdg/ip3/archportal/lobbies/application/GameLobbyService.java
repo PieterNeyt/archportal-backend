@@ -25,7 +25,7 @@ public class GameLobbyService implements LobbiesApi {
 
     @Override
     public UUID getPlayerIdBySessionId(UUID sessionId) {
-        GameSessionId sessionIdObj = new GameSessionId(sessionId);
+        var sessionIdObj = new GameSessionId(sessionId);
 
         GameLobby lobby = validateSession(sessionIdObj);
         return gameLobbies.findPlayerBySessionId(sessionIdObj)
@@ -34,7 +34,7 @@ public class GameLobbyService implements LobbiesApi {
 
     @Override
     public UUID getGameIdBySessionId(UUID sessionId) {
-        GameSessionId sessionIdObj = new GameSessionId(sessionId);
+        var sessionIdObj = new GameSessionId(sessionId);
 
         GameLobby lobby = validateSession(sessionIdObj);
         return lobby.getGameId().id();

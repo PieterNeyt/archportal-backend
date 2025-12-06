@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.analytics.infrastructure.gameStatistics.jpa;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import java.time.LocalDateTime;
@@ -9,8 +10,11 @@ import java.util.UUID;
 @Getter
 public class JpaWinnerRecord {
 
+    @Column(nullable = false)
     private LocalDateTime playedAt;
+    @Column(nullable = false)
     private String winner;
+    @Column(nullable = false)
     private UUID sessionId;
 
     protected JpaWinnerRecord() { }

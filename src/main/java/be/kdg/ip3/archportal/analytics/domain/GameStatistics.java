@@ -11,7 +11,9 @@ import org.jmolecules.ddd.annotation.AggregateRoot;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 //TODO: verder uitwerken, dit is skelly, buiten dan voor winnerrecords
@@ -21,14 +23,14 @@ public class GameStatistics {
     private final GameStatisticsId gameStatisticsId;
     private Duration TotalPlayTimeMinutes;
     private LocalDateTime lastPlayedAt;
-    private List<Achievements> achievements;
+    private Set<Achievements> achievements;
     private List<WinnerRecord> winnerRecords;
 
     public GameStatistics(GameStatisticsId gameStatisticsId, Duration totalPlayTimeMinutes, LocalDateTime lastPlayedAt, List<Achievements> achievements, List<WinnerRecord> winnerRecords) {
         this.gameStatisticsId = gameStatisticsId;
         this.TotalPlayTimeMinutes = totalPlayTimeMinutes;
         this.lastPlayedAt = lastPlayedAt;
-        this.achievements = new ArrayList<>(achievements);
+        this.achievements = new HashSet<>(achievements);
         this.winnerRecords = new ArrayList<>(winnerRecords);
     }
 
@@ -36,7 +38,7 @@ public class GameStatistics {
         this.gameStatisticsId = gameStatisticsId;
         this.TotalPlayTimeMinutes = Duration.ofMinutes(0);
         this.lastPlayedAt = LocalDateTime.of(0,  1, 1, 0, 0, 0 );
-        this.achievements = new ArrayList<>();
+        this.achievements = new HashSet<>();
         this.winnerRecords = new ArrayList<>();
     }
 

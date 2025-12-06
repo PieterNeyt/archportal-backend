@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -43,17 +44,22 @@ public class AnalyticsService implements AnalyticsApi {
 
 
     @Override
-    public void instantiateGameStatistics(CreateGameStatsDto dto) {
-        GameId gameId = new GameId(dto.gID());
-        ProfileId profileId = new ProfileId(dto.proID());
+    public void instantiateGameStatistics(List<CreateGameStatsDto> dto) {
+        dto.forEach(this::instantiateSingleGameStatistics);
+    }
 
-        GameStatistics gameStatistics = new GameStatistics(new GameStatisticsId(gameId, profileId));
+    private void instantiateSingleGameStatistics(CreateGameStatsDto dto) {
+        var gameId = new GameId(dto.gameID());
+        var profileId = new ProfileId(dto.profileID());
+
+        var gameStatistics = new GameStatistics(new GameStatisticsId(gameId, profileId));
         this.gameStatisticsRepository.save(gameStatistics);
     }
+
     public GameStatistics getGameStatistics(UUID profileId, UUID gameId) {
-        ProfileId pId = new ProfileId(profileId);
-        GameId gId = new GameId(gameId);
-        GameStatisticsId gameStatisticsId = new GameStatisticsId(gId, pId);
+        var pId = new ProfileId(profileId);
+        var gId = new GameId(gameId);
+        var gameStatisticsId = new GameStatisticsId(gId, pId);
 
         return gameStatisticsRepository.findById(gameStatisticsId)
                 .orElseThrow(() -> new IllegalArgumentException("No game statistics found for profile id: " + profileId + " and game id: " + gameId));
