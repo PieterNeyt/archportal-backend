@@ -37,11 +37,10 @@ public class ProfileController {
         return ResponseEntity.ok(library);
     }
 
-    // TODO zorge da er ook een notification wordt gestuurd naar de ontvanger
     @PostMapping("/friend-request")
     public ResponseEntity<Void> sendFriendRequest(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {
         var senderId = new ProfileId(UUID.fromString(token.getSubject()));
-        var request = profileService.createFriendRequest(senderId, dto.gamerTag());
+        profileService.createFriendRequest(senderId, dto.gamerTag());
 
         var location = URI.create("/api/profile/" + dto.gamerTag() + "/friend-request");
         return ResponseEntity.created(location).build();
