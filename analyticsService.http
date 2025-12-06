@@ -1,0 +1,5 @@
+### Get analytics for Ttt
+GET http://localhost:8080/api/analytics/gameStats/377cf5d9-477c-494e-b055-eae123114e72/1b2d89fa-bd59-4873-b568-8df26c3a047c
+Content-Type: application/json
+
+

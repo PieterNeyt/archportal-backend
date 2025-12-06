@@ -14,5 +14,13 @@ public interface JpaGameLobbyRepository extends JpaRepository<JpaGameLobbyEntity
         JOIN lobby.sessions session
         WHERE session.gameSessionId = :sessionId
     """)
-    Optional<JpaGameLobbyEntity> findBySessionId(UUID sessionId);
+    Optional<JpaGameLobbyEntity> findLobbyBySessionId(UUID sessionId);
+
+    @Query("""
+        SELECT session.playerId
+        FROM JpaGameLobbyEntity lobby
+        JOIN lobby.sessions session
+        WHERE session.gameSessionId = :sessionId
+    """)
+    Optional<UUID> findPlayerIdBySessionId(UUID sessionId);
 }
