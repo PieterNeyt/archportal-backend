@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.communications.infrastructure.notification;
 
 import be.kdg.ip3.archportal.communications.domain.notification.Notification;
+import be.kdg.ip3.archportal.communications.domain.notification.NotificationId;
 import be.kdg.ip3.archportal.communications.domain.notification.NotificationRepository;
 import be.kdg.ip3.archportal.communications.domain.notification.RecieverId;
 import be.kdg.ip3.archportal.communications.infrastructure.notification.jpa.JpaNotificationEntity;
@@ -43,5 +44,16 @@ public class DbNotificationRepository implements NotificationRepository {
     @Override
     public int getTotalNotificationFromRecieverId(RecieverId recieverId) {
         return this.repository.countByRecieverId(recieverId.id());
+    }
+
+    @Override
+    public Optional<Notification> findById(NotificationId notificationId) {
+        return this.repository.findById(notificationId.id()).map(JpaNotificationEntity::toDomain);
+    }
+
+    @Override
+    public void delete(Notification notification) {
+        var jpaNotification = JpaNotificationEntity.fromDomain(notification);
+        this.repository.delete(jpaNotification);
     }
 }

@@ -14,4 +14,8 @@ public interface NotificationRepository {
     Optional<List<Notification>> findByRecieverIdFirst5(RecieverId recieverId);
 
     int getTotalNotificationFromRecieverId(RecieverId recieverId);
+
+    Optional<Notification> findById(NotificationId notificationId);
+
+    void delete(Notification notification);
 }

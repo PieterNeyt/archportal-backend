@@ -3,6 +3,7 @@ package be.kdg.ip3.archportal.communications.application;
 
 import be.kdg.ip3.archportal.communications.domain.NotFoundException;
 import be.kdg.ip3.archportal.communications.domain.notification.Notification;
+import be.kdg.ip3.archportal.communications.domain.notification.NotificationId;
 import be.kdg.ip3.archportal.communications.domain.notification.NotificationRepository;
 import be.kdg.ip3.archportal.communications.domain.notification.RecieverId;
 import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettings;
@@ -83,6 +84,14 @@ public class NotificationServices {
 
     public int getTotalNotifications(RecieverId recieverId) {
         return repository.getTotalNotificationFromRecieverId(recieverId);
+    }
+
+    public void readNotification(RecieverId recieverId, NotificationId notificationId) {
+        var notification = repository.findById(notificationId)
+                .orElseThrow(notificationId::notFound);
+
+        notification.checkReciever(recieverId);
+        this.repository.delete(notification);
     }
 }
 
