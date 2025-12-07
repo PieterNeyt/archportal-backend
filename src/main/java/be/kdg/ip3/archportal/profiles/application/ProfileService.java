@@ -6,7 +6,8 @@ import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
-import be.kdg.ip3.archportal.profiles.domain.friendRequest.*;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAction;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
@@ -149,5 +150,17 @@ public class ProfileService {
 
         profileRepository.save(receiver);
         profileRepository.save(sender);
+    }
+
+    public void cancelFriendRequest(ProfileId profileId, String gamerTag) {
+        var sender = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        var receiver = profileRepository.findByGamerTag(gamerTag).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
+
+        var request = receiver.getIncomingFriendRequests().stream().filter(r -> r.senderId().equals(sender.getId()))
+                .findFirst().orElseThrow(() -> new NotFoundException("Friend request not found."));
+        
+        receiver.declineFriendRequest(request);
+        
+        profileRepository.save(receiver);
     }
 }

@@ -1,8 +1,8 @@
 package be.kdg.ip3.archportal.profiles.api;
 
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
-import be.kdg.ip3.archportal.profiles.api.dto.ProfileDto;
 import be.kdg.ip3.archportal.profiles.api.dto.FriendRequestDto;
+import be.kdg.ip3.archportal.profiles.api.dto.ProfileDto;
 import be.kdg.ip3.archportal.profiles.application.ProfileService;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import jakarta.validation.Valid;
@@ -78,6 +78,13 @@ public class ProfileController {
     public ResponseEntity<Void> declineFriendRequest(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
         profileService.declineFriendRequest(profileId, dto.gamerTag());
+        return ResponseEntity.noContent().build();
+    }
+    
+    @DeleteMapping("/friend-request/cancel")
+    public ResponseEntity<Void> cancelFriendRequest(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        profileService.cancelFriendRequest(profileId, dto.gamerTag());
         return ResponseEntity.noContent().build();
     }
 }
