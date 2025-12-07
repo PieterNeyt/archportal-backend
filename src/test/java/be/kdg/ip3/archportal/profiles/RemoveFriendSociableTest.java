@@ -2,6 +2,8 @@ package be.kdg.ip3.archportal.profiles;
 
 import be.kdg.ip3.archportal.profiles.application.ProfileService;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
+import be.kdg.ip3.archportal.profiles.domain.friendship.Friendship;
+import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
@@ -16,10 +18,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class RemoveFriendSociableTest {
@@ -27,12 +28,13 @@ public class RemoveFriendSociableTest {
     ProfileRepository profileRepository;
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
-
+    @Mock
+    FriendshipRepository friendshipRepository;
     ProfileService service;
 
     @BeforeEach
     void setUp() {
-        service = new ProfileService(profileRepository, null, applicationEventPublisher);
+        service = new ProfileService(profileRepository, null, applicationEventPublisher, friendshipRepository);
     }
 
     @Nested
@@ -72,10 +74,11 @@ public class RemoveFriendSociableTest {
 
             when(profileRepository.findById(profileId)).thenReturn(Optional.of(profile));
             when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(friend));
+            when(friendshipRepository.findBetween(profileId, friendId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> service.removeFriend(profileId, gamerTag))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("You are not friends.");
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessage("You are not friends with " + gamerTag + ".");
         }
     }
 
@@ -87,18 +90,15 @@ public class RemoveFriendSociableTest {
         var profile = Profile.createProfile(profileId, "Cian", "Van Acker", "cian", "cian.vanacker@student.kdg.be");
         var friend = Profile.createProfile(friendId, "Alice", "Smith", gamerTag, "alice@example.com");
 
-        profile.addFriend(friendId);
-        friend.addFriend(profileId);
+        var friendShip = new Friendship(profileId, friendId);
 
         when(profileRepository.findById(profileId)).thenReturn(Optional.of(profile));
         when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(friend));
+        when(friendshipRepository.findBetween(profileId, friendId)).thenReturn(Optional.of(friendShip));
 
         service.removeFriend(profileId, gamerTag);
 
-        assertThat(profile.getFriends()).doesNotContain(friendId);
-        assertThat(friend.getFriends()).doesNotContain(profileId);
-
-        verify(profileRepository).save(profile);
-        verify(profileRepository).save(friend);
+        verify(friendshipRepository).delete(friendShip);
+        verify(profileRepository, never()).save(any());
     }
 }

@@ -41,7 +41,7 @@ public class DbProfileRepository implements ProfileRepository {
 
     @Override
     public List<Profile> findAllFriends(ProfileId id) {
-        return jpaProfileRepository.findAllFriendsOfProfileId(id.id()).stream().map(JpaProfileEntity::toDomain).toList();
+        return jpaProfileRepository.findAllFriendsOf(id.id()).stream().map(JpaProfileEntity::toDomain).toList();
     }
 
     @Override

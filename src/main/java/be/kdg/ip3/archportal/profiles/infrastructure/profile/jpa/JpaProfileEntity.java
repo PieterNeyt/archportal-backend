@@ -37,11 +37,6 @@ public class JpaProfileEntity {
     private int platformPoints;
 
     @ElementCollection
-    @CollectionTable(name = "profile_friends", joinColumns = @JoinColumn(name = "profile_id"), schema = "profileservice")
-    @Column(name = "friend_id", nullable = false)
-    private Set<UUID> friends = new HashSet<>();
-
-    @ElementCollection
     @CollectionTable(name = "profile_platform_benefits", joinColumns = @JoinColumn(name = "profile_id"), schema = "profileservice")
     @Column(name = "benefit_id", nullable = false)
     private List<UUID> platformBenefits = new ArrayList<>();
@@ -63,7 +58,7 @@ public class JpaProfileEntity {
     }
 
     public JpaProfileEntity(UUID id, String firstName, String lastName, String email, String icon, String gamerTag,
-                            int platformPoints, Set<UUID> friends, List<UUID> platformBenefits, List<UUID> library,
+                            int platformPoints, List<UUID> platformBenefits, List<UUID> library,
                             Set<JpaFriendRequest> incomingRequests) {
         this.id = id;
         this.firstName = firstName;
@@ -72,14 +67,12 @@ public class JpaProfileEntity {
         this.icon = icon;
         this.gamerTag = gamerTag;
         this.platformPoints = platformPoints;
-        this.friends = friends;
         this.platformBenefits = platformBenefits;
         this.library = library;
         this.incomingRequests = incomingRequests;
     }
 
     public static JpaProfileEntity fromDomain(Profile profile) {
-        Set<UUID> friendIds = profile.getFriends().stream().map(ProfileId::id).collect(Collectors.toSet());
         Set<JpaFriendRequest> incoming = profile.getIncomingFriendRequests().stream().map(JpaFriendRequest::from).collect(Collectors.toSet());
         return new JpaProfileEntity(
                 profile.getId().id(),
@@ -89,7 +82,6 @@ public class JpaProfileEntity {
                 profile.getIcon(),
                 profile.getGamerTag(),
                 profile.getPlatformPoints(),
-                friendIds,
                 profile.getPlatformBenefits(),
                 profile.getLibrary(),
                 incoming
@@ -97,7 +89,6 @@ public class JpaProfileEntity {
     }
 
     public Profile toDomain() {
-        Set<ProfileId> friendIds = friends.stream().map(ProfileId::new).collect(Collectors.toSet());
         Set<FriendRequest> incoming = incomingRequests.stream().map(JpaFriendRequest::toDomain).collect(Collectors.toSet());
         return new Profile(
                 new ProfileId(id),
@@ -107,7 +98,6 @@ public class JpaProfileEntity {
                 email,
                 icon,
                 gamerTag,
-                friendIds,
                 firstName,
                 library,
                 incoming

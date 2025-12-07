@@ -1,6 +1,5 @@
 package be.kdg.ip3.archportal.profiles.domain.profile;
 
-import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAlreadyExistsException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.InvalidFriendRequestException;
@@ -20,12 +19,11 @@ public class Profile {
     private String gamerTag;
     private final List<UUID> library;
     private int platformPoints;
-    private final Set<ProfileId> friends;
     private final List<UUID> platformBenefits;
     private final Set<FriendRequest> incomingFriendRequests;
 
     public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String email, String icon,
-                   String gamerTag, Set<ProfileId> friends, String firstName, List<UUID> library, Set<FriendRequest> incomingFriendRequests) {
+                   String gamerTag, String firstName, List<UUID> library, Set<FriendRequest> incomingFriendRequests) {
         this.id = profileId;
         setEmail(email);
         this.platformBenefits = platformBenefits;
@@ -33,14 +31,13 @@ public class Profile {
         setLastName(lastName);
         this.icon = icon;
         setGamerTag(gamerTag);
-        this.friends = friends;
         setFirstName(firstName);
         this.library = library;
         this.incomingFriendRequests = incomingFriendRequests;
     }
 
     public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag, String email) {
-        return new Profile(profileId, new ArrayList<>(), 0, lastName, email, "", gamerTag, new HashSet<>(), firstName, new ArrayList<>(), new HashSet<>());
+        return new Profile(profileId, new ArrayList<>(), 0, lastName, email, "", gamerTag, firstName, new ArrayList<>(), new HashSet<>());
 
     }
 
@@ -75,16 +72,6 @@ public class Profile {
         this.platformPoints = platformPoints;
     }
 
-    public void addFriend(ProfileId friendId) {
-        if (friendId == null)
-            throw new IllegalArgumentException("The friend id provided is invalid.");
-
-        if (friends.contains(friendId))
-            throw new IllegalArgumentException("Friend already exists.");
-
-        friends.add(friendId);
-    }
-
     public void addIncomingFriendRequest(FriendRequest friendRequest) {
         if (friendRequest == null)
             throw new IllegalArgumentException("The friend request provided is invalid.");
@@ -94,31 +81,12 @@ public class Profile {
         incomingFriendRequests.add(friendRequest);
     }
 
-    public void acceptFriendRequest(FriendRequest friendRequest) {
-        if (friendRequest == null)
-            throw new IllegalArgumentException("The friend request provided is invalid.");
-        if (!incomingFriendRequests.contains(friendRequest))
-            throw new IllegalArgumentException("Friend request does not exists.");
-
-        addFriend(friendRequest.senderId());
-
-        incomingFriendRequests.remove(friendRequest);
-    }
-
-    public void declineFriendRequest(FriendRequest friendRequest) {
+    public void removeFriendRequest(FriendRequest friendRequest) {
         if (friendRequest == null)
             throw new IllegalArgumentException("The friend request provided is invalid.");
         if (!incomingFriendRequests.contains(friendRequest))
             throw new IllegalArgumentException("Friend request does not exists.");
         incomingFriendRequests.remove(friendRequest);
-    }
-    
-    public void removeFriend(ProfileId friendId) {
-        if (friendId == null)
-            throw new IllegalArgumentException("The friend id provided is invalid.");
-        if (!friends.contains(friendId))
-            throw new IllegalArgumentException("You are not friends.");
-        friends.remove(friendId);
     }
 
     public void AddPoints(int points) {
@@ -131,11 +99,6 @@ public class Profile {
     public void validateNotSameProfile(Profile receiver) {
         if (this.id.equals(receiver.getId()))
             throw new InvalidFriendRequestException("Sender and receiver profiles cannot be the same profile.");
-    }
-
-    public void validateNotAlreadyFriends(Profile receiver) {
-        if (this.friends.contains(receiver.getId()))
-            throw new AlreadyFriendException(receiver.getGamerTag());
     }
 
     public void validateNoExistingRequestBetween(Profile receiver) {
