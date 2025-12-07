@@ -158,9 +158,20 @@ public class ProfileService {
 
         var request = receiver.getIncomingFriendRequests().stream().filter(r -> r.senderId().equals(sender.getId()))
                 .findFirst().orElseThrow(() -> new NotFoundException("Friend request not found."));
-        
+
         receiver.declineFriendRequest(request);
-        
+
         profileRepository.save(receiver);
+    }
+
+    public void removeFriend(ProfileId profileId, String gamerTag) {
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        var friend = profileRepository.findByGamerTag(gamerTag).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
+
+        profile.removeFriend(friend.getId());
+        friend.removeFriend(profileId);
+
+        profileRepository.save(profile);
+        profileRepository.save(friend);
     }
 }

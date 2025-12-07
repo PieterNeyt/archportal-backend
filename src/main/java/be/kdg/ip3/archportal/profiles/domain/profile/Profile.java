@@ -18,10 +18,10 @@ public class Profile {
     private String email;
     private String icon;
     private String gamerTag;
-    private List<UUID> library;
+    private final List<UUID> library;
     private int platformPoints;
-    private Set<ProfileId> friends;
-    private List<UUID> platformBenefits;
+    private final Set<ProfileId> friends;
+    private final List<UUID> platformBenefits;
     private final Set<FriendRequest> incomingFriendRequests;
 
     public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String email, String icon,
@@ -111,6 +111,14 @@ public class Profile {
         if (!incomingFriendRequests.contains(friendRequest))
             throw new IllegalArgumentException("Friend request does not exists.");
         incomingFriendRequests.remove(friendRequest);
+    }
+    
+    public void removeFriend(ProfileId friendId) {
+        if (friendId == null)
+            throw new IllegalArgumentException("The friend id provided is invalid.");
+        if (!friends.contains(friendId))
+            throw new IllegalArgumentException("You are not friends.");
+        friends.remove(friendId);
     }
 
     public void AddPoints(int points) {
