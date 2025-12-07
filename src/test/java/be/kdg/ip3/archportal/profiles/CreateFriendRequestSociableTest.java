@@ -1,10 +1,11 @@
 package be.kdg.ip3.archportal.profiles;
 
-import be.kdg.ip3.archportal.profiles.application.FriendRequestService;
+import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
+import be.kdg.ip3.archportal.profiles.application.ProfileService;
+import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAlreadyExistsException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.InvalidFriendRequestException;
-import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
-import be.kdg.ip3.archportal.profiles.domain.friendRequest.*;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -29,13 +31,13 @@ class CreateFriendRequestSociableTest {
     @Mock
     ProfileRepository profileRepository;
     @Mock
-    FriendRequestRepository friendRequestRepository;
+    ApplicationEventPublisher applicationEventPublisher;
 
-    FriendRequestService service;
+    ProfileService service;
 
     @BeforeEach
     void setUp() {
-        service = new FriendRequestService(friendRequestRepository, profileRepository);
+        service = new ProfileService(profileRepository, null, applicationEventPublisher);
     }
 
     @Nested
@@ -47,6 +49,7 @@ class CreateFriendRequestSociableTest {
             var profile = Profile.createProfile(profileId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be");
             
             when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(profile));
+            when(profileRepository.findById(profileId)).thenReturn(Optional.of(profile));
 
             assertThatThrownBy(() -> service.createFriendRequest(profileId, gamerTag))
                     .isInstanceOf(InvalidFriendRequestException.class)
@@ -70,18 +73,17 @@ class CreateFriendRequestSociableTest {
             var senderId = new ProfileId(UUID.randomUUID());
             var receiverId = new ProfileId(UUID.randomUUID());
             var gamerTag = "gamerTag";
-            var profile = Profile.createProfile(receiverId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be");
+            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be");
+            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice123", "alice@example.com");
+            var existingRequest = new FriendRequest(senderId);
+            receiver.addIncomingFriendRequest(existingRequest);
 
-            when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(profile));
-
-            when(profileRepository.existsById(senderId)).thenReturn(true);
-
-            when(friendRequestRepository.existsPending(senderId, receiverId)).thenReturn(false);
-            when(friendRequestRepository.existsPending(receiverId, senderId)).thenReturn(true);
+            when(profileRepository.findById(senderId)).thenReturn(Optional.of(sender));
+            when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(receiver));
 
             assertThatThrownBy(() -> service.createFriendRequest(senderId, gamerTag))
                     .isInstanceOf(FriendRequestAlreadyExistsException.class)
-                    .hasMessage("A pending friend request already exists between these profiles.");
+                    .hasMessage("Friend request already exists.");
         }
     }
 
@@ -90,17 +92,16 @@ class CreateFriendRequestSociableTest {
         var senderId = new ProfileId(UUID.randomUUID());
         var receiverId = new ProfileId(UUID.randomUUID());
         var gamerTag = "gamerTag";
-        var profile = Profile.createProfile(receiverId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be");
+        var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be");
+        var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice123", "alice@example.com");
 
-        when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(profile));
-
-        when(profileRepository.existsById(any())).thenReturn(true);
-        when(friendRequestRepository.existsPending(any(), any())).thenReturn(false);
+        when(profileRepository.findById(senderId)).thenReturn(Optional.of(sender));
+        when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(receiver));
         
         assertThat(service.createFriendRequest(senderId, gamerTag))
-                .returns(senderId, FriendRequest::getSenderId)
-                .returns(receiverId, FriendRequest::getReceiverId)
-                .returns(FriendRequestState.PENDING, FriendRequest::getState);
-        verify(friendRequestRepository).save(any(FriendRequest.class));
+                .returns(senderId, FriendRequest::senderId);
+        verify(profileRepository).save(sender);
+        verify(profileRepository).save(receiver);
+        verify(applicationEventPublisher).publishEvent(any(AddNotificationEvent.class));
     }
 }

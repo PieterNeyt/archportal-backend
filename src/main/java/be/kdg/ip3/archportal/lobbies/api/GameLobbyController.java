@@ -10,9 +10,13 @@ import be.kdg.ip3.archportal.lobbies.domain.id.GameId;
 import be.kdg.ip3.archportal.lobbies.domain.id.GameLobbyId;
 import be.kdg.ip3.archportal.lobbies.domain.id.GameSessionId;
 import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
+import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
+import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,16 +36,19 @@ public class GameLobbyController {
 
     @PostMapping("/singleplayer/start")
     public ResponseEntity<StartSinglePlayerResponse> startSinglePlayer(
-            @Valid @RequestBody StartSinglePlayerRequest request
-    ) {
+            @Valid @RequestBody StartSinglePlayerRequest request,
+            @AuthenticationPrincipal Jwt jwt
+            ) {
+
+        var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));
 
         GameLobby lobby = gameLobbyService.createSinglePlayerLobby(
-                new PlayerId(request.playerId()),
+                playerId,
                 new GameId(request.gameId())
         );
 
         GameSession session = gameLobbyService.startSession(
-                new PlayerId(request.playerId()),
+                playerId,
                 lobby.getGameLobbyId()
         );
 

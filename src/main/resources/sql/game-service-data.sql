@@ -27,46 +27,55 @@ VALUES ('f7b56a1e-1c63-4d0c-aa75-3b40e8253e19', '3f071d5d-5d2e-4b5f-9c12-7cf7e90
         'https://hub.example.com/games/forestbound', 'ADVENTURE', 12),
        ('1b2d89fa-bd59-4873-b568-8df26c3a047c', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', 'Tic-Tac-Toe Deluxe',
         'Speel met kruisjes en gaatjes', 44.99,
-        'https://play-lh.googleusercontent.com/zPxLgj5nvl20ahJV7aFC6S5mD8kii5CEEDj25j1P9CYAfXL9sdDuO-8eES0r4DhJHrU',
+        'https://content.tinytap.it/2CF7E204-AE31-418B-A18D-3212C7EDBBC6/coverImage.png?ver=0',
         'http://localhost:5174/ttt/', 'STRATEGY', 2),
        ('1b2d89fa-bd59-4873-b568-8df26c3a047d', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', 'Tic-Tac-Toe Deluxe compose',
         'Speel met kruisjes en gaatjes', 44.99,
-        'https://play-lh.googleusercontent.com/zPxLgj5nvl20ahJV7aFC6S5mD8kii5CEEDj25j1P9CYAfXL9sdDuO-8eES0r4DhJHrU',
-        'http://localhost/ttt/', 'STRATEGY', 2),
+        'https://content.tinytap.it/2CF7E204-AE31-418B-A18D-3212C7EDBBC6/coverImage.png?ver=0', 'http://localhost/ttt/',
+        'STRATEGY', 2),
        ('ab842ad3-7426-492f-bfda-4c61689ec2c4', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', 'Campfire Stories',
         'A family-friendly party game where players build stories using illustrated prompt cards.', 24.99,
         'https://i.kickstarter.com/assets/026/491/434/3d8e598174acdbebfbf2e3348a5b0ff3_original.jpg?anim=false&fit=cover&gravity=auto&height=873&origin=ugc&q=92&v=1568619866&width=1552&sig=w7B94mmyjQcUBHpfytD9pVa5h8Cm9ilkmNnW9hvYoOI%3D',
         'https://hub.example.com/games/campfire-stories', 'FAMILY', 20);
 
 INSERT INTO profileservice.profile (id, first_name, last_name, gamer_tag, icon, platform_points, email)
-VALUES ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', 'Cian', 'Van Acker', 'naic56', null, 0, 'cian'),
-       ('09bcb315-b8ac-4376-a501-8249e5fd34fb', 'Axel', 'Peeters', 'lexa', null, 0, 'axel'),
-       ('09bcb315-b8ac-4376-a501-8249e5fd34fc', 'Pieter', 'Neyt', 'reteip', null, 0, 'pieter'),
-       ('09bcb315-b8ac-4376-a501-8249e5fd34fd', 'Hugo', 'Dor', 'oguh', null, 0, 'hugo'),
-       ('1aef6aef-44ce-43c7-b52b-cb562eb02e64', 'Hugo', 'Dor', 'BIGHIC', null, 0, 'hugo.dor@student.kdg.be');
+VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Cian', 'Van Acker', 'cian', null, 0, 'cian.vanacker@student.kdg.be'),
+       ('5a129b2c-3016-4616-bca0-99ec7b067b32', 'Axel', 'Peeters', 'axel', null, 0, 'axel.peeters.1@student.kdg.be'),
+       ('58e1a434-0797-4d3d-9140-e846b20b7887', 'Pieter', 'Neyt', 'pieter', null, 0, 'pieter.neyt@student.kdg.be'),
+       ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'Hugo', 'Dor', 'hugo', null, 0, 'hugo.dor@student.kdg.be');
 
 INSERT INTO profileservice.profile_library (game_id, profile_id)
-VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', 'fdb74a46-98e2-403a-bfeb-22fa10d11bf2');
+VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
+       ('1b2d89fa-bd59-4873-b568-8df26c3a047c', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
+       ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '5a129b2c-3016-4616-bca0-99ec7b067b32'),
+       ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '5a129b2c-3016-4616-bca0-99ec7b067b32'),
+       ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '58e1a434-0797-4d3d-9140-e846b20b7887'),
+       ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '58e1a434-0797-4d3d-9140-e846b20b7887'),
+       ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad'),
+       ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad');
 
 INSERT INTO profileservice.profile_friends (profile_id, friend_id)
-VALUES ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', '09bcb315-b8ac-4376-a501-8249e5fd34fb'),
-       ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', '09bcb315-b8ac-4376-a501-8249e5fd34fc');
+VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', '5a129b2c-3016-4616-bca0-99ec7b067b32'),
+       ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', '58e1a434-0797-4d3d-9140-e846b20b7887'),
+       ('5a129b2c-3016-4616-bca0-99ec7b067b32', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
+       ('58e1a434-0797-4d3d-9140-e846b20b7887', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840');
+
+INSERT INTO profileservice.friend_requests (sender_id, receiver_id)
+VALUES ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840');
 
 INSERT INTO communicationservice.notification_settings (profile_id)
-VALUES ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2');
+VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
+       ('5a129b2c-3016-4616-bca0-99ec7b067b32'),
+       ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad'),
+       ('58e1a434-0797-4d3d-9140-e846b20b7887');
 
 INSERT INTO communicationservice.notification_channel_types (profile_id, channel_type)
-VALUES ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', 'EMAIL'),
-       ('fdb74a46-98e2-403a-bfeb-22fa10d11bf2', 'IN_PLATFORM');
-
-
-INSERT INTO communicationservice.notification_settings (profile_id)
-VALUES ('1aef6aef-44ce-43c7-b52b-cb562eb02e64');
-
-INSERT INTO communicationservice.notification_channel_types (profile_id, channel_type)
-VALUES ('1aef6aef-44ce-43c7-b52b-cb562eb02e64', 'IN_PLATFORM');
-
-
-INSERT INTO communicationservice.notifications (id, reciever_id, title, body, type, created_at)
-VALUES
-    ('e1a1b2c3-d4f5-6789-abcd-ef0123456789', '1aef6aef-44ce-43c7-b52b-cb562eb02e64', 'Congrats! You have successfully created your own game Tick Tack Toe', 'Now that your project is live, you can head over to the Game Studio page to continue building your experience. From there, you can add new features, update existing content, customize your game world, or even create your own achievements and updates to share with your players. Feel free to explore, experiment, and shape your game exactly the way you imagine it. Kind regards, The Arch Portal Team"', 'SYSTEM', NOW()), ('a2b3c4d5-e6f7-8901-abcd-234567890abc', '1aef6aef-44ce-43c7-b52b-cb562eb02e64', 'New Message', 'You have received a new chat message.', 'CHAT', NOW()), ('b3c4d5e6-f7a8-9012-bcde-345678901bcd', '1aef6aef-44ce-43c7-b52b-cb562eb02e64', 'Achievement Unlocked', 'You reached Level 5!', 'ACHIEVEMENT', NOW()), ('c4d5e6f7-a8b9-0123-cdef-456789012cde', '1aef6aef-44ce-43c7-b52b-cb562eb02e64', 'Game Invite', 'Your friend invited you to a game.', 'GAME_INVITE', NOW()), ('d5e6f7a8-b9c0-1234-def0-567890123def', '1aef6aef-44ce-43c7-b52b-cb562eb02e64', 'Friend Request', 'John Doe sent you a friend request.', 'FRIEND_REQUEST', NOW()), ('e6f7a8b9-c0d1-2345-ef01-678901234ef0', '1aef6aef-44ce-43c7-b52b-cb562eb02e64', 'Your Turn', 'It’s your turn to play.', 'TURN_REMINDER', NOW()), ('f7a8b9c0-d1e2-3456-f012-789012345f01', '1aef6aef-44ce-43c7-b52b-cb562eb02e64', 'System Update', 'We have updated our terms of service.', 'SYSTEM', NOW());
+VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'EMAIL'),
+       ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'IN_PLATFORM'),
+       ('5a129b2c-3016-4616-bca0-99ec7b067b32', 'EMAIL'),
+       ('5a129b2c-3016-4616-bca0-99ec7b067b32', 'IN_PLATFORM'),
+       ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'EMAIL'),
+       ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'IN_PLATFORM'),
+       ('58e1a434-0797-4d3d-9140-e846b20b7887', 'EMAIL'),
+       ('58e1a434-0797-4d3d-9140-e846b20b7887', 'IN_PLATFORM');
+       

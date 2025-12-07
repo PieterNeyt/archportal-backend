@@ -9,6 +9,7 @@ import be.kdg.ip3.archportal.lobbies.infrastructure.jpa.JpaGameLobbyRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class DbLobbyRepository implements GameLobbyRepository {
@@ -30,10 +31,14 @@ public class DbLobbyRepository implements GameLobbyRepository {
     }
     @Override
     public Optional<GameLobby> findLobbyBySessionId(GameSessionId sessionId) {
-        return jpaLobbyRepository.findBySessionId(sessionId.id())
+        return jpaLobbyRepository.findLobbyBySessionId(sessionId.id())
                 .map(JpaGameLobbyEntity::toDomain);
     }
 
+    @Override
+    public Optional<UUID> findPlayerBySessionId(GameSessionId sessionId) {
+        return jpaLobbyRepository.findPlayerIdBySessionId(sessionId.id());
+    }
 
 
 }

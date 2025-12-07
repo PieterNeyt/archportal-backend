@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.profiles.api;
 
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAlreadyExistsException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.InvalidFriendRequestException;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,12 @@ public class ProfilesErrorHandling {
     public ResponseEntity<ErrorResponse> handleInvalidFriendRequestException(final InvalidFriendRequestException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+    
+    @ExceptionHandler(AlreadyFriendException.class)
+    public ResponseEntity<ErrorResponse> handleAlreadyFriendException(final AlreadyFriendException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
     public record ErrorResponse(String message) {
