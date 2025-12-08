@@ -54,11 +54,15 @@ VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c
        ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad'),
        ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad');
 
-INSERT INTO profileservice.profile_friends (profile_id, friend_id)
-VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', '5a129b2c-3016-4616-bca0-99ec7b067b32'),
-       ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', '58e1a434-0797-4d3d-9140-e846b20b7887'),
-       ('5a129b2c-3016-4616-bca0-99ec7b067b32', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
-       ('58e1a434-0797-4d3d-9140-e846b20b7887', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840');
+INSERT INTO analyticsservice.game_statistics (last_played_at, total_playtime_minutes, game_id, profile_id)
+VALUES (NOW(), 120, '1b2d89fa-bd59-4873-b568-8df26c3a047c', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
+       (NOW(), 95, '1b2d89fa-bd59-4873-b568-8df26c3a047c', '5a129b2c-3016-4616-bca0-99ec7b067b32'),
+       (NOW(), 150, '1b2d89fa-bd59-4873-b568-8df26c3a047c', '58e1a434-0797-4d3d-9140-e846b20b7887'),
+       (NOW(), 80, '1b2d89fa-bd59-4873-b568-8df26c3a047c', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad');
+
+INSERT INTO profileservice.friendship(id, profile_a_id, profile_b_id)
+VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', '5a129b2c-3016-4616-bca0-99ec7b067b32'),
+       ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', '58e1a434-0797-4d3d-9140-e846b20b7887');
 
 INSERT INTO profileservice.friend_requests (sender_id, receiver_id)
 VALUES ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840');
