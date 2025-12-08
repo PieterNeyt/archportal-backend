@@ -6,7 +6,11 @@ import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
-import be.kdg.ip3.archportal.profiles.domain.friendRequest.*;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAction;
+import be.kdg.ip3.archportal.profiles.domain.friendship.Friendship;
+import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
@@ -25,11 +29,13 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final GamesApi gamesApi;
     private final ApplicationEventPublisher eventPublisher;
+    private final FriendshipRepository friendshipRepository;
 
-    public ProfileService(ProfileRepository profileRepository, GamesApi gamesApi, ApplicationEventPublisher eventPublisher) {
+    public ProfileService(ProfileRepository profileRepository, GamesApi gamesApi, ApplicationEventPublisher eventPublisher, FriendshipRepository friendshipRepository) {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
         this.eventPublisher = eventPublisher;
+        this.friendshipRepository = friendshipRepository;
     }
 
     public Profile syncUser(Jwt token) {
@@ -65,13 +71,13 @@ public class ProfileService {
         var sender = profileRepository.findById(senderId).orElseThrow(() -> new NotFoundException("Sender with id " + senderId + " is not found."));
 
         sender.validateNotSameProfile(receiver);
-        sender.validateNotAlreadyFriends(receiver);
         sender.validateNoExistingRequestBetween(receiver);
+        if (friendshipRepository.existsBetween(receiver.getId(), sender.getId()))
+            throw new AlreadyFriendException(receiver.getGamerTag());
 
         var friendRequest = new FriendRequest(senderId);
         receiver.addIncomingFriendRequest(friendRequest);
 
-        profileRepository.save(sender);
         profileRepository.save(receiver);
 
         eventPublisher.publishEvent(new AddNotificationEvent(receiver.getId().id(),
@@ -113,12 +119,19 @@ public class ProfileService {
         var request = receiver.getIncomingFriendRequests().stream().filter(r -> r.senderId().equals(sender.getId()))
                 .findFirst().orElseThrow(() -> new NotFoundException("Friend request not found."));
 
+        if (friendshipRepository.existsBetween(receiver.getId(), sender.getId())) {
+            receiver.removeFriendRequest(request);
+            profileRepository.save(receiver);
+            throw new AlreadyFriendException(receiver.getGamerTag());
+        }
+
         String title = "";
         String body = "";
         switch (action) {
             case ACCEPT -> {
-                receiver.acceptFriendRequest(request);
-                sender.addFriend(receiverId);
+                receiver.removeFriendRequest(request);
+                var friendship = new Friendship(sender.getId(), receiver.getId());
+                friendshipRepository.save(friendship);
                 title = String.format("Great news! %s accepted your invite", receiver.getGamerTag());
                 body = """
                         You’re officially connected!
@@ -132,7 +145,7 @@ public class ProfileService {
                         The Arch Portal Team""";
             }
             case DECLINE -> {
-                receiver.declineFriendRequest(request);
+                receiver.removeFriendRequest(request);
                 title = String.format("Your invite to %s was declined", receiver.getGamerTag());
                 body = """
                         Thanks for reaching out and trying to connect.
@@ -148,6 +161,25 @@ public class ProfileService {
         eventPublisher.publishEvent(new AddNotificationEvent(sender.getId().id(), title, body, NotificationType.FRIEND_REQUEST));
 
         profileRepository.save(receiver);
-        profileRepository.save(sender);
+    }
+
+    public void cancelFriendRequest(ProfileId profileId, String gamerTag) {
+        var sender = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        var receiver = profileRepository.findByGamerTag(gamerTag).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
+
+        var request = receiver.getIncomingFriendRequest(sender.getId());
+
+        receiver.removeFriendRequest(request);
+
+        profileRepository.save(receiver);
+    }
+
+    public void removeFriend(ProfileId profileId, String gamerTag) {
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        var friend = profileRepository.findByGamerTag(gamerTag).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
+
+        var friendship = friendshipRepository.findBetween(profile.getId(), friend.getId()).orElseThrow(() -> new NotFoundException("You are not friends with " + gamerTag + "."));
+
+        friendshipRepository.delete(friendship);
     }
 }

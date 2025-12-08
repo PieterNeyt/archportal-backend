@@ -3,9 +3,11 @@ package be.kdg.ip3.archportal.profiles;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.profiles.application.ProfileService;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
+import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAlreadyExistsException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.InvalidFriendRequestException;
+import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
@@ -23,8 +25,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CreateFriendRequestSociableTest {
@@ -32,12 +33,13 @@ class CreateFriendRequestSociableTest {
     ProfileRepository profileRepository;
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
-
+    @Mock
+    FriendshipRepository friendshipRepository;
     ProfileService service;
 
     @BeforeEach
     void setUp() {
-        service = new ProfileService(profileRepository, null, applicationEventPublisher);
+        service = new ProfileService(profileRepository, null, applicationEventPublisher, friendshipRepository);
     }
 
     @Nested
@@ -85,6 +87,30 @@ class CreateFriendRequestSociableTest {
                     .isInstanceOf(FriendRequestAlreadyExistsException.class)
                     .hasMessage("Friend request already exists.");
         }
+
+        @Test
+        void createFriendRequest_alreadyFriends_throwsAlreadyFriendException() {
+            var senderId = new ProfileId(UUID.randomUUID());
+            var receiverId = new ProfileId(UUID.randomUUID());
+            var gamerTag = "receiverTag";
+
+            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", gamerTag, "cian@example.com");
+            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice123", "alice@example.com");
+
+            when(profileRepository.findById(senderId)).thenReturn(Optional.of(sender));
+            when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(receiver));
+            when(friendshipRepository.existsBetween(receiverId, senderId)).thenReturn(true);
+
+            assertThatThrownBy(() -> service.createFriendRequest(senderId, gamerTag))
+                    .isInstanceOf(AlreadyFriendException.class)
+                    .hasMessageContaining(receiver.getGamerTag());
+
+            assertThat(receiver.getIncomingFriendRequests()).isEmpty();
+
+            verify(profileRepository, never()).save(any());
+            verify(applicationEventPublisher, never()).publishEvent(any());
+        }
+
     }
 
     @Test
@@ -100,7 +126,6 @@ class CreateFriendRequestSociableTest {
         
         assertThat(service.createFriendRequest(senderId, gamerTag))
                 .returns(senderId, FriendRequest::senderId);
-        verify(profileRepository).save(sender);
         verify(profileRepository).save(receiver);
         verify(applicationEventPublisher).publishEvent(any(AddNotificationEvent.class));
     }
