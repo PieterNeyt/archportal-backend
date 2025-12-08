@@ -61,8 +61,10 @@ VALUES (NOW(), 120, '1b2d89fa-bd59-4873-b568-8df26c3a047c', 'ed7b6a30-a12f-4ae5-
        (NOW(), 80, '1b2d89fa-bd59-4873-b568-8df26c3a047c', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad');
 
 INSERT INTO profileservice.friendship(id, profile_a_id, profile_b_id)
-VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', '5a129b2c-3016-4616-bca0-99ec7b067b32'),
-       ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', '58e1a434-0797-4d3d-9140-e846b20b7887');
+VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840',
+        '5a129b2c-3016-4616-bca0-99ec7b067b32'),
+       ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840',
+        '58e1a434-0797-4d3d-9140-e846b20b7887');
 
 INSERT INTO profileservice.friend_requests (sender_id, receiver_id)
 VALUES ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840');
@@ -82,4 +84,71 @@ VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'EMAIL'),
        ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'IN_PLATFORM'),
        ('58e1a434-0797-4d3d-9140-e846b20b7887', 'EMAIL'),
        ('58e1a434-0797-4d3d-9140-e846b20b7887', 'IN_PLATFORM');
-       
+
+-- ============================
+-- Notifications for CIÁN
+-- ============================
+INSERT INTO communicationservice.notifications (id, receiver_id, title, body, type, created_at)
+VALUES ('11111111-1111-1111-1111-111111111111', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Welkom!',
+        'Welkom op het platform, veel speelplezier!', 'SYSTEM', NOW()),
+       ('11111111-1111-1111-1111-111111111112', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Nieuwe game beschikbaar',
+        'Er is een nieuwe game toegevoegd aan de catalogus.', 'SYSTEM', NOW()),
+       ('11111111-1111-1111-1111-111111111113', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Vriend online',
+        'Een van je vrienden is nu online.', 'FRIEND_REQUEST', NOW()),
+       ('11111111-1111-1111-1111-111111111114', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Achievement behaald',
+        'Je hebt een nieuwe achievement verdiend!', 'ACHIEVEMENT', NOW()),
+       ('11111111-1111-1111-1111-111111111115', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Reminder',
+        'Je hebt al even niet gespeeld, kom eens terug!', 'TURN_REMINDER', NOW()),
+       ('11111111-1111-1111-1111-111111111116', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Nieuwsupdate',
+        'Er is een nieuwe platform-update beschikbaar.', 'SYSTEM', NOW());
+
+-- ============================
+-- Notifications for AXEL
+-- ============================
+INSERT INTO communicationservice.notifications (id, receiver_id, title, body, type, created_at)
+VALUES ('22222222-2222-2222-2222-222222222221', '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Welkom!',
+        'Welkom op het platform, veel speelplezier!', 'SYSTEM', NOW()),
+       ('22222222-2222-2222-2222-222222222222', '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Nieuwe game beschikbaar',
+        'Er is een nieuwe game toegevoegd aan de catalogus.', 'SYSTEM', NOW()),
+       ('22222222-2222-2222-2222-222222222223', '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Vriend online',
+        'Een van je vrienden is nu online.', 'FRIEND_REQUEST', NOW()),
+       ('22222222-2222-2222-2222-222222222224', '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Achievement behaald',
+        'Je hebt een nieuwe achievement verdiend!', 'ACHIEVEMENT', NOW()),
+       ('22222222-2222-2222-2222-222222222225', '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Reminder',
+        'Je hebt al even niet gespeeld, kom eens terug!', 'TURN_REMINDER', NOW()),
+       ('22222222-2222-2222-2222-222222222226', '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Nieuwsupdate',
+        'Er is een nieuwe platform-update beschikbaar.', 'SYSTEM', NOW());
+
+-- ============================
+-- Notifications for PIETER
+-- ============================
+INSERT INTO communicationservice.notifications (id, receiver_id, title, body, type, created_at)
+VALUES ('33333333-3333-3333-3333-333333333331', '58e1a434-0797-4d3d-9140-e846b20b7887', 'Welkom!',
+        'Welkom op het platform, veel speelplezier!', 'SYSTEM', NOW()),
+       ('33333333-3333-3333-3333-333333333332', '58e1a434-0797-4d3d-9140-e846b20b7887', 'Nieuwe game beschikbaar',
+        'Er is een nieuwe game toegevoegd aan de catalogus.', 'SYSTEM', NOW()),
+       ('33333333-3333-3333-3333-333333333333', '58e1a434-0797-4d3d-9140-e846b20b7887', 'Vriend online',
+        'Een van je vrienden is nu online.', 'FRIEND_REQUEST', NOW()),
+       ('33333333-3333-3333-3333-333333333334', '58e1a434-0797-4d3d-9140-e846b20b7887', 'Achievement behaald',
+        'Je hebt een nieuwe achievement verdiend!', 'ACHIEVEMENT', NOW()),
+       ('33333333-3333-3333-3333-333333333335', '58e1a434-0797-4d3d-9140-e846b20b7887', 'Reminder',
+        'Je hebt al even niet gespeeld, kom eens terug!', 'TURN_REMINDER', NOW()),
+       ('33333333-3333-3333-3333-333333333336', '58e1a434-0797-4d3d-9140-e846b20b7887', 'Nieuwsupdate',
+        'Er is een nieuwe platform-update beschikbaar.', 'SYSTEM', NOW());
+
+-- ============================
+-- Notifications for HUGO
+-- ============================
+INSERT INTO communicationservice.notifications (id, receiver_id, title, body, type, created_at)
+VALUES ('44444444-4444-4444-4444-444444444441', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'Welkom!',
+        'Welkom op het platform, veel speelplezier!', 'SYSTEM', NOW()),
+       ('44444444-4444-4444-4444-444444444442', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'Nieuwe game beschikbaar',
+        'Er is een nieuwe game toegevoegd aan de catalogus.', 'SYSTEM', NOW()),
+       ('44444444-4444-4444-4444-444444444443', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'Vriend online',
+        'Een van je vrienden is nu online.', 'FRIEND_REQUEST', NOW()),
+       ('44444444-4444-4444-4444-444444444444', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'Achievement behaald',
+        'Je hebt een nieuwe achievement verdiend!', 'ACHIEVEMENT', NOW()),
+       ('44444444-4444-4444-4444-444444444445', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'Reminder',
+        'Je hebt al even niet gespeeld, kom eens terug!', 'TURN_REMINDER', NOW()),
+       ('44444444-4444-4444-4444-444444444446', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'Nieuwsupdate',
+        'Er is een nieuwe platform-update beschikbaar.', 'SYSTEM', NOW());

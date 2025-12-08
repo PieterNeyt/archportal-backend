@@ -4,7 +4,7 @@ package be.kdg.ip3.archportal.communications.infrastructure.notification.jpa;
 import be.kdg.ip3.archportal.communications.domain.notification.Notification;
 import be.kdg.ip3.archportal.communications.domain.notification.NotificationId;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
-import be.kdg.ip3.archportal.communications.domain.notification.RecieverId;
+import be.kdg.ip3.archportal.communications.domain.notification.ReceiverId;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -33,17 +33,13 @@ public class JpaNotificationEntity {
     @Column(nullable = false)
     private Date createdAt;
 
-    @Column(nullable = false)
-    private boolean isRead;
-
-    public JpaNotificationEntity(UUID id, UUID receiverId, String title, String body, NotificationType type, Date createdAt, boolean isRead) {
+    public JpaNotificationEntity(UUID id, UUID receiverId, String title, String body, NotificationType type, Date createdAt) {
         this.id = id;
         this.receiverId = receiverId;
         this.title = title;
         this.body = body;
         this.type = type;
         this.createdAt = createdAt;
-        this.isRead = isRead;
     }
 
     public JpaNotificationEntity() {
@@ -52,23 +48,21 @@ public class JpaNotificationEntity {
     public static JpaNotificationEntity fromDomain(Notification domain) {
         return new JpaNotificationEntity(
                 domain.getId().id(),
-                domain.getRecieverId().id(),
+                domain.getReceiverId().id(),
                 domain.getTitle(),
                 domain.getBody(),
                 domain.getType(),
-                domain.getCreatedAt(),
-                domain.isRead()
+                domain.getCreatedAt()
         );
     }
 
     public Notification toDomain() {
         return new Notification(
-                this.isRead,
                 this.createdAt,
                 this.type,
                 this.body,
                 this.title,
-                new RecieverId(this.receiverId),
+                new ReceiverId(this.receiverId),
                 new NotificationId(this.id)
         );
     }

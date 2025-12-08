@@ -5,16 +5,16 @@ import org.springframework.util.Assert;
 
 import java.util.UUID;
 
-public record RecieverId(UUID id) {
-    public RecieverId {
+public record ReceiverId(UUID id) {
+    public ReceiverId {
         Assert.notNull(id, "id is null");
     }
 
     public NotFoundException notFound() {
-        return new NotFoundException("Profile [" + id + "] not found");
+        return new NotFoundException("ReceiverId [" + id + "] not found");
     }
 
-    public static RecieverId create() {
-        return new RecieverId(UUID.randomUUID());
+    public static ReceiverId create() {
+        return new ReceiverId(UUID.randomUUID());
     }
 }
