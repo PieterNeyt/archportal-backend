@@ -10,6 +10,7 @@ import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
+import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -64,6 +65,7 @@ public class AcceptDeclineFriendRequestSociableTest {
             verify(friendshipRepository).save(any(Friendship.class));
             verify(profileRepository).save(receiver);
             verify(applicationEventPublisher).publishEvent(any(AddNotificationEvent.class));
+            verify(applicationEventPublisher).publishEvent(any(FriendShipCreatedEvent.class));
         }
 
         @Test
