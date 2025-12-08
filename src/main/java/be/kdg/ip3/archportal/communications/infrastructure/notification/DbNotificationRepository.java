@@ -3,10 +3,9 @@ package be.kdg.ip3.archportal.communications.infrastructure.notification;
 import be.kdg.ip3.archportal.communications.domain.notification.Notification;
 import be.kdg.ip3.archportal.communications.domain.notification.NotificationId;
 import be.kdg.ip3.archportal.communications.domain.notification.NotificationRepository;
-import be.kdg.ip3.archportal.communications.domain.notification.RecieverId;
+import be.kdg.ip3.archportal.communications.domain.notification.ReceiverId;
 import be.kdg.ip3.archportal.communications.infrastructure.notification.jpa.JpaNotificationEntity;
 import be.kdg.ip3.archportal.communications.infrastructure.notification.jpa.JpaNotificationRepository;
-import org.hibernate.query.spi.Limit;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -27,23 +26,23 @@ public class DbNotificationRepository implements NotificationRepository {
     }
 
     @Override
-    public Optional<List<Notification>> findByRecieverId(RecieverId recieverId) {
-        return this.repository.findByRecieverId(recieverId.id())
+    public Optional<List<Notification>> findByReceiverId(ReceiverId receiverId) {
+        return this.repository.findByRecieverId(receiverId.id())
                 .map(list -> list.stream()
                         .map(JpaNotificationEntity::toDomain)
                         .toList());
     }
 
     @Override
-    public Optional<List<Notification>> findByRecieverIdFirst5(RecieverId recieverId) {
-        return this.repository.findByRecieverId(recieverId.id(), Pageable.ofSize(5))
+    public Optional<List<Notification>> findByReceiverIdFirstAmount(ReceiverId receiverId, int  amount) {
+        return this.repository.findByRecieverId(receiverId.id(), Pageable.ofSize(amount))
                 .map(list -> list.stream()
                         .map(JpaNotificationEntity::toDomain)
                         .toList());    }
 
     @Override
-    public int getTotalNotificationFromRecieverId(RecieverId recieverId) {
-        return this.repository.countByRecieverId(recieverId.id());
+    public int getTotalNotificationFromReceiverId(ReceiverId receiverId) {
+        return this.repository.countByRecieverId(receiverId.id());
     }
 
     @Override

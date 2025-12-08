@@ -11,27 +11,27 @@ import java.util.Date;
 @Getter
 public class Notification {
     private final NotificationId id;
-    private final RecieverId recieverId;
+    private final ReceiverId receiverId;
     private final String title;
     private final String body;
     private final NotificationType type;
     private final Date createdAt;
 
-    public Notification(Date createdAt, NotificationType type, String body, String title, RecieverId recieverId, NotificationId id) {
+    public Notification(Date createdAt, NotificationType type, String body, String title, ReceiverId receiverId, NotificationId id) {
         this.createdAt = createdAt;
         this.type = type;
         this.body = body;
         this.title = title;
-        this.recieverId = recieverId;
+        this.receiverId = receiverId;
         this.id = id;
     }
-    public Notification(NotificationType type, String body, String title, RecieverId recieverId) {
-        this(Date.from(Instant.now()),type,body,title,recieverId, NotificationId.create());
+    public Notification(NotificationType type, String body, String title, ReceiverId receiverId) {
+        this(Date.from(Instant.now()),type,body,title, receiverId, NotificationId.create());
     }
 
 
-    public void checkReciever(RecieverId recieverId) {
-        if(!this.recieverId.equals(recieverId))
+    public void checkReciever(ReceiverId receiverId) {
+        if(!this.receiverId.equals(receiverId))
             throw new IllegalArgumentException("reciever id not match");
     }
 }

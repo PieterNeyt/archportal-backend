@@ -9,13 +9,14 @@ import java.util.Optional;
 public interface NotificationRepository {
     void save(Notification newNotification);
 
-    Optional<List<Notification>> findByRecieverId(RecieverId recieverId);
+    Optional<List<Notification>> findByReceiverId(ReceiverId receiverId);
 
-    Optional<List<Notification>> findByRecieverIdFirst5(RecieverId recieverId);
+    Optional<List<Notification>> findByReceiverIdFirstAmount(ReceiverId receiverId, int amount);
 
-    int getTotalNotificationFromRecieverId(RecieverId recieverId);
+    int getTotalNotificationFromReceiverId(ReceiverId receiverId);
 
     Optional<Notification> findById(NotificationId notificationId);
 
     void delete(Notification notification);
+
 }

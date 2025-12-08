@@ -5,7 +5,7 @@ import be.kdg.ip3.archportal.communications.domain.NotFoundException;
 import be.kdg.ip3.archportal.communications.domain.notification.Notification;
 import be.kdg.ip3.archportal.communications.domain.notification.NotificationId;
 import be.kdg.ip3.archportal.communications.domain.notification.NotificationRepository;
-import be.kdg.ip3.archportal.communications.domain.notification.RecieverId;
+import be.kdg.ip3.archportal.communications.domain.notification.ReceiverId;
 import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettings;
 import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettingsRepository;
 import be.kdg.ip3.archportal.communications.domain.settings.ProfileId;
@@ -40,7 +40,7 @@ public class NotificationServices {
     public void sendEmailNotification(Notification notification) {
         var message = new SimpleMailMessage(template);
 
-        var recieverEmail = profilesApi.getProfileEmail(notification.getRecieverId().id());
+        var recieverEmail = profilesApi.getProfileEmail(notification.getReceiverId().id());
 
         message.setTo(recieverEmail);
 
@@ -60,7 +60,7 @@ public class NotificationServices {
                 newNotificationEvent.type(),
                 newNotificationEvent.body(),
                 newNotificationEvent.title(),
-                new RecieverId(profileId.id()));
+                new ReceiverId(profileId.id()));
 
         if (settings.containsEmail()) {
             sendEmailNotification(newNotification);
@@ -71,26 +71,26 @@ public class NotificationServices {
         }
     }
 
-    public List<Notification> getNotifications(RecieverId recieverId) {
+    public List<Notification> getNotifications(ReceiverId receiverId) {
 
-        return repository.findByRecieverId(recieverId)
+        return repository.findByReceiverId(receiverId)
                 .orElseThrow(() -> new NotFoundException("No notifications found for current reciever"));
     }
 
-    public List<Notification> getFirst5Notifications(RecieverId recieverId) {
-        return repository.findByRecieverIdFirst5(recieverId)
+    public List<Notification> getFirstAmountNotifications(ReceiverId receiverId, int amount) {
+        return repository.findByReceiverIdFirstAmount(receiverId,amount)
                 .orElseThrow(() -> new NotFoundException("No notifications found for current reciever"));
     }
 
-    public int getTotalNotifications(RecieverId recieverId) {
-        return repository.getTotalNotificationFromRecieverId(recieverId);
+    public int getTotalNotifications(ReceiverId receiverId) {
+        return repository.getTotalNotificationFromReceiverId(receiverId);
     }
 
-    public void readNotification(RecieverId recieverId, NotificationId notificationId) {
+    public void readNotification(ReceiverId receiverId, NotificationId notificationId) {
         var notification = repository.findById(notificationId)
                 .orElseThrow(notificationId::notFound);
 
-        notification.checkReciever(recieverId);
+        notification.checkReciever(receiverId);
         this.repository.delete(notification);
     }
 }
