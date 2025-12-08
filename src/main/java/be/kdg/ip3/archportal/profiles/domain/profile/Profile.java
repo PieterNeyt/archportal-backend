@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.profiles.domain.profile;
 
+import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAlreadyExistsException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.InvalidFriendRequestException;
@@ -99,6 +100,11 @@ public class Profile {
     public void validateNotSameProfile(Profile receiver) {
         if (this.id.equals(receiver.getId()))
             throw new InvalidFriendRequestException("Sender and receiver profiles cannot be the same profile.");
+    }
+
+    public FriendRequest getIncomingFriendRequest(ProfileId senderId) {
+        return incomingFriendRequests.stream().filter(r -> r.senderId().equals(senderId))
+                .findFirst().orElseThrow(() -> new NotFoundException("Friend request not found."));
     }
 
     public void validateNoExistingRequestBetween(Profile receiver) {

@@ -167,8 +167,7 @@ public class ProfileService {
         var sender = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
         var receiver = profileRepository.findByGamerTag(gamerTag).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
 
-        var request = receiver.getIncomingFriendRequests().stream().filter(r -> r.senderId().equals(sender.getId()))
-                .findFirst().orElseThrow(() -> new NotFoundException("Friend request not found."));
+        var request = receiver.getIncomingFriendRequest(sender.getId());
 
         receiver.removeFriendRequest(request);
 
