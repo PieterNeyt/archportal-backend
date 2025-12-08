@@ -127,7 +127,7 @@ public class RemoveAddNotificationsSociableTest {
             // Act & Assert
             assertThatThrownBy(() -> service.readNotification(receiverId, notificationId))
                     .isInstanceOf(NotFoundException.class)
-                    .hasMessageContaining("Notificaiton [" + notificationId + "] not found");
+                    .hasMessageContaining("Notificaiton [" + notificationId.id() + "] not found");
         }
     }
 }
