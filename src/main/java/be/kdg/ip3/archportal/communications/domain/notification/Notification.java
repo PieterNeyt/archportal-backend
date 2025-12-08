@@ -30,8 +30,8 @@ public class Notification {
     }
 
 
-    public void checkReciever(ReceiverId receiverId) {
+    public void checkReceiver(ReceiverId receiverId) {
         if(!this.receiverId.equals(receiverId))
-            throw new IllegalArgumentException("reciever id not match");
+            throw new IllegalArgumentException("receiver id not match");
     }
 }

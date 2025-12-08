@@ -22,8 +22,8 @@ public class NotificationController {
 
     @GetMapping()
     public ResponseEntity<List<NotificationDto>> getNotifications(@AuthenticationPrincipal Jwt jwt) {
-        var recieverId = new ReceiverId(UUID.fromString(jwt.getSubject()));
-        var notificaitons = notificationServices.getNotifications(recieverId);
+        var receiverId = new ReceiverId(UUID.fromString(jwt.getSubject()));
+        var notificaitons = notificationServices.getNotifications(receiverId);
 
         return ResponseEntity.ok(
                 notificaitons

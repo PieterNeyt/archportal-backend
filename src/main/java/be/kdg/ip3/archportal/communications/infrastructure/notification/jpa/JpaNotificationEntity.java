@@ -17,7 +17,7 @@ public class JpaNotificationEntity {
     private UUID id;
 
     @Column(nullable = false)
-    private UUID recieverId;
+    private UUID receiverId;
 
     @Column(nullable = false)
     private String title;
@@ -35,7 +35,7 @@ public class JpaNotificationEntity {
 
     public JpaNotificationEntity(UUID id, UUID receiverId, String title, String body, NotificationType type, Date createdAt) {
         this.id = id;
-        this.recieverId = receiverId;
+        this.receiverId = receiverId;
         this.title = title;
         this.body = body;
         this.type = type;
@@ -48,7 +48,7 @@ public class JpaNotificationEntity {
     public static JpaNotificationEntity fromDomain(Notification domain) {
         return new JpaNotificationEntity(
                 domain.getId().id(),
-                domain.getRecieverId().id(),
+                domain.getReceiverId().id(),
                 domain.getTitle(),
                 domain.getBody(),
                 domain.getType(),
@@ -62,7 +62,7 @@ public class JpaNotificationEntity {
                 this.type,
                 this.body,
                 this.title,
-                new ReceiverId(this.recieverId),
+                new ReceiverId(this.receiverId),
                 new NotificationId(this.id)
         );
     }

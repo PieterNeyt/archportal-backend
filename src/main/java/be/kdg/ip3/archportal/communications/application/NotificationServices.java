@@ -40,9 +40,9 @@ public class NotificationServices {
     public void sendEmailNotification(Notification notification) {
         var message = new SimpleMailMessage(template);
 
-        var recieverEmail = profilesApi.getProfileEmail(notification.getReceiverId().id());
+        var receiverEmail = profilesApi.getProfileEmail(notification.getReceiverId().id());
 
-        message.setTo(recieverEmail);
+        message.setTo(receiverEmail);
 
         message.setSubject(notification.getTitle());
         message.setText(notification.getBody());
@@ -52,7 +52,7 @@ public class NotificationServices {
     }
 
     public void addNotification(AddNotificationEvent newNotificationEvent) {
-        var profileId = new ProfileId(newNotificationEvent.recieverId());
+        var profileId = new ProfileId(newNotificationEvent.receiverId());
         var settings = settingsRepository.findById(profileId)
                 .orElse(new NotificationSettings(profileId));
 
@@ -74,12 +74,12 @@ public class NotificationServices {
     public List<Notification> getNotifications(ReceiverId receiverId) {
 
         return repository.findByReceiverId(receiverId)
-                .orElseThrow(() -> new NotFoundException("No notifications found for current reciever"));
+                .orElseThrow(() -> new NotFoundException("No notifications found for current receiver"));
     }
 
     public List<Notification> getFirstAmountNotifications(ReceiverId receiverId, int amount) {
         return repository.findByReceiverIdFirstAmount(receiverId,amount)
-                .orElseThrow(() -> new NotFoundException("No notifications found for current reciever"));
+                .orElseThrow(() -> new NotFoundException("No notifications found for current receiver"));
     }
 
     public int getTotalNotifications(ReceiverId receiverId) {
@@ -90,7 +90,7 @@ public class NotificationServices {
         var notification = repository.findById(notificationId)
                 .orElseThrow(notificationId::notFound);
 
-        notification.checkReciever(receiverId);
+        notification.checkReceiver(receiverId);
         this.repository.delete(notification);
     }
 }
