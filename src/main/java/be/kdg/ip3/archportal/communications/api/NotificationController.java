@@ -23,10 +23,10 @@ public class NotificationController {
     @GetMapping()
     public ResponseEntity<List<NotificationDto>> getNotifications(@AuthenticationPrincipal Jwt jwt) {
         var receiverId = new ReceiverId(UUID.fromString(jwt.getSubject()));
-        var notificaitons = notificationServices.getNotifications(receiverId);
+        var notifications = notificationServices.getNotifications(receiverId);
 
         return ResponseEntity.ok(
-                notificaitons
+                notifications
                 .stream()
                 .map(NotificationDto::fromDomain)
                 .toList());

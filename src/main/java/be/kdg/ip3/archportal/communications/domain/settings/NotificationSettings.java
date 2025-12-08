@@ -4,6 +4,7 @@ import be.kdg.ip3.archportal.communications.domain.notification.ChannelType;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.Entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -19,7 +20,7 @@ public class NotificationSettings {
     }
 
     public NotificationSettings(ProfileId profileId) {
-        this(profileId, List.of(ChannelType.EMAIL, ChannelType.IN_PLATFORM));
+        this(profileId, new ArrayList<>(List.of(ChannelType.EMAIL, ChannelType.IN_PLATFORM)));
     }
 
     public void addChannelType(ChannelType channelType) {
