@@ -1,6 +1,6 @@
 package be.kdg.ip3.archportal.games.api;
 
-import be.kdg.ip3.archportal.games.api.dto.CreateGameStudioDto;
+import be.kdg.ip3.archportal.games.api.dto.GameStudioDto;
 import be.kdg.ip3.archportal.games.api.dto.OwnerStudioStatusDto;
 import be.kdg.ip3.archportal.games.application.GameStudioService;
 import be.kdg.ip3.archportal.games.application.command.CreateGameStudioCommand;
@@ -24,7 +24,7 @@ public class GameStudioController {
     }
 
     @PostMapping()
-    public ResponseEntity<CreateGameStudioDto> createGameStudio(@Valid @RequestBody CreateGameStudioDto studioDto,
+    public ResponseEntity<GameStudioDto> createGameStudio(@Valid @RequestBody GameStudioDto studioDto,
                                                                 @AuthenticationPrincipal Jwt token) {
         var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
         var createStudioCommand = CreateGameStudioCommand.fromDto(studioDto, ownerId);
@@ -33,7 +33,7 @@ public class GameStudioController {
 
         return ResponseEntity
                 .created(location)
-                .body(CreateGameStudioDto.fromDomain(studio));
+                .body(GameStudioDto.fromDomain(studio));
     }
 
     @GetMapping("/me")
@@ -42,5 +42,21 @@ public class GameStudioController {
         var studio = gameStudioService.findGameStudioStatusByOwnerId(ownerId);
         return ResponseEntity.ok(studio);
     }
+
+    @GetMapping()
+    public ResponseEntity<?> getGameStudio(@AuthenticationPrincipal Jwt token) {
+        var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
+        var studio = gameStudioService.findGameStudioStatusByOwnerId(ownerId);
+        return ResponseEntity.ok("");
+    }
+
+    @PutMapping()
+    public ResponseEntity<?> updateGameStudio(@AuthenticationPrincipal Jwt token) {
+        var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
+        var studio = gameStudioService.findGameStudioStatusByOwnerId(ownerId);
+        return ResponseEntity.ok("");
+    }
+
+
 
 }

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public record CreateGameStudioDto(
+public record GameStudioDto(
         UUID id,
         UUID ownerId,
         @NotNull
@@ -15,8 +15,8 @@ public record CreateGameStudioDto(
         @NotNull
         String IBAN
 ) {
-    public static CreateGameStudioDto fromDomain(CreateGameStudioCommand studioCommand) {
-        return new CreateGameStudioDto(
+    public static GameStudioDto fromDomain(CreateGameStudioCommand studioCommand) {
+        return new GameStudioDto(
                 studioCommand.id().id(),
                 studioCommand.ownerId().id(),
                 studioCommand.name(),

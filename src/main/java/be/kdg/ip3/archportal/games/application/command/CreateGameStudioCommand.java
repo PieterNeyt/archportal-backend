@@ -1,6 +1,6 @@
 package be.kdg.ip3.archportal.games.application.command;
 
-import be.kdg.ip3.archportal.games.api.dto.CreateGameStudioDto;
+import be.kdg.ip3.archportal.games.api.dto.GameStudioDto;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudio;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
 import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
@@ -12,7 +12,7 @@ public record CreateGameStudioCommand(
         String description,
         String IBAN
 ) {
-    public static CreateGameStudioCommand fromDto(CreateGameStudioDto studioDto, OwnerId ownerId) {
+    public static CreateGameStudioCommand fromDto(GameStudioDto studioDto, OwnerId ownerId) {
         return new CreateGameStudioCommand(
                 GameStudioId.create(),
                 ownerId,
