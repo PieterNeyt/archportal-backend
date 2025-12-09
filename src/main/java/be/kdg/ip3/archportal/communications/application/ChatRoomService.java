@@ -1,8 +1,10 @@
 package be.kdg.ip3.archportal.communications.application;
 
+import be.kdg.ip3.archportal.communications.domain.NotFoundException;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomRepository;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
+import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
@@ -30,11 +32,26 @@ public class ChatRoomService {
         chatRoomRepository.save(chatRoom);
     }
 
-    //TODO checken of wel vrienden zijn en checken of wel bestaan
-    public void createChatRoom(List<UUID> memberIds, UUID creatorId) {
+    public List<ChatRoom> getChatRooms(UUID profileId) {
+        return chatRoomRepository.findChatRoomsOfProfileId(profileId);
+    }
+
+    public ChatRoom createChatRoom(List<String> gamerTags, UUID creatorId) {
+        if (!profilesApi.existsById(creatorId)) {
+            throw new NotFoundException("Creator profile does not exist: " + creatorId);
+        }
+
+        var profiles = profilesApi.getProfilesFromGamerTags(gamerTags);
+        var foundTags = profiles.stream().map(ProfileDto::gamerTag).toList();
+        ChatRoom.validateProfiles(gamerTags, foundTags);
+
+        var friends = profilesApi.getFriendIdsWithCreator(creatorId, profiles.stream().map(ProfileDto::id).toList());
+        ChatRoom.validateFriends(profiles.stream().map(ProfileDto::id).toList(), friends);
+
         var chatRoom = new ChatRoom();
         chatRoom.addMember(creatorId);
-        chatRoom.addMembers(memberIds);
+        chatRoom.addMembers(profiles.stream().map(ProfileDto::id).toList());
         chatRoomRepository.save(chatRoom);
+        return chatRoom;
     }
 }

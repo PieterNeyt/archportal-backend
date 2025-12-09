@@ -50,6 +50,11 @@ public class DbProfileRepository implements ProfileRepository {
                 .map(JpaProfileEntity::toDomain)
                 .toList();
     }
+    
+    @Override
+    public List<Profile> findFromGamerTags(List<String> gamerTags) {
+        return jpaProfileRepository.findByGamerTagIn(gamerTags).stream().map(JpaProfileEntity::toDomain).toList();
+    }
 
     @Override
     public List<Profile> findByIncomingRequestHasId(ProfileId senderId) {

@@ -66,6 +66,16 @@ VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c
        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840',
         '58e1a434-0797-4d3d-9140-e846b20b7887');
 
+INSERT INTO communicationservice.chat_room(id, title) 
+VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Title'),
+       ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', 'Title');
+
+INSERT INTO communicationservice.chat_room_member(chat_room_id, members) 
+VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
+       ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '5a129b2c-3016-4616-bca0-99ec7b067b32'),
+       ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
+       ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', '58e1a434-0797-4d3d-9140-e846b20b7887');
+
 INSERT INTO profileservice.friend_requests (sender_id, receiver_id)
 VALUES ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840');
 

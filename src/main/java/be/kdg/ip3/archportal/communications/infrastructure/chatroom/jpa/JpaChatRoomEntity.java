@@ -13,9 +13,11 @@ import java.util.stream.Collectors;
 public class JpaChatRoomEntity {
     @Id
     private UUID id;
+    @Column(nullable = false, length = 100)
+    private String title;
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "chat_room_member", schema = "communicationservice",
-            joinColumns = @JoinColumn(name = "char_room_id"))
+            joinColumns = @JoinColumn(name = "chat_room_id"))
     private Set<UUID> members;
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<JpaMessageEntity> messages;
@@ -23,8 +25,9 @@ public class JpaChatRoomEntity {
     protected JpaChatRoomEntity() {
     }
 
-    public JpaChatRoomEntity(UUID id, Set<UUID> members, Set<JpaMessageEntity> messages) {
+    public JpaChatRoomEntity(UUID id, String title, Set<UUID> members, Set<JpaMessageEntity> messages) {
         this.id = id;
+        this.title = title;
         this.members = members;
         this.messages = messages;
     }
@@ -32,6 +35,7 @@ public class JpaChatRoomEntity {
     public static JpaChatRoomEntity fromDomain(ChatRoom chatRoom) {
         return new JpaChatRoomEntity(
                 chatRoom.getId().id(),
+                chatRoom.getTitle(),
                 chatRoom.getMembers(),
                 chatRoom.getMessages().stream().map(JpaMessageEntity::fromDomain).collect(Collectors.toSet())
         );
@@ -40,6 +44,7 @@ public class JpaChatRoomEntity {
     public ChatRoom toDomain() {
         return new ChatRoom(
                 new ChatRoomId(id),
+                title,
                 members,
                 messages.stream().map(JpaMessageEntity::toDomain).collect(Collectors.toSet())
         );

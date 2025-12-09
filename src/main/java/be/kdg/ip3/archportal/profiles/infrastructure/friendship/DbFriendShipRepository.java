@@ -7,7 +7,9 @@ import be.kdg.ip3.archportal.profiles.infrastructure.friendship.jpa.JpaFriendShi
 import be.kdg.ip3.archportal.profiles.infrastructure.friendship.jpa.JpaFriendshipEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class DbFriendShipRepository implements FriendshipRepository {
@@ -35,5 +37,13 @@ public class DbFriendShipRepository implements FriendshipRepository {
     @Override
     public Optional<Friendship> findBetween(ProfileId profileAId, ProfileId profileBId) {
         return repository.findBetween(profileAId.id(), profileBId.id()).map(JpaFriendshipEntity::toDomain);
+    }
+
+    @Override
+    public List<UUID> findFriendIds(ProfileId creatorId, List<ProfileId> otherIds) {
+        var ids = otherIds.stream().map(ProfileId::id).toList();
+        return repository.findFriendsWithCreator(creatorId.id(), ids).stream()
+                .map(e -> e.getProfileAId().equals(creatorId.id()) ? e.getProfileBId() : e.getProfileAId())
+                .toList();
     }
 }

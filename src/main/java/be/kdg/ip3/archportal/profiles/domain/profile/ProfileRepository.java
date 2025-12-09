@@ -13,10 +13,13 @@ public interface ProfileRepository {
 
     Optional<Profile> findByGamerTag(String username);
 
+    List<Profile> findFromGamerTags(List<String> gamerTags);
+
     boolean existsById(ProfileId id);
 
     List<Profile> findAllFriends(ProfileId id);
 
     List<Profile> findFromIds(List<ProfileId> profileIds);
+
     List<Profile> findByIncomingRequestHasId(ProfileId senderId);
 }
