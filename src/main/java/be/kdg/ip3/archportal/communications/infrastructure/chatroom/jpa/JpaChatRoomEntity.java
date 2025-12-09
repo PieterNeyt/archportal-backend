@@ -31,7 +31,7 @@ public class JpaChatRoomEntity {
         this.id = id;
         this.title = title;
         this.members = members;
-        this.messages = messages;
+        setMessages(messages);
     }
 
     public static JpaChatRoomEntity fromDomain(ChatRoom chatRoom) {
@@ -59,5 +59,10 @@ public class JpaChatRoomEntity {
                 members.stream().toList(),
                 List.of()
         );
+    }
+    
+    private void setMessages(Set<JpaMessageEntity> messages) {
+        this.messages = messages;
+        this.messages.forEach(m -> m.setChatRoom(this));
     }
 }

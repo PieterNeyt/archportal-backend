@@ -4,6 +4,7 @@ import be.kdg.ip3.archportal.communications.domain.NotFoundException;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomId;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomRepository;
+import be.kdg.ip3.archportal.communications.domain.chatroom.Message;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
@@ -63,5 +64,16 @@ public class ChatRoomService {
         chatRoom.validateMember(profileId);
 
         return chatRoom;
+    }
+
+    public Message createMessage(ChatRoomId id, UUID profileId, String text) {
+        if (!profilesApi.existsById(profileId))
+            throw new NotFoundException("Profile does not exist: " + profileId);
+        var chatRoom = chatRoomRepository.findById(id).orElseThrow(id::notFound);
+        chatRoom.validateMember(profileId);
+        var message = Message.createMessage(profileId, text);
+        chatRoom.addMessage(message);
+        chatRoomRepository.save(chatRoom);
+        return message;
     }
 }

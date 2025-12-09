@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 @AggregateRoot
@@ -27,7 +28,7 @@ public class ChatRoom {
         this.id = id;
         this.title = title;
         this.members = members;
-        this.messages = messages.stream().sorted(Comparator.comparing(Message::timestamp)).toList();
+        this.messages = messages.stream().sorted(Comparator.comparing(Message::timestamp)).collect(Collectors.toList());
     }
 
     public ChatRoom() {
@@ -63,6 +64,7 @@ public class ChatRoom {
         if (message == null)
             throw new IllegalArgumentException("Message is null");
         messages.add(message);
+        messages.sort(Comparator.comparing(Message::timestamp));
     }
 
     public static void validateProfiles(List<String> allTags, List<String> foundTags) {

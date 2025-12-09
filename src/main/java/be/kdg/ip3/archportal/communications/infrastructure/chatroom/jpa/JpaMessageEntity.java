@@ -3,6 +3,7 @@ package be.kdg.ip3.archportal.communications.infrastructure.chatroom.jpa;
 import be.kdg.ip3.archportal.communications.domain.chatroom.Message;
 import be.kdg.ip3.archportal.communications.domain.chatroom.MessageId;
 import jakarta.persistence.*;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -18,6 +19,7 @@ public class JpaMessageEntity {
     private String text;
     @Column(nullable = false)
     private LocalDateTime timestamp;
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id", nullable = false)
     private JpaChatRoomEntity chatRoom;
