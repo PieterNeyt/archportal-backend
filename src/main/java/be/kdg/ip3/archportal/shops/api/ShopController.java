@@ -28,6 +28,14 @@ public class ShopController {
         return ResponseEntity.ok(games);
     }
 
+
+    @GetMapping("/game/{id}")
+    public ResponseEntity<GlobalGameDto> getGame(@PathVariable("id") UUID gameId) {
+        var game = shopService.getGame(gameId);
+        return ResponseEntity.ok(game);
+    }
+
+
     @GetMapping("/cart")
     public ResponseEntity<CartDto> getCart(@AuthenticationPrincipal Jwt token) {
         Cart cart = shopService.getOrCreateCart(UUID.fromString(token.getSubject()));

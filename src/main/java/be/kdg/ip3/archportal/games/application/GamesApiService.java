@@ -1,5 +1,7 @@
 package be.kdg.ip3.archportal.games.application;
 
+import be.kdg.ip3.archportal.games.domain.NotFoundException;
+import be.kdg.ip3.archportal.games.domain.game.GameId;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
@@ -28,6 +30,14 @@ public class GamesApiService implements GamesApi {
     public List<GlobalGameDto> getGamesByIds(List<UUID> gameIds) {
         var games = gameRepository.findAllById(gameIds);
         return games.stream().map(GlobalGameDto::fromDomain).toList();
+    }
+
+    @Override
+    public GlobalGameDto getGameById(UUID gameId) {
+        var game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new NotFoundException("Game Id["+gameId+"] not found"));
+
+        return GlobalGameDto.fromDomain(game);
     }
 
     @Override
