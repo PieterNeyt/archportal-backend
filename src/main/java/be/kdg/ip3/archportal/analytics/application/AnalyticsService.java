@@ -56,10 +56,8 @@ public class AnalyticsService implements AnalyticsApi {
         this.gameStatisticsRepository.save(gameStatistics);
     }
 
-    public GameStatistics getGameStatistics(UUID profileId, UUID gameId) {
-        var pId = new ProfileId(profileId);
-        var gId = new GameId(gameId);
-        var gameStatisticsId = new GameStatisticsId(gId, pId);
+    public GameStatistics getGameStatistics(ProfileId profileId, GameId gameId) {
+        var gameStatisticsId = new GameStatisticsId(gameId, profileId);
 
         return gameStatisticsRepository.findById(gameStatisticsId)
                 .orElseThrow(() -> new IllegalArgumentException("No game statistics found for profile id: " + profileId + " and game id: " + gameId));
