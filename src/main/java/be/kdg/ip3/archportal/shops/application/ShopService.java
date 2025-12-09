@@ -118,4 +118,7 @@ public class ShopService {
         return success;
     }
 
+    public GlobalGameDto getGame(UUID gameId) {
+        return gameApi.getGameById(gameId);
+    }
 }
