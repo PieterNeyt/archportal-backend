@@ -50,4 +50,11 @@ public class GameStudio {
         if (!this.ownerId.equals(ownerId))
             throw new AccessDeniedException("This is not your game studio");
     }
+
+    public void update(GameStudio domain,OwnerId ownerId) {
+        checkOwner(ownerId);
+        setName(domain.getName());
+        setDescription(domain.getDescription());
+        setIBAN(domain.getIBAN());
+    }
 }

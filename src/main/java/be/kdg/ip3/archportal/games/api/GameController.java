@@ -8,12 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -31,5 +29,14 @@ public class GameController {
         var game = gameService.createGame(gameDto, ownerId);
         var location = URI.create("/api/games/" + game.getId().id());
         return ResponseEntity.created(location).body(GameDto.fromDomain(game));
+    }
+
+    @GetMapping({"/studio"})
+    public ResponseEntity<List<GameDto>> getGamesFromStudio(@AuthenticationPrincipal Jwt token) {
+        var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
+        var games = gameService.getGamesFromStudio(ownerId);
+        return ResponseEntity.ok(games.stream()
+                .map(GameDto::fromDomain)
+                .toList());
     }
 }

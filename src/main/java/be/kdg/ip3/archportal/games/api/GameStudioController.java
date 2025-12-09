@@ -1,9 +1,9 @@
 package be.kdg.ip3.archportal.games.api;
 
-import be.kdg.ip3.archportal.games.api.dto.CreateGameStudioDto;
+import be.kdg.ip3.archportal.games.api.dto.GameStudioDto;
 import be.kdg.ip3.archportal.games.api.dto.OwnerStudioStatusDto;
 import be.kdg.ip3.archportal.games.application.GameStudioService;
-import be.kdg.ip3.archportal.games.application.command.CreateGameStudioCommand;
+import be.kdg.ip3.archportal.games.application.command.GameStudioCommand;
 import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -24,16 +24,16 @@ public class GameStudioController {
     }
 
     @PostMapping()
-    public ResponseEntity<CreateGameStudioDto> createGameStudio(@Valid @RequestBody CreateGameStudioDto studioDto,
+    public ResponseEntity<GameStudioDto> createGameStudio(@Valid @RequestBody GameStudioDto studioDto,
                                                                 @AuthenticationPrincipal Jwt token) {
         var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
-        var createStudioCommand = CreateGameStudioCommand.fromDto(studioDto, ownerId);
+        var createStudioCommand = GameStudioCommand.fromDto(studioDto, ownerId);
         var studio = gameStudioService.createGameStudio(createStudioCommand);
         var location = URI.create("/api/gamestudio/" + studio.id().id());
 
         return ResponseEntity
                 .created(location)
-                .body(CreateGameStudioDto.fromDomain(studio));
+                .body(GameStudioDto.fromCommand(studio));
     }
 
     @GetMapping("/me")
@@ -43,4 +43,18 @@ public class GameStudioController {
         return ResponseEntity.ok(studio);
     }
 
+    @GetMapping()
+    public ResponseEntity<GameStudioDto> getGameStudio(@AuthenticationPrincipal Jwt token) {
+        var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
+        var studio = gameStudioService.findByOwnerId(ownerId);
+        return ResponseEntity.ok(GameStudioDto.fromDomain(studio));
+    }
+
+    @PutMapping()
+    public ResponseEntity<GameStudioDto> updateGameStudio(@RequestBody GameStudioDto studioDto,@AuthenticationPrincipal Jwt token) {
+        var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
+        var studioCommand = GameStudioCommand.fromDto(studioDto, ownerId);
+        var studio = gameStudioService.updateGameStudio(studioCommand);
+        return ResponseEntity.ok(GameStudioDto.fromDomain(studio));
+    }
 }
