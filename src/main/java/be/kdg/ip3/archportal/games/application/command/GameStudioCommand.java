@@ -14,7 +14,7 @@ public record GameStudioCommand(
 ) {
     public static GameStudioCommand fromDto(GameStudioDto studioDto, OwnerId ownerId) {
         return new GameStudioCommand(
-                GameStudioId.create(),
+                new GameStudioId(studioDto.id()),
                 ownerId,
                 studioDto.name(),
                 studioDto.description(),
