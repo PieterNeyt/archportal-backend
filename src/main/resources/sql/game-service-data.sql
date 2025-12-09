@@ -66,15 +66,58 @@ VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c
        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840',
         '58e1a434-0797-4d3d-9140-e846b20b7887');
 
-INSERT INTO communicationservice.chat_room(id, title) 
+INSERT INTO communicationservice.chat_room(id, title)
 VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Title'),
        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', 'Title');
 
-INSERT INTO communicationservice.chat_room_member(chat_room_id, members) 
+INSERT INTO communicationservice.chat_room_member(chat_room_id, members)
 VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '5a129b2c-3016-4616-bca0-99ec7b067b32'),
        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', '58e1a434-0797-4d3d-9140-e846b20b7887');
+
+INSERT INTO communicationservice.message(id, chat_room_id, sender, text, timestamp)
+VALUES ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Hallo ik ben Cian', now() - interval '30 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Hallo ik ben axel', now() - interval '28 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaac', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Hallo ik ben Cian', now() - interval '25 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaad', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Hallo ik ben axel', now() - interval '22 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaae', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Hallo ik ben Cian', now() - interval '20 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaf', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Hallo ik ben axel', now() - interval '18 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaba', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Hallo ik ben Cian', now() - interval '15 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaca', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Hallo ik ben axel', now() - interval '12 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaada', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Hallo ik ben Cian', now() - interval '10 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaea', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Hallo ik ben axel', now()- interval '9 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaafa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Hallo ik ben Cian', now() - interval '8 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaadaa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Hallo ik ben axel', now()- interval '7 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaadda', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Hallo ik ben Cian', now() - interval '6 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaeaaadea', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Hallo ik ben axel', now()- interval '5 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaeaadda', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Hallo ik ben Cian', now() - interval '4 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaadea', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Hallo ik ben axel', now()- interval '3 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaeda', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Hallo ik ben Cian', now() - interval '2 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaeea', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Hallo ik ben axel', now()- interval '1 minutes'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaefa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Hallo ik ben Cian', now() - interval '30 seconds'),
+       ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaabaaa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Hallo ik ben axel', now());
+
 
 INSERT INTO profileservice.friend_requests (sender_id, receiver_id)
 VALUES ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840');

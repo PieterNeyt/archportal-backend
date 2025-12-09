@@ -2,8 +2,12 @@ package be.kdg.ip3.archportal.communications.api.dto;
 
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 
-public record ChatRoomDto(String title) {
-    public static ChatRoomDto fromDomain(ChatRoom chatRoom) {
-        return new ChatRoomDto(chatRoom.getTitle());
+import java.util.List;
+import java.util.UUID;
+
+public record ChatRoomDto(UUID id, String title, List<MessageDto> messages) {
+    public static ChatRoomDto fromDomain(ChatRoom chatRoom, UUID profileId) {
+        return new ChatRoomDto(chatRoom.getId().id(), chatRoom.getTitle(),
+                chatRoom.getMessages().stream().map(mes -> MessageDto.fromDomain(mes, profileId)).toList());
     }
 }

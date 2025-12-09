@@ -4,6 +4,8 @@ import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomId;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -36,7 +38,7 @@ public class JpaChatRoomEntity {
         return new JpaChatRoomEntity(
                 chatRoom.getId().id(),
                 chatRoom.getTitle(),
-                chatRoom.getMembers(),
+                new HashSet<>(chatRoom.getMembers()),
                 chatRoom.getMessages().stream().map(JpaMessageEntity::fromDomain).collect(Collectors.toSet())
         );
     }
@@ -45,8 +47,17 @@ public class JpaChatRoomEntity {
         return new ChatRoom(
                 new ChatRoomId(id),
                 title,
-                members,
-                messages.stream().map(JpaMessageEntity::toDomain).collect(Collectors.toSet())
+                members.stream().toList(),
+                messages.stream().map(JpaMessageEntity::toDomain).toList()
+        );
+    }
+
+    public ChatRoom toDomainWithoutMessages() {
+        return new ChatRoom(
+                new ChatRoomId(id),
+                title,
+                members.stream().toList(),
+                List.of()
         );
     }
 }

@@ -3,6 +3,7 @@ package be.kdg.ip3.archportal.communications.api;
 import be.kdg.ip3.archportal.communications.api.dto.ChatRoomDto;
 import be.kdg.ip3.archportal.communications.api.dto.CreateChatRoomDto;
 import be.kdg.ip3.archportal.communications.application.ChatRoomService;
+import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomId;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,13 +28,21 @@ public class ChatRoomController {
         var profileId = UUID.fromString(token.getSubject());
         var chatRoom = chatRoomService.createChatRoom(dto.gamerTags(), profileId);
         var location = URI.create("/api/chat-room/" + chatRoom.getId().id());
-        return ResponseEntity.created(location).body(ChatRoomDto.fromDomain(chatRoom));
+        return ResponseEntity.created(location).body(ChatRoomDto.fromDomain(chatRoom, profileId));
     }
 
     @GetMapping
-    public ResponseEntity<List<ChatRoomDto>> getChatRooms(@AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<List<ChatRoomDto>> getChatRoomsWithoutMessages(@AuthenticationPrincipal Jwt token) {
         var profileId = UUID.fromString(token.getSubject());
-        var chatRooms = chatRoomService.getChatRooms(profileId).stream().map(ChatRoomDto::fromDomain).toList();
+        var chatRooms = chatRoomService.getChatRoomsWithoutMessages(profileId).stream()
+                .map(chatRoom -> ChatRoomDto.fromDomain(chatRoom, profileId)).toList();
         return ResponseEntity.ok(chatRooms);
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<ChatRoomDto> getChatRoom(@PathVariable UUID id,  @AuthenticationPrincipal Jwt token) {
+        var profileId = UUID.fromString(token.getSubject());
+        var chatRoom = chatRoomService.getChatRoom(new ChatRoomId(id), profileId);
+        return ResponseEntity.ok(ChatRoomDto.fromDomain(chatRoom, profileId));
     }
 }
