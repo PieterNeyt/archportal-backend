@@ -3,7 +3,7 @@ package be.kdg.ip3.archportal.games.api;
 import be.kdg.ip3.archportal.games.api.dto.GameStudioDto;
 import be.kdg.ip3.archportal.games.api.dto.OwnerStudioStatusDto;
 import be.kdg.ip3.archportal.games.application.GameStudioService;
-import be.kdg.ip3.archportal.games.application.command.CreateGameStudioCommand;
+import be.kdg.ip3.archportal.games.application.command.GameStudioCommand;
 import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +27,13 @@ public class GameStudioController {
     public ResponseEntity<GameStudioDto> createGameStudio(@Valid @RequestBody GameStudioDto studioDto,
                                                                 @AuthenticationPrincipal Jwt token) {
         var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
-        var createStudioCommand = CreateGameStudioCommand.fromDto(studioDto, ownerId);
+        var createStudioCommand = GameStudioCommand.fromDto(studioDto, ownerId);
         var studio = gameStudioService.createGameStudio(createStudioCommand);
         var location = URI.create("/api/gamestudio/" + studio.id().id());
 
         return ResponseEntity
                 .created(location)
-                .body(GameStudioDto.fromDomain(studio));
+                .body(GameStudioDto.fromCommand(studio));
     }
 
     @GetMapping("/me")
@@ -44,17 +44,18 @@ public class GameStudioController {
     }
 
     @GetMapping()
-    public ResponseEntity<?> getGameStudio(@AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<GameStudioDto> getGameStudio(@AuthenticationPrincipal Jwt token) {
         var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
-        var studio = gameStudioService.findGameStudioStatusByOwnerId(ownerId);
-        return ResponseEntity.ok("");
+        var studio = gameStudioService.findGameStudio(ownerId);
+        return ResponseEntity.ok(GameStudioDto.fromDomain(studio));
     }
 
     @PutMapping()
-    public ResponseEntity<?> updateGameStudio(@AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<GameStudioDto> updateGameStudio(@RequestBody GameStudioDto studioDto,@AuthenticationPrincipal Jwt token) {
         var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
-        var studio = gameStudioService.findGameStudioStatusByOwnerId(ownerId);
-        return ResponseEntity.ok("");
+        var studioCommand = GameStudioCommand.fromDto(studioDto, ownerId);
+        var studio = gameStudioService.updateGameStudio(studioCommand);
+        return ResponseEntity.ok(GameStudioDto.fromDomain(studio));
     }
 
 

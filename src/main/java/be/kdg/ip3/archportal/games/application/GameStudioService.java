@@ -1,7 +1,7 @@
 package be.kdg.ip3.archportal.games.application;
 
 import be.kdg.ip3.archportal.games.api.dto.OwnerStudioStatusDto;
-import be.kdg.ip3.archportal.games.application.command.CreateGameStudioCommand;
+import be.kdg.ip3.archportal.games.application.command.GameStudioCommand;
 import be.kdg.ip3.archportal.games.domain.NotFoundException;
 import be.kdg.ip3.archportal.games.domain.event.GameStudioCreatedEvent;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudio;
@@ -30,7 +30,7 @@ public class GameStudioService {
         this.publisher = publisher;
     }
 
-    public CreateGameStudioCommand createGameStudio(CreateGameStudioCommand studioCommand) {
+    public GameStudioCommand createGameStudio(GameStudioCommand studioCommand) {
         if (!profilesApi.existsById(studioCommand.ownerId().id()))
             throw new NotFoundException("Profile [" + studioCommand.ownerId().id() + "] not found");
 
@@ -47,7 +47,7 @@ public class GameStudioService {
         var gameStudioCreatedEvent = new GameStudioCreatedEvent(studio.getOwnerId(), studio.getId());
         publisher.publishEvent(gameStudioCreatedEvent);
 
-        return CreateGameStudioCommand.fromDomain(studio, studioCommand.ownerId());
+        return GameStudioCommand.fromDomain(studio, studioCommand.ownerId());
     }
 
     public GameStudio findById(GameStudioId id) {
@@ -60,5 +60,18 @@ public class GameStudioService {
 
     public OwnerStudioStatusDto findGameStudioStatusByOwnerId(OwnerId ownerId) {
         return this.gameStudioRepo.findByOwnerId(ownerId).map(OwnerStudioStatusDto::from).orElseGet(OwnerStudioStatusDto::noStudio);
+    }
+
+    public GameStudio findGameStudio(OwnerId ownerId) {
+        return this.gameStudioRepo.findByOwnerId(ownerId).orElseThrow(ownerId::notFound);
+    }
+
+    public GameStudio updateGameStudio(GameStudioCommand studioCommand) {
+        var studio = this.gameStudioRepo.findById(studioCommand.id())
+                .orElseThrow(studioCommand.id()::notFound);
+
+        studio.update(studioCommand.toDomain());
+        this.gameStudioRepo.save(studio);
+        return  studio;
     }
 }
