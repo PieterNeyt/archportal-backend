@@ -62,15 +62,11 @@ public class GameStudioService {
         return this.gameStudioRepo.findByOwnerId(ownerId).map(OwnerStudioStatusDto::from).orElseGet(OwnerStudioStatusDto::noStudio);
     }
 
-    public GameStudio findGameStudio(OwnerId ownerId) {
-        return this.gameStudioRepo.findByOwnerId(ownerId).orElseThrow(ownerId::notFound);
-    }
-
     public GameStudio updateGameStudio(GameStudioCommand studioCommand) {
         var studio = this.gameStudioRepo.findById(studioCommand.id())
                 .orElseThrow(studioCommand.id()::notFound);
 
-        studio.update(studioCommand.toDomain());
+        studio.update(studioCommand.toDomain(),studioCommand.ownerId());
         this.gameStudioRepo.save(studio);
         return  studio;
     }

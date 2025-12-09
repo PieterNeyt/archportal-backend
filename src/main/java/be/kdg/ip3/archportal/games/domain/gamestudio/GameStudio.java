@@ -51,7 +51,8 @@ public class GameStudio {
             throw new AccessDeniedException("This is not your game studio");
     }
 
-    public void update(GameStudio domain) {
+    public void update(GameStudio domain,OwnerId ownerId) {
+        checkOwner(ownerId);
         setName(domain.getName());
         setDescription(domain.getDescription());
         setIBAN(domain.getIBAN());

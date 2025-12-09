@@ -46,7 +46,7 @@ public class GameStudioController {
     @GetMapping()
     public ResponseEntity<GameStudioDto> getGameStudio(@AuthenticationPrincipal Jwt token) {
         var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
-        var studio = gameStudioService.findGameStudio(ownerId);
+        var studio = gameStudioService.findByOwnerId(ownerId);
         return ResponseEntity.ok(GameStudioDto.fromDomain(studio));
     }
 
