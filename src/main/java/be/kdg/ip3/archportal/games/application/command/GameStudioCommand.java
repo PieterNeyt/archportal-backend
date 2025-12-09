@@ -1,9 +1,12 @@
 package be.kdg.ip3.archportal.games.application.command;
 
 import be.kdg.ip3.archportal.games.api.dto.GameStudioDto;
+import be.kdg.ip3.archportal.games.domain.game.Game;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudio;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
 import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
+
+import java.util.UUID;
 
 public record GameStudioCommand(
         GameStudioId id,
@@ -13,8 +16,15 @@ public record GameStudioCommand(
         String IBAN
 ) {
     public static GameStudioCommand fromDto(GameStudioDto studioDto, OwnerId ownerId) {
+        GameStudioId id;
+        if (studioDto.id() == null) {
+            id = GameStudioId.create();
+        } else {
+            id = new GameStudioId(studioDto.id());
+        }
+
         return new GameStudioCommand(
-                new GameStudioId(studioDto.id()),
+                id,
                 ownerId,
                 studioDto.name(),
                 studioDto.description(),
