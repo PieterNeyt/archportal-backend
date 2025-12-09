@@ -30,7 +30,7 @@ public class ShopController {
 
 
     @GetMapping("/game/{id}")
-    public ResponseEntity<GlobalGameDto> getAllGames(@PathVariable("id") UUID gameId) {
+    public ResponseEntity<GlobalGameDto> getGame(@PathVariable("id") UUID gameId) {
         var game = shopService.getGame(gameId);
         return ResponseEntity.ok(game);
     }
