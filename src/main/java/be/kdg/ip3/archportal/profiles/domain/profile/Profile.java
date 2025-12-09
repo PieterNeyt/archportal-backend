@@ -132,4 +132,11 @@ public class Profile {
     public void acquireGame(UUID gameId) {
         this.library.add(gameId);
     }
+
+    public void update(String firstName, String lastName, String gamerTag, String email) {
+        setFirstName(firstName);
+        setLastName(lastName);
+        setGamerTag(gamerTag);
+        setEmail(email);
+    }
 }
