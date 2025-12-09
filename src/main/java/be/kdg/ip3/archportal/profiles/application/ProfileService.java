@@ -55,8 +55,6 @@ public class ProfileService {
         profile.update(firstName,lastName,gamerTag,email);
 
         profileRepository.save(profile);
-
-        profileRepository.save(profile);
         return profile;
     }
 
