@@ -10,6 +10,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class GameService {
@@ -44,5 +46,10 @@ public class GameService {
                 NotificationType.SYSTEM
         ));
         return game;
+    }
+
+    public List<Game> getGamesFromStudio(OwnerId ownerId) {
+        var studio = gameStudioService.findByOwnerId(ownerId);
+        return this.gameRepository.findByStudioId(studio.getId());
     }
 }

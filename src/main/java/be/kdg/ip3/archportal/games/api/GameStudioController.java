@@ -57,7 +57,4 @@ public class GameStudioController {
         var studio = gameStudioService.updateGameStudio(studioCommand);
         return ResponseEntity.ok(GameStudioDto.fromDomain(studio));
     }
-
-
-
 }

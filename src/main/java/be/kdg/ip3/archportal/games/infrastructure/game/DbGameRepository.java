@@ -2,6 +2,7 @@ package be.kdg.ip3.archportal.games.infrastructure.game;
 
 import be.kdg.ip3.archportal.games.domain.game.Game;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
+import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
 import be.kdg.ip3.archportal.games.infrastructure.game.jpa.JpaGameEntity;
 import be.kdg.ip3.archportal.games.infrastructure.game.jpa.JpaGameRepository;
 import org.springframework.stereotype.Repository;
@@ -45,6 +46,13 @@ public class DbGameRepository implements GameRepository {
     public List<Game> findAllById(List<UUID> gameIds) {
         return jpaGameRepository.findAllById(gameIds)
                 .stream()
+                .map(JpaGameEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Game> findByStudioId(GameStudioId id) {
+        return jpaGameRepository.findByStudioId(id.id()).stream()
                 .map(JpaGameEntity::toDomain)
                 .toList();
     }
