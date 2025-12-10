@@ -5,9 +5,12 @@ import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomId;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomRepository;
 import be.kdg.ip3.archportal.communications.domain.chatroom.Message;
+import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
+import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +24,12 @@ import java.util.UUID;
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ProfilesApi profilesApi;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ChatRoomService(ChatRoomRepository chatRoomRepository, ProfilesApi profilesApi) {
+    public ChatRoomService(ChatRoomRepository chatRoomRepository, ProfilesApi profilesApi, ApplicationEventPublisher eventPublisher) {
         this.chatRoomRepository = chatRoomRepository;
         this.profilesApi = profilesApi;
+        this.eventPublisher = eventPublisher;
     }
 
     @ApplicationModuleListener
@@ -86,6 +91,8 @@ public class ChatRoomService {
         var message = Message.createMessage(profileId, text);
         chatRoom.addMessage(message);
         chatRoomRepository.save(chatRoom);
+
+        chatRoom.getMembers().forEach(member -> eventPublisher.publishEvent(new AddNotificationEvent(member, "New message from " + chatRoom.getTitle(), text, NotificationType.CHAT)));
         return message;
     }
 }
