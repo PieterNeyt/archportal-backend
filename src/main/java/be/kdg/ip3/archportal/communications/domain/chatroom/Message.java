@@ -30,7 +30,7 @@ public class Message {
 
     private void setText(String text) {
         if (text == null || text.isBlank())
-            throw new NullPointerException("Message is invalid");
+            throw new IllegalArgumentException("Message is invalid");
         if (text.length() > 500)
             throw new IllegalArgumentException("Message is too long");
         this.text = text;
