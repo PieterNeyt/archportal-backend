@@ -3,11 +3,13 @@ package be.kdg.ip3.archportal.games.domain.game;
 import be.kdg.ip3.archportal.games.domain.Money;
 import be.kdg.ip3.archportal.games.domain.achievement.Achievement;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
+import be.kdg.ip3.archportal.games.domain.owner.Owner;
 import be.kdg.ip3.archportal.games.domain.update.Update;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
 import java.math.BigDecimal;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Getter
@@ -75,5 +77,29 @@ public class Game {
         if (genre == null)
             throw new IllegalArgumentException("The genre provided is invalid.");
         this.genre = genre;
+    }
+
+    public void checkGameStudioFromOwner(GameStudioId id) {
+        if(!this.studioId.equals(id))
+            throw new IllegalStateException("Wrong GameStudio");
+    }
+
+    public void update(Game newGame) {
+        checkGameStudioFromOwner(newGame.studioId);
+
+        setTitle(newGame.title);
+        setDescription(newGame.description);
+        setPrice(newGame.price);
+        setImageUrl(newGame.imageUrl);
+        setGameUrl(newGame.gameUrl);
+        setGenre(newGame.genre);
+        setMaxLobbySize(newGame.maxLobbySize);
+
+    }
+
+    private void setImageUrl(String imageUrl) {
+        if (imageUrl == null || imageUrl.trim().isEmpty() || imageUrl.isEmpty() || imageUrl.length() > 255)
+            throw new IllegalArgumentException("The imageUrl provided is invalid.");
+        this.imageUrl = imageUrl;
     }
 }
