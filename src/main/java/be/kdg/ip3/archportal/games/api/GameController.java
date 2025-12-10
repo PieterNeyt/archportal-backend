@@ -39,4 +39,11 @@ public class GameController {
                 .map(GameDto::fromDomain)
                 .toList());
     }
+
+    @PutMapping()
+    public ResponseEntity<GameDto> updateGame(@RequestBody GameDto gameDto,@AuthenticationPrincipal Jwt token) {
+        var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
+        var game = gameService.updateGame(gameDto,ownerId);
+        return ResponseEntity.ok(GameDto.fromDomain(game));
+    }
 }
