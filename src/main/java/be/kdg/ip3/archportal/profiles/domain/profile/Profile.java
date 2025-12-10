@@ -37,8 +37,8 @@ public class Profile {
         this.incomingFriendRequests = incomingFriendRequests;
     }
 
-    public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag, String email) {
-        return new Profile(profileId, new ArrayList<>(), 0, lastName, email, "", gamerTag, firstName, new ArrayList<>(), new HashSet<>());
+    public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag, String email,String icon) {
+        return new Profile(profileId, new ArrayList<>(), 0, lastName, email, icon, gamerTag, firstName, new ArrayList<>(), new HashSet<>());
 
     }
 
@@ -47,6 +47,13 @@ public class Profile {
             throw new IllegalArgumentException("The email provided is invalid.");
 
         this.email = email;
+    }
+
+    private void setIcon(String icon) {
+        if (icon != null && icon.length() > 255)
+            throw new IllegalArgumentException("The icon provided is invalid.");
+
+        this.icon = icon;
     }
 
     public void setFirstName(String firstName) {
@@ -133,10 +140,11 @@ public class Profile {
         this.library.add(gameId);
     }
 
-    public void update(String firstName, String lastName, String gamerTag, String email) {
+    public void update(String firstName, String lastName, String gamerTag, String email,String icon) {
         setFirstName(firstName);
         setLastName(lastName);
         setGamerTag(gamerTag);
         setEmail(email);
+        setIcon(icon);
     }
 }

@@ -35,6 +35,7 @@ class CreateFriendRequestSociableTest {
     ApplicationEventPublisher applicationEventPublisher;
     @Mock
     FriendshipRepository friendshipRepository;
+
     ProfileService service;
 
     @BeforeEach
@@ -48,7 +49,7 @@ class CreateFriendRequestSociableTest {
         void createFriendRequest_equalSenderAndReceiverIds_throwsExpected() {
             var profileId = new ProfileId(UUID.randomUUID());
             var gamerTag = "gamerTag";
-            var profile = Profile.createProfile(profileId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be");
+            var profile = Profile.createProfile(profileId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be","icon");
             
             when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(profile));
             when(profileRepository.findById(profileId)).thenReturn(Optional.of(profile));
@@ -75,8 +76,8 @@ class CreateFriendRequestSociableTest {
             var senderId = new ProfileId(UUID.randomUUID());
             var receiverId = new ProfileId(UUID.randomUUID());
             var gamerTag = "gamerTag";
-            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be");
-            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice123", "alice@example.com");
+            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be","icon");
+            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice123", "alice@example.com","icon");
             var existingRequest = new FriendRequest(senderId);
             receiver.addIncomingFriendRequest(existingRequest);
 
@@ -94,8 +95,8 @@ class CreateFriendRequestSociableTest {
             var receiverId = new ProfileId(UUID.randomUUID());
             var gamerTag = "receiverTag";
 
-            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", gamerTag, "cian@example.com");
-            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice123", "alice@example.com");
+            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", gamerTag, "cian@example.com","icon");
+            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice123", "alice@example.com","icon");
 
             when(profileRepository.findById(senderId)).thenReturn(Optional.of(sender));
             when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(receiver));
@@ -118,8 +119,8 @@ class CreateFriendRequestSociableTest {
         var senderId = new ProfileId(UUID.randomUUID());
         var receiverId = new ProfileId(UUID.randomUUID());
         var gamerTag = "gamerTag";
-        var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be");
-        var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice123", "alice@example.com");
+        var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", gamerTag, "cian.vanacker@student.kdg.be","icon");
+        var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice123", "alice@example.com","icon");
 
         when(profileRepository.findById(senderId)).thenReturn(Optional.of(sender));
         when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(receiver));
