@@ -3,7 +3,6 @@ package be.kdg.ip3.archportal.communications.domain.chatroom;
 import be.kdg.ip3.archportal.communications.domain.NotFoundException;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.util.ArrayList;
@@ -20,19 +19,22 @@ public class ChatRoom {
     private final List<UUID> members;
     private final List<Message> messages;
     
-    @Value("${max.members.in.group}")
-    private int maxMembers;
+    private static final int maxMembers = 10;
     
 
     public ChatRoom(ChatRoomId id, String title, List<UUID> members, List<Message> messages) {
         this.id = id;
-        this.title = title;
+        setTitle(title);
         this.members = members;
         this.messages = messages.stream().sorted(Comparator.comparing(Message::timestamp)).collect(Collectors.toList());
     }
 
-    public ChatRoom() {
-        this(new ChatRoomId(UUID.randomUUID()), "Group", new ArrayList<>(), new ArrayList<>());
+    public ChatRoom() { 
+        this(new ChatRoomId(UUID.randomUUID()), "", new ArrayList<>(), new ArrayList<>());
+    }
+    
+    public ChatRoom(String title) {
+        this(new ChatRoomId(UUID.randomUUID()), title, new ArrayList<>(), new ArrayList<>());
     }
 
     public void addMember(UUID memberId) {
@@ -84,5 +86,11 @@ public class ChatRoom {
     public void validateMember(UUID profileId) {
         if (!members.contains(profileId))
             throw new AccessDeniedException("You are not a member of this chat");
+    }
+    
+    private void setTitle(String title) {
+        if (title == null || title.trim().isEmpty())
+            throw new IllegalArgumentException("Title is null or empty");
+        this.title = title;
     }
 }

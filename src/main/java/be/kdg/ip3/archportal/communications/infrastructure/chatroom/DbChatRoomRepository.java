@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 public class DbChatRoomRepository implements ChatRoomRepository {
@@ -17,11 +18,6 @@ public class DbChatRoomRepository implements ChatRoomRepository {
 
     public DbChatRoomRepository(JpaChatRoomRepository chatRoomRepository) {
         this.chatRoomRepository = chatRoomRepository;
-    }
-
-    @Override
-    public List<ChatRoom> findChatRoomsWithoutMessagesOfProfileId(UUID profileId) {
-        return chatRoomRepository.findChatRoomsOfProfileId(profileId).stream().map(JpaChatRoomEntity::toDomainWithoutMessages).toList();
     }
 
     @Override
@@ -34,6 +30,11 @@ public class DbChatRoomRepository implements ChatRoomRepository {
     public Optional<ChatRoom> findByIdWithLastMessage(ChatRoomId chatRoomId) {
         return this.chatRoomRepository.findByIdWithLastMessage(chatRoomId.id())
                 .map(JpaChatRoomEntity::toDomain);
+    }
+
+    @Override
+    public List<ChatRoom> findChatRoomsOfProfileIdWithLastMessage(UUID profileId) {
+        return chatRoomRepository.findChatRoomsOfProfileIdWithLastMessage(profileId).stream().map(JpaChatRoomEntity::toDomain).collect(Collectors.toList());
     }
 
     @Override

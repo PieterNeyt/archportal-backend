@@ -36,26 +36,12 @@ public class ChatRoomController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ChatRoomDto>> getChatRoomsWithoutMessages(@AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<List<ChatRoomDto>> getChatRoomsWithLastMessage(@AuthenticationPrincipal Jwt token) {
         var profileId = UUID.fromString(token.getSubject());
-        var chatRooms = chatRoomService.getChatRoomsWithoutMessages(profileId).stream()
+        var chatRooms = chatRoomService.getChatRoomsWithLastMessage(profileId).stream()
                 .map(chatRoom -> ChatRoomDto.fromDomain(chatRoom, profileId)).toList();
         return ResponseEntity.ok(chatRooms);
     }
-
-    @GetMapping("/last-message/{id}")
-    public ResponseEntity<LastMessageDto> getChatRoomLastMessage(@PathVariable UUID id,
-                                                                 @AuthenticationPrincipal Jwt token) {
-        var profileId = UUID.fromString(token.getSubject());
-        var chatRoom = chatRoomService.getChatRoomLastMessage(new ChatRoomId(id), profileId);
-
-        return chatRoom.getMessages().stream()
-                .max(Comparator.comparing(Message::timestamp))
-                .map(msg -> new LastMessageDto(msg.text(), msg.timestamp()))
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.noContent().build());
-    }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<ChatRoomDto> getChatRoom(@PathVariable UUID id, @AuthenticationPrincipal Jwt token) {

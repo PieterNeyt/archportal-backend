@@ -5,7 +5,6 @@ import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomId;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -52,15 +51,6 @@ public class JpaChatRoomEntity {
         );
     }
 
-    public ChatRoom toDomainWithoutMessages() {
-        return new ChatRoom(
-                new ChatRoomId(id),
-                title,
-                members.stream().toList(),
-                List.of()
-        );
-    }
-    
     private void setMessages(Set<JpaMessageEntity> messages) {
         this.messages = messages;
         this.messages.forEach(m -> m.setChatRoom(this));

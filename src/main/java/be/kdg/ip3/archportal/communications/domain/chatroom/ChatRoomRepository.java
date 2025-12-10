@@ -9,9 +9,10 @@ import java.util.UUID;
 @Repository
 public interface ChatRoomRepository {
     void save(ChatRoom chatRoom);
-    List<ChatRoom> findChatRoomsWithoutMessagesOfProfileId(UUID profileId);
 
     Optional<ChatRoom> findById(ChatRoomId id);
 
     Optional<ChatRoom>  findByIdWithLastMessage(ChatRoomId chatRoomId);
+    
+    List<ChatRoom> findChatRoomsOfProfileIdWithLastMessage(UUID profileId);
 }

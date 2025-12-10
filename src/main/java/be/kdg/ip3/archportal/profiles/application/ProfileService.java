@@ -148,7 +148,7 @@ public class ProfileService {
                         
                         Kind regards,
                         The Arch Portal Team""";
-                eventPublisher.publishEvent(new FriendShipCreatedEvent(receiver.getId().id(), sender.getId().id()));
+                eventPublisher.publishEvent(new FriendShipCreatedEvent(receiver.getId().id(),receiver.getGamerTag(), sender.getId().id(), sender.getGamerTag()));
             }
             case DECLINE -> {
                 receiver.removeFriendRequest(request);

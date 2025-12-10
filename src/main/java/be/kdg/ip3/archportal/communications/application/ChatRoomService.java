@@ -12,7 +12,7 @@ import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,14 +29,25 @@ public class ChatRoomService {
 
     @ApplicationModuleListener
     public void onFriendShipCreated(FriendShipCreatedEvent event) {
-        var chatRoom = new ChatRoom();
+        var chatRoom = new ChatRoom(event.profileAGamertag() + ", " + event.profileBGamertag());
         chatRoom.addMember(event.profileAId());
         chatRoom.addMember(event.profileBId());
         chatRoomRepository.save(chatRoom);
     }
 
-    public List<ChatRoom> getChatRoomsWithoutMessages(UUID profileId) {
-        return chatRoomRepository.findChatRoomsWithoutMessagesOfProfileId(profileId);
+    public List<ChatRoom> getChatRoomsWithLastMessage(UUID profileId) {
+        var rooms = chatRoomRepository.findChatRoomsOfProfileIdWithLastMessage(profileId);
+        rooms.sort(Comparator.comparing(
+                room -> room.getMessages().isEmpty()
+                        ? null
+                        : room.getMessages()
+                        .stream()
+                        .map(Message::timestamp)
+                        .max(Comparator.naturalOrder())
+                        .orElse(null),
+                Comparator.nullsLast(Comparator.reverseOrder())
+        ));
+        return rooms;
     }
 
     public ChatRoom createChatRoom(List<String> gamerTags, UUID creatorId) {
@@ -76,11 +87,5 @@ public class ChatRoomService {
         chatRoom.addMessage(message);
         chatRoomRepository.save(chatRoom);
         return message;
-    }
-
-    public ChatRoom getChatRoomLastMessage(ChatRoomId chatRoomId, UUID profileId) {
-        var chatroom = chatRoomRepository.findByIdWithLastMessage(chatRoomId).orElseThrow(chatRoomId::notFound);
-        chatroom.validateMember(profileId);
-        return chatroom;
     }
 }
