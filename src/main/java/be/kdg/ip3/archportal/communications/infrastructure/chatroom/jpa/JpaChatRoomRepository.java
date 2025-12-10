@@ -18,6 +18,7 @@ public interface JpaChatRoomRepository extends JpaRepository<JpaChatRoomEntity, 
     @Query("SELECT cr FROM JpaChatRoomEntity cr " +
             "LEFT JOIN FETCH cr.messages m " +
             "WHERE cr.id = :id " +
-            "AND m.timestamp = (SELECT MAX(m2.timestamp) FROM JpaMessageEntity m2 WHERE m2.chatRoom = cr)")
+            "AND (m.timestamp = (SELECT MAX(m2.timestamp) FROM JpaMessageEntity m2 WHERE m2.chatRoom = cr) " +
+            "     OR m.id IS NULL)")
     Optional<JpaChatRoomEntity> findByIdWithLastMessage(@Param("id") UUID id);
 }
