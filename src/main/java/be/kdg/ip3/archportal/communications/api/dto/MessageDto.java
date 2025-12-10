@@ -8,9 +8,9 @@ import java.util.UUID;
 public record MessageDto(boolean isYou, String text, LocalDateTime timestamp) {
     public static MessageDto fromDomain(Message message, UUID profileId) {
         return new MessageDto(
-                message.sender().equals(profileId),
-                message.text(),
-                message.timestamp()
+                message.getSenderId().equals(profileId),
+                message.getText(),
+                message.getTimestamp()
         );
     }
 }

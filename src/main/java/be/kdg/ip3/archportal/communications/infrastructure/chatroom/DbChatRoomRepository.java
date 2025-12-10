@@ -27,12 +27,6 @@ public class DbChatRoomRepository implements ChatRoomRepository {
     }
 
     @Override
-    public Optional<ChatRoom> findByIdWithLastMessage(ChatRoomId chatRoomId) {
-        return this.chatRoomRepository.findByIdWithLastMessage(chatRoomId.id())
-                .map(JpaChatRoomEntity::toDomain);
-    }
-
-    @Override
     public List<ChatRoom> findChatRoomsOfProfileIdWithLastMessage(UUID profileId) {
         return chatRoomRepository.findChatRoomsOfProfileIdWithLastMessage(profileId).stream().map(JpaChatRoomEntity::toDomain).collect(Collectors.toList());
     }

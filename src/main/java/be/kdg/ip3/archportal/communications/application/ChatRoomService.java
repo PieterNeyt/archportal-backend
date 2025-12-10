@@ -47,7 +47,7 @@ public class ChatRoomService {
                         ? null
                         : room.getMessages()
                         .stream()
-                        .map(Message::timestamp)
+                        .map(Message::getTimestamp)
                         .max(Comparator.naturalOrder())
                         .orElse(null),
                 Comparator.nullsLast(Comparator.reverseOrder())
@@ -86,13 +86,25 @@ public class ChatRoomService {
     public Message createMessage(ChatRoomId id, UUID profileId, String text) {
         if (!profilesApi.existsById(profileId))
             throw new NotFoundException("Profile does not exist: " + profileId);
-        var chatRoom = chatRoomRepository.findById(id).orElseThrow(id::notFound);
-        chatRoom.validateMember(profileId);
-        var message = Message.createMessage(profileId, text);
-        chatRoom.addMessage(message);
-        chatRoomRepository.save(chatRoom);
 
+        var t0 = System.currentTimeMillis();
+        var chatRoom = chatRoomRepository.findById(id).orElseThrow(id::notFound);
+        System.out.println("Load chat room " + (System.currentTimeMillis() - t0) + "ms");
+
+        chatRoom.validateMember(profileId);
+        var message = new Message(profileId, text);
+        t0 = System.currentTimeMillis();
+        chatRoom.addMessage(message);
+        System.out.println("Add message " + (System.currentTimeMillis() - t0) + "ms");
+
+        t0 = System.currentTimeMillis();
+        chatRoomRepository.save(chatRoom);
+        System.out.println("Save chat room " + (System.currentTimeMillis() - t0) + "ms");
+
+        t0 = System.currentTimeMillis();
         chatRoom.getMembers().forEach(member -> eventPublisher.publishEvent(new AddNotificationEvent(member, "New message from " + chatRoom.getTitle(), text, NotificationType.CHAT)));
+        System.out.println("Publish events " + (System.currentTimeMillis() - t0) + "ms");
+
         return message;
     }
 }

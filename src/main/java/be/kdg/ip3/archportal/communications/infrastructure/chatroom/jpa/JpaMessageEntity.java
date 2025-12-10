@@ -36,10 +36,10 @@ public class JpaMessageEntity {
 
     public static JpaMessageEntity fromDomain(Message message) {
         return new JpaMessageEntity(
-                message.id().id(),
-                message.sender(),
-                message.text(),
-                message.timestamp()
+                message.getId().id(),
+                message.getSenderId(),
+                message.getText(),
+                message.getTimestamp()
         );
     }
 

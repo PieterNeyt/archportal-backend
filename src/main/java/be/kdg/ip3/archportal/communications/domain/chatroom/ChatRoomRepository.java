@@ -11,8 +11,6 @@ public interface ChatRoomRepository {
     void save(ChatRoom chatRoom);
 
     Optional<ChatRoom> findById(ChatRoomId id);
-
-    Optional<ChatRoom>  findByIdWithLastMessage(ChatRoomId chatRoomId);
     
     List<ChatRoom> findChatRoomsOfProfileIdWithLastMessage(UUID profileId);
 }
