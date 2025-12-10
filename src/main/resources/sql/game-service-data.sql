@@ -1,13 +1,13 @@
 -- ===== Owners =====
 INSERT INTO gameservice.owner (id, game_studio_id)
 VALUES ('51d0b9d3-80aa-4d18-9c3b-84b2f8b8d671', '3f071d5d-5d2e-4b5f-9c12-7cf7e902b113'),
-       ('7f9244b8-b5ce-4479-96f7-5e02a40211ad', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912');
+       ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912');
 
 -- ===== Studios =====
 INSERT INTO gameservice.gamestudio (id, owner_id, name, description, iban)
 VALUES ('3f071d5d-5d2e-4b5f-9c12-7cf7e902b113', '51d0b9d3-80aa-4d18-9c3b-84b2f8b8d671', 'HexGrid Games',
         'A board-game studio focused on abstract strategy and elegant, minimalistic designs.', 'NL91ABNA0417164300'),
-       ('d1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', '7f9244b8-b5ce-4479-96f7-5e02a40211ad', 'Timberwolf Studios',
+       ('d1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'Timberwolf Studios',
         'Specializes in thematic adventure and family-friendly board games with rich world-building.',
         'NL32RABO0287365401');
 

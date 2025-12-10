@@ -14,4 +14,6 @@ public interface GamesApi {
 
     List<GlobalGameDto> getAllGames();
     List<GlobalGameDto> getGamesByIds(List<UUID> gameIds);
+
+    GlobalGameDto getGameById(UUID gameId);
 }

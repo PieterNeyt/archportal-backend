@@ -35,6 +35,7 @@ public class AcceptDeclineFriendRequestSociableTest {
     ApplicationEventPublisher applicationEventPublisher;
     @Mock
     FriendshipRepository friendshipRepository;
+
     ProfileService service;
 
     @BeforeEach
@@ -49,8 +50,8 @@ public class AcceptDeclineFriendRequestSociableTest {
             var receiverId = new ProfileId(UUID.randomUUID());
             var senderId = new ProfileId(UUID.randomUUID());
 
-            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", "cian", "cian@gmail.com");
-            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice", "alice@gmail.com");
+            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", "cian", "cian@gmail.com","");
+            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice", "alice@gmail.com","");
 
             receiver.addIncomingFriendRequest(new FriendRequest(senderId));
 
@@ -73,8 +74,8 @@ public class AcceptDeclineFriendRequestSociableTest {
             var receiverId = new ProfileId(UUID.randomUUID());
             var senderId = new ProfileId(UUID.randomUUID());
 
-            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", "cian", "cian@gmail.com");
-            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice", "alice@gmail.com");
+            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", "cian", "cian@gmail.com","icon");
+            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice", "alice@gmail.com","icon");
 
             when(profileRepository.findByGamerTag("alice")).thenReturn(Optional.of(sender));
             when(profileRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
@@ -99,8 +100,8 @@ public class AcceptDeclineFriendRequestSociableTest {
         void acceptFriendRequest_alreadyFriends_throwsAlreadyFriendException_requestRemoved() {
             var receiverId = new ProfileId(UUID.randomUUID());
             var senderId = new ProfileId(UUID.randomUUID());
-            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", "cian", "cian@gmail.com");
-            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice", "alice@gmail.com");
+            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", "cian", "cian@gmail.com","icon");
+            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice", "alice@gmail.com","icon");
 
             receiver.addIncomingFriendRequest(new FriendRequest(senderId));
 
@@ -126,8 +127,8 @@ public class AcceptDeclineFriendRequestSociableTest {
             var receiverId = new ProfileId(UUID.randomUUID());
             var senderId = new ProfileId(UUID.randomUUID());
 
-            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", "cian", "cian@gmail.com");
-            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice", "alice@gmail.com");
+            var receiver = Profile.createProfile(receiverId, "Cian", "Van Acker", "cian", "cian@gmail.com","icon");
+            var sender = Profile.createProfile(senderId, "Alice", "Smith", "alice", "alice@gmail.com","icon");
 
             receiver.addIncomingFriendRequest(new FriendRequest(senderId));
 
