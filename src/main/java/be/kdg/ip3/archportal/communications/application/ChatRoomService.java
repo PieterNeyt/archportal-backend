@@ -12,6 +12,7 @@ import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,5 +76,11 @@ public class ChatRoomService {
         chatRoom.addMessage(message);
         chatRoomRepository.save(chatRoom);
         return message;
+    }
+
+    public ChatRoom getChatRoomLastMessage(ChatRoomId chatRoomId, UUID profileId) {
+        var chatroom = chatRoomRepository.findByIdWithLastMessage(chatRoomId).orElseThrow(chatRoomId::notFound);
+        chatroom.validateMember(profileId);
+        return chatroom;
     }
 }

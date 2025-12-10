@@ -67,7 +67,7 @@ VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c
         '58e1a434-0797-4d3d-9140-e846b20b7887');
 
 INSERT INTO communicationservice.chat_room(id, title)
-VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Title'),
+VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Axel'),
        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', 'Title');
 
 INSERT INTO communicationservice.chat_room_member(chat_room_id, members)

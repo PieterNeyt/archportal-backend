@@ -12,4 +12,6 @@ public interface ChatRoomRepository {
     List<ChatRoom> findChatRoomsWithoutMessagesOfProfileId(UUID profileId);
 
     Optional<ChatRoom> findById(ChatRoomId id);
+
+    Optional<ChatRoom>  findByIdWithLastMessage(ChatRoomId chatRoomId);
 }

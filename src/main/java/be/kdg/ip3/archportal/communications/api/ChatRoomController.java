@@ -3,8 +3,10 @@ package be.kdg.ip3.archportal.communications.api;
 import be.kdg.ip3.archportal.communications.api.dto.ChatRoomDto;
 import be.kdg.ip3.archportal.communications.api.dto.CreateChatRoomDto;
 import be.kdg.ip3.archportal.communications.api.dto.CreateMessageDto;
+import be.kdg.ip3.archportal.communications.api.dto.LastMessageDto;
 import be.kdg.ip3.archportal.communications.application.ChatRoomService;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomId;
+import be.kdg.ip3.archportal.communications.domain.chatroom.Message;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +14,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,6 +42,20 @@ public class ChatRoomController {
                 .map(chatRoom -> ChatRoomDto.fromDomain(chatRoom, profileId)).toList();
         return ResponseEntity.ok(chatRooms);
     }
+
+    @GetMapping("/last-message/{id}")
+    public ResponseEntity<LastMessageDto> getChatRoomLastMessage(@PathVariable UUID id,
+                                                                 @AuthenticationPrincipal Jwt token) {
+        var profileId = UUID.fromString(token.getSubject());
+        var chatRoom = chatRoomService.getChatRoomLastMessage(new ChatRoomId(id), profileId);
+
+        return chatRoom.getMessages().stream()
+                .max(Comparator.comparing(Message::timestamp))
+                .map(msg -> new LastMessageDto(msg.text(), msg.timestamp()))
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<ChatRoomDto> getChatRoom(@PathVariable UUID id, @AuthenticationPrincipal Jwt token) {
