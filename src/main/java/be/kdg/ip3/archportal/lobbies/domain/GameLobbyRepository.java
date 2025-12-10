@@ -1,9 +1,12 @@
 package be.kdg.ip3.archportal.lobbies.domain;
 
+import be.kdg.ip3.archportal.games.domain.game.Game;
+import be.kdg.ip3.archportal.lobbies.domain.id.GameId;
 import be.kdg.ip3.archportal.lobbies.domain.id.GameLobbyId;
 import be.kdg.ip3.archportal.lobbies.domain.id.GameSessionId;
 import org.jmolecules.ddd.annotation.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,5 +16,5 @@ public interface GameLobbyRepository {
     Optional<GameLobby> findById(GameLobbyId id);
     Optional<GameLobby> findLobbyBySessionId(GameSessionId sessionId);
     Optional<UUID> findPlayerBySessionId(GameSessionId sessionId);
-
+    List<GameLobby> findAllLobbiesByGameId(GameId gameId);
 }

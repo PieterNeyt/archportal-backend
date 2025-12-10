@@ -1,14 +1,19 @@
 package be.kdg.ip3.archportal.lobbies.application;
 
 import be.kdg.ip3.archportal.games.shared.GamesApi;
+import be.kdg.ip3.archportal.lobbies.api.dto.GameLobbyFace;
+import be.kdg.ip3.archportal.lobbies.api.dto.PlayerLobbyInfo;
 import be.kdg.ip3.archportal.lobbies.domain.GameLobby;
 import be.kdg.ip3.archportal.lobbies.domain.GameLobbyRepository;
 import be.kdg.ip3.archportal.lobbies.domain.GameSession;
 import be.kdg.ip3.archportal.lobbies.domain.id.*;
 import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
+import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
+import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -17,10 +22,12 @@ public class GameLobbyService implements LobbiesApi {
 
     private final GameLobbyRepository gameLobbies;
     private final GamesApi gamesApi;
+    private final ProfilesApi profileApi;
 
-    public GameLobbyService(GameLobbyRepository gameLobbies, GamesApi gamesApi) {
+    public GameLobbyService(GameLobbyRepository gameLobbies, GamesApi gamesApi, ProfilesApi profileApi) {
         this.gameLobbies = gameLobbies;
         this.gamesApi = gamesApi;
+        this.profileApi = profileApi;
     }
 
     @Override
@@ -58,6 +65,43 @@ public class GameLobbyService implements LobbiesApi {
         return lobby;
 
     }
+
+    public GameLobby joinMultiplayerLobby(PlayerId playerId, GameLobbyId lobbyId) {
+
+        GameLobby lobby = gameLobbies.findById(lobbyId)
+                .orElseThrow(() -> new IllegalArgumentException("No lobby found for id: " + lobbyId));
+
+        lobby.addPlayer(playerId);
+
+        gameLobbies.save(lobby);
+
+        return lobby;
+    }
+
+    public List<GameLobby> getLobbiesByGameId(GameId gameId) {
+        return gameLobbies.findAllLobbiesByGameId(gameId);
+    }
+
+    public GameLobby getLobbyInfo(GameLobbyId lobbyId) {
+        return gameLobbies.findById(lobbyId)
+                .orElseThrow(() -> new IllegalArgumentException("No lobby found for id: " + lobbyId));
+    }
+
+    public List<PlayerLobbyInfo> getBasicPlayerInfo(GameLobbyId lobbyId) {
+        var lobby = gameLobbies.findById(lobbyId)
+                .orElseThrow(() -> new IllegalArgumentException("No lobby found for id: " + lobbyId));
+
+        var playerIds = lobby.getPlayers();
+        var response = profileApi.getBasicProfiles(playerIds.stream().map(PlayerId::id).toList());
+
+
+        return response.stream()
+                .map(p -> new PlayerLobbyInfo(
+                        p.Gamertag(),
+                        p.avatarUrl()
+                )).toList();
+       }
+
 
     public GameSession startSession(PlayerId playerId, GameLobbyId lobbyId) {
 

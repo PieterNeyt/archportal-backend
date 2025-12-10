@@ -13,4 +13,6 @@ public interface ProfilesApi {
     boolean existsById(UUID id);
 
     String getProfileEmail(UUID id);
+    List<BasicProfileInfo> getBasicProfiles(List<UUID> profileIds);
+
 }
