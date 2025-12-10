@@ -3,10 +3,10 @@ package be.kdg.ip3.archportal.games.application;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.api.dto.GameDto;
+import be.kdg.ip3.archportal.games.application.command.GameCommand;
 import be.kdg.ip3.archportal.games.domain.NotFoundException;
 import be.kdg.ip3.archportal.games.domain.game.Game;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
-import be.kdg.ip3.archportal.games.domain.owner.Owner;
 import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -55,13 +55,13 @@ public class GameService {
         return this.gameRepository.findByStudioId(studio.getId());
     }
 
-    public Game updateGame(GameDto gameDto, OwnerId ownerId) {
-        var game = this.gameRepository.findById(gameDto.id())
+    public Game updateGame(GameCommand gameCommand, OwnerId ownerId) {
+        var game = this.gameRepository.findById(gameCommand.id())
                 .orElseThrow(() -> new NotFoundException("game not found"));
 
         var gameStudio = this.gameStudioService.findByOwnerId(ownerId);
 
-        game.update(gameDto.toDomain(gameStudio.getId()));
+        game.update(gameCommand.toDomain(gameStudio.getId()));
 
         this.gameRepository.save(game);
         return game;

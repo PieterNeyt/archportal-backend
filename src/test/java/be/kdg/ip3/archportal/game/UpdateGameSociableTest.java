@@ -2,7 +2,7 @@ package be.kdg.ip3.archportal.game;
 
 import be.kdg.ip3.archportal.games.application.GameService;
 import be.kdg.ip3.archportal.games.application.GameStudioService;
-import be.kdg.ip3.archportal.games.api.dto.GameDto;
+import be.kdg.ip3.archportal.games.application.command.GameCommand;
 import be.kdg.ip3.archportal.games.domain.NotFoundException;
 import be.kdg.ip3.archportal.games.domain.game.Game;
 import be.kdg.ip3.archportal.games.domain.game.GameGenre;
@@ -14,18 +14,18 @@ import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 public class UpdateGameSociableTest {
@@ -60,7 +60,7 @@ public class UpdateGameSociableTest {
             var gameStudio = mock(GameStudio.class);
             when(gameStudio.getId()).thenReturn(studioId);
 
-            var gameDto = new GameDto(gameId.id(), "Title", "Description", "hello.com", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
+            var gameDto = new GameCommand(gameId.id(), "Title", "Description", "hello.com", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
 
 
             when(gameRepository.findById(gameId.id())).thenReturn(Optional.of(existingGame));
@@ -88,7 +88,7 @@ public class UpdateGameSociableTest {
             var gameStudio = mock(GameStudio.class);
             when(gameStudio.getId()).thenReturn(studioId);
 
-            var gameDto = new GameDto(gameId.id(), "New Title", "New Description", "new-image.jpg", "new-url.com",BigDecimal.valueOf(20.0), GameGenre.ABSTRACT, 8);
+            var gameDto = new GameCommand(gameId.id(), "New Title", "New Description", "new-image.jpg", "new-url.com",BigDecimal.valueOf(20.0), GameGenre.ABSTRACT, 8);
 
 
             when(gameRepository.findById(gameId.id())).thenReturn(Optional.of(existingGame));
@@ -117,7 +117,7 @@ public class UpdateGameSociableTest {
             var gameId = new GameId(UUID.randomUUID());
             var ownerId = new OwnerId(UUID.randomUUID());
 
-            var gameDto = new GameDto(gameId.id(), "Title", "Description", "hello.com", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
+            var gameDto = new GameCommand(gameId.id(), "Title", "Description", "hello.com", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
 
             when(gameRepository.findById(gameId.id())).thenReturn(Optional.empty());
 
@@ -141,7 +141,7 @@ public class UpdateGameSociableTest {
             var gameStudio = mock(GameStudio.class);
             when(gameStudio.getId()).thenReturn(wrongStudioId);
 
-            var gameDto = new GameDto(gameId.id(), "Title", "Description", "hello.com", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
+            var gameDto = new GameCommand(gameId.id(), "Title", "Description", "hello.com", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
 
 
             when(gameRepository.findById(gameId.id())).thenReturn(Optional.of(existingGame));
@@ -168,7 +168,7 @@ public class UpdateGameSociableTest {
             var gameStudio = mock(GameStudio.class);
             when(gameStudio.getId()).thenReturn(studioId);
 
-            var gameDto = new GameDto(gameId.id(), null, "Description", "", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
+            var gameDto = new GameCommand(gameId.id(), null, "Description", "", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
 
             when(gameRepository.findById(gameId.id())).thenReturn(Optional.of(existingGame));
             when(gameStudioService.findByOwnerId(ownerId)).thenReturn(gameStudio);
@@ -194,7 +194,7 @@ public class UpdateGameSociableTest {
             var gameStudio = mock(GameStudio.class);
             when(gameStudio.getId()).thenReturn(studioId);
 
-            var gameDto = new GameDto(gameId.id(), "Title", "", "", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
+            var gameDto = new GameCommand(gameId.id(), "Title", "", "", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
 
 
             when(gameRepository.findById(gameId.id())).thenReturn(Optional.of(existingGame));
@@ -221,7 +221,7 @@ public class UpdateGameSociableTest {
             var gameStudio = mock(GameStudio.class);
             when(gameStudio.getId()).thenReturn(studioId);
 
-            var gameDto = new GameDto(gameId.id(), "Title", "Description", "", "url.com",BigDecimal.valueOf(-10.0), GameGenre.ABSTRACT, 4);
+            var gameDto = new GameCommand(gameId.id(), "Title", "Description", "", "url.com",BigDecimal.valueOf(-10.0), GameGenre.ABSTRACT, 4);
 
 
             when(gameRepository.findById(gameId.id())).thenReturn(Optional.of(existingGame));
@@ -248,7 +248,7 @@ public class UpdateGameSociableTest {
             var gameStudio = mock(GameStudio.class);
             when(gameStudio.getId()).thenReturn(studioId);
 
-            var gameDto = new GameDto(gameId.id(), "Title", "Description", "Hello.com", "",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
+            var gameDto = new GameCommand(gameId.id(), "Title", "Description", "Hello.com", "",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
 
             when(gameRepository.findById(gameId.id())).thenReturn(Optional.of(existingGame));
             when(gameStudioService.findByOwnerId(ownerId)).thenReturn(gameStudio);
@@ -274,7 +274,7 @@ public class UpdateGameSociableTest {
             var gameStudio = mock(GameStudio.class);
             when(gameStudio.getId()).thenReturn(studioId);
 
-            var gameDto = new GameDto(gameId.id(), "Title", "Description", "", "url.com",BigDecimal.valueOf(10.0), null, 4);
+            var gameDto = new GameCommand(gameId.id(), "Title", "Description", "", "url.com",BigDecimal.valueOf(10.0), null, 4);
 
 
             when(gameRepository.findById(gameId.id())).thenReturn(Optional.of(existingGame));
@@ -301,7 +301,7 @@ public class UpdateGameSociableTest {
             var gameStudio = mock(GameStudio.class);
             when(gameStudio.getId()).thenReturn(studioId);
 
-            var gameDto = new GameDto(gameId.id(), "Title", "Description", "", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, -4);
+            var gameDto = new GameCommand(gameId.id(), "Title", "Description", "", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, -4);
 
 
             when(gameRepository.findById(gameId.id())).thenReturn(Optional.of(existingGame));
@@ -328,7 +328,7 @@ public class UpdateGameSociableTest {
             var gameStudio = mock(GameStudio.class);
             when(gameStudio.getId()).thenReturn(studioId);
 
-            var gameDto = new GameDto(gameId.id(), "Title", "Description", "", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
+            var gameDto = new GameCommand(gameId.id(), "Title", "Description", "", "url.com",BigDecimal.valueOf(10.0), GameGenre.ABSTRACT, 4);
 
             when(gameRepository.findById(gameId.id())).thenReturn(Optional.of(existingGame));
             when(gameStudioService.findByOwnerId(ownerId)).thenReturn(gameStudio);
