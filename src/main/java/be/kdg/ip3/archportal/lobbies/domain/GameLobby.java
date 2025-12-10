@@ -49,9 +49,12 @@ public class GameLobby {
         lobby.closeLobby();
         return lobby;
     }
-    public static GameLobby createMultiplayerLobby() {
-        //TODO: implement multiplayer lobby creation logic
-        return null;
+    public static GameLobby createMultiplayerLobby(GameId gameId, int maxPlayers) {
+        return new GameLobby(
+                GameLobbyId.create(),
+                gameId,
+                maxPlayers
+        );
     }
 
     public void addSession(GameSession session) {

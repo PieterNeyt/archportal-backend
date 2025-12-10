@@ -41,6 +41,14 @@ public class GamesApiService implements GamesApi {
     }
 
     @Override
+    public int getMaxPlayersForGame(UUID gameId) {
+        var game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new NotFoundException("Game Id["+gameId+"] not found"));
+
+        return game.getMaxLobbySize();
+    }
+
+    @Override
     public List<UUID> validateGames(List<UUID> gameIds) {
         return gameIds.stream()
                 .filter(gameId -> !gameRepository.existsById(gameId))

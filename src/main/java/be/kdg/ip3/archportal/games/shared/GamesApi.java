@@ -16,4 +16,5 @@ public interface GamesApi {
     List<GlobalGameDto> getGamesByIds(List<UUID> gameIds);
 
     GlobalGameDto getGameById(UUID gameId);
+    int getMaxPlayersForGame(UUID gameId);
 }

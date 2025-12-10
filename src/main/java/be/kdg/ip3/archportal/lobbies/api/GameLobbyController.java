@@ -1,8 +1,6 @@
 package be.kdg.ip3.archportal.lobbies.api;
 
-import be.kdg.ip3.archportal.lobbies.api.dto.SessionInfo;
-import be.kdg.ip3.archportal.lobbies.api.dto.StartSinglePlayerRequest;
-import be.kdg.ip3.archportal.lobbies.api.dto.StartSinglePlayerResponse;
+import be.kdg.ip3.archportal.lobbies.api.dto.*;
 import be.kdg.ip3.archportal.lobbies.application.GameLobbyService;
 import be.kdg.ip3.archportal.lobbies.domain.GameLobby;
 import be.kdg.ip3.archportal.lobbies.domain.GameSession;
@@ -61,6 +59,22 @@ public class GameLobbyController {
         var location = URI.create("/api/lobbies/sessions/" + session.getGameSessionId().id());
 
         return ResponseEntity.created(location).body(response);
+    }
+
+    @PostMapping("/multiplayer/start")
+    public ResponseEntity<StartMultiPlayerResponse> startMultiplayerLobby(
+            @Valid @RequestBody StartMultiPlayerRequest request,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        var playerId = new PlayerId(UUID.fromString(jwt.getSubject())); // Degene die de lobby heeft aangemaakt
+
+
+        GameLobby lobby = gameLobbyService.createMultiplayerLobby(
+                playerId,
+                new GameId(request.gameId())
+        );
+
+
     }
 
 
