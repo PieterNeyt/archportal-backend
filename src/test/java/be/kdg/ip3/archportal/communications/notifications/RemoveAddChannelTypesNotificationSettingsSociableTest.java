@@ -1,4 +1,4 @@
-package be.kdg.ip3.archportal.notifications;
+package be.kdg.ip3.archportal.communications.notifications;
 
 import be.kdg.ip3.archportal.communications.application.NotificationSettingsServices;
 import be.kdg.ip3.archportal.communications.domain.NotFoundException;
@@ -6,7 +6,6 @@ import be.kdg.ip3.archportal.communications.domain.notification.ChannelType;
 import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettings;
 import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettingsRepository;
 import be.kdg.ip3.archportal.communications.domain.settings.ProfileId;
-import be.kdg.ip3.archportal.profiles.domain.friendRequest.InvalidFriendRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,8 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 

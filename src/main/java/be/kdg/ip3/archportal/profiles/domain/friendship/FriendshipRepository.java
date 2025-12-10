@@ -3,7 +3,9 @@ package be.kdg.ip3.archportal.profiles.domain.friendship;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import org.jmolecules.ddd.annotation.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface FriendshipRepository {
@@ -14,4 +16,6 @@ public interface FriendshipRepository {
     Optional<Friendship> findBetween(ProfileId profileAId, ProfileId profileBId);
     
     boolean existsBetween(ProfileId profileAId, ProfileId profileBId);
+
+    List<UUID> findFriendIds(ProfileId creatorId, List<ProfileId> otherIds);
 }

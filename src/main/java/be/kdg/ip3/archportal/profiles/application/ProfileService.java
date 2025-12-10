@@ -6,6 +6,7 @@ import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
+import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAction;
@@ -147,6 +148,7 @@ public class ProfileService {
                         
                         Kind regards,
                         The Arch Portal Team""";
+                eventPublisher.publishEvent(new FriendShipCreatedEvent(receiver.getId().id(),receiver.getGamerTag(), sender.getId().id(), sender.getGamerTag()));
             }
             case DECLINE -> {
                 receiver.removeFriendRequest(request);

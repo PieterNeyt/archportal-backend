@@ -4,9 +4,11 @@ import be.kdg.ip3.archportal.profiles.domain.friendship.Friendship;
 import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.util.UUID;
 
+@Getter
 @Entity
 @Table(name = "friendship", schema = "profileservice",
         uniqueConstraints = {

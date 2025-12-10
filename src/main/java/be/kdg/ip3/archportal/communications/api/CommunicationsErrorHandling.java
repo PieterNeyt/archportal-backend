@@ -5,13 +5,12 @@ import be.kdg.ip3.archportal.communications.domain.NotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.nio.file.AccessDeniedException;
-
 @ControllerAdvice()
-public class CommunicationsErrorHandeling {
+public class CommunicationsErrorHandling {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> notFoundHandler(final NotFoundException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());

@@ -5,6 +5,8 @@ import be.kdg.ip3.archportal.analytics.shared.CreateGameStatsDto;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
+import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
+import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,17 +21,38 @@ public class ProfileApiService implements ProfilesApi {
     private final ProfileRepository profileRepository;
     private final GamesApi gamesApi;
     private final AnalyticsApi analyticsApi;
+    private final FriendshipRepository friendshipRepository;
 
-    public ProfileApiService(ProfileRepository profileRepository, GamesApi gamesApi, AnalyticsApi analyticsApi) {
+    public ProfileApiService(ProfileRepository profileRepository, GamesApi gamesApi, AnalyticsApi analyticsApi, FriendshipRepository friendshipRepository) {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
         this.analyticsApi = analyticsApi;
+        this.friendshipRepository = friendshipRepository;
     }
 
     @Override
     public boolean existsById(UUID id) {
         var profileId = new ProfileId(id);
         return profileRepository.existsById(profileId);
+    }
+
+    @Override
+    public List<ProfileDto> getProfilesFromGamerTags(List<String> gamerTags) {
+        return profileRepository.findFromGamerTags(gamerTags).stream().map(ProfileDto::from).toList();
+    }
+
+    @Override
+    public boolean areFriends(UUID profileAId, UUID profileBId) {
+        var a = new ProfileId(profileAId);
+        var b = new ProfileId(profileBId);
+        return friendshipRepository.existsBetween(a, b);
+    }
+
+    @Override
+    public List<UUID> getFriendIdsWithCreator(UUID creatorId, List<UUID> candidateIds) {
+        var creator = new ProfileId(creatorId);
+        var others = candidateIds.stream().map(ProfileId::new).toList();
+        return friendshipRepository.findFriendIds(creator, others);
     }
 
     @Override
@@ -77,7 +100,7 @@ public class ProfileApiService implements ProfilesApi {
         games.forEach(profile::acquireGame);
         profileRepository.save(profile);
 
-        for (var game: games){
+        for (var game : games) {
             List<CreateGameStatsDto> createGameStatsDtos = new ArrayList<>();
             createGameStatsDtos.add(new CreateGameStatsDto(game, profileId));
 
