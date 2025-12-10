@@ -43,13 +43,17 @@ public class ProfileService {
         String firstName = token.getClaim("given_name");
         String lastName = token.getClaim("family_name");
         String gamerTag = token.getClaim("preferred_username");
+        String icon = token.getClaim("icon");
         String email = token.getClaim("email");
 
         var profile = profileRepository.findById(profileId).orElseGet(() -> {
-            Profile newProfile = Profile.createProfile(profileId, firstName, lastName, gamerTag, email);
+            Profile newProfile = Profile.createProfile(profileId, firstName, lastName, gamerTag, email,icon);
             eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
             return newProfile;
         });
+
+
+        profile.update(firstName,lastName,gamerTag,email,icon);
 
         profileRepository.save(profile);
         return profile;

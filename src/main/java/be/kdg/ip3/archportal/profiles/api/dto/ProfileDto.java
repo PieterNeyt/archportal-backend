@@ -6,9 +6,10 @@ public record ProfileDto(
         String firstName,
         String lastName,
         String icon,
-        String gamerTag
+        String gamerTag,
+        String email
 ) {
     public static ProfileDto from(Profile profile) {
-        return new ProfileDto(profile.getFirstName(), profile.getLastName(), profile.getIcon(), profile.getGamerTag());
+        return new ProfileDto(profile.getFirstName(), profile.getLastName(), profile.getIcon(), profile.getGamerTag(),profile.getEmail());
     }
 }

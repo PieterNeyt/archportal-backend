@@ -30,6 +30,7 @@ public class RemoveFriendSociableTest {
     ApplicationEventPublisher applicationEventPublisher;
     @Mock
     FriendshipRepository friendshipRepository;
+
     ProfileService service;
 
     @BeforeEach
@@ -54,7 +55,7 @@ public class RemoveFriendSociableTest {
         void removeFriend_friendAccountDoesNotExist_throwsExpected() {
             var profileId = new ProfileId(UUID.randomUUID());
             var gamerTag = "gamerTag";
-            var profile = Profile.createProfile(profileId, "Cian", "Van Acker", "cian", "cian.vanacker@student.kdg.be");
+            var profile = Profile.createProfile(profileId, "Cian", "Van Acker", "cian", "cian.vanacker@student.kdg.be","icon");
 
             when(profileRepository.findById(profileId)).thenReturn(Optional.of(profile));
             when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.empty());
@@ -69,8 +70,8 @@ public class RemoveFriendSociableTest {
             var profileId = new ProfileId(UUID.randomUUID());
             var friendId = new ProfileId(UUID.randomUUID());
             var gamerTag = "gamerTag";
-            var profile = Profile.createProfile(profileId, "Cian", "Van Acker", "cian", "cian.vanacker@student.kdg.be");
-            var friend = Profile.createProfile(friendId, "Alice", "Smith", gamerTag, "alice@example.com");
+            var profile = Profile.createProfile(profileId, "Cian", "Van Acker", "cian", "cian.vanacker@student.kdg.be","icon");
+            var friend = Profile.createProfile(friendId, "Alice", "Smith", gamerTag, "alice@example.com","icon");
 
             when(profileRepository.findById(profileId)).thenReturn(Optional.of(profile));
             when(profileRepository.findByGamerTag(gamerTag)).thenReturn(Optional.of(friend));
@@ -87,8 +88,8 @@ public class RemoveFriendSociableTest {
         var profileId = new ProfileId(UUID.randomUUID());
         var friendId = new ProfileId(UUID.randomUUID());
         var gamerTag = "gamerTag";
-        var profile = Profile.createProfile(profileId, "Cian", "Van Acker", "cian", "cian.vanacker@student.kdg.be");
-        var friend = Profile.createProfile(friendId, "Alice", "Smith", gamerTag, "alice@example.com");
+        var profile = Profile.createProfile(profileId, "Cian", "Van Acker", "cian", "cian.vanacker@student.kdg.be","icon");
+        var friend = Profile.createProfile(friendId, "Alice", "Smith", gamerTag, "alice@example.com","icon");
 
         var friendShip = new Friendship(profileId, friendId);
 
