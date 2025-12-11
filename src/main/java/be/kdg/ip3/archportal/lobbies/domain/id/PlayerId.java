@@ -1,5 +1,8 @@
 package be.kdg.ip3.archportal.lobbies.domain.id;
 
+
+import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
+
 import java.util.UUID;
 
 public record PlayerId(
@@ -12,8 +15,14 @@ public record PlayerId(
         }
     }
 
+    public NotFoundException notFound() {
+        return new NotFoundException("Player [" + id + "] not found");
+    }
+
+
     public static PlayerId create() {
         return new PlayerId(UUID.randomUUID());
     }
 
 }
+

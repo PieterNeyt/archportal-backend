@@ -74,4 +74,16 @@ public class GameLobby {
             gameLobbyStatus = GameLobbyStatus.FULL;
         }
     }
+    
+    public void removePlayer(PlayerId playerId) {
+        if (!players.contains(playerId))
+            throw new NotFoundException("Player not found");
+        players.remove(playerId);
+    }
+
+    public void requirePlayerIsInLobby(PlayerId playerId) {
+        if (!players.contains(playerId)) {
+            throw new IllegalStateException("Only owner can start the lobby");
+        }
+    }
 }

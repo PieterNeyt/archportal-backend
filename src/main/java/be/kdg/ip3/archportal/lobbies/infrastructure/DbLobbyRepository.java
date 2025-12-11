@@ -60,5 +60,13 @@ public class DbLobbyRepository implements GameLobbyRepository {
         return this.jpaLobbyRepository.findIdByPlayerId(playerId.id());
     }
 
+    @Override
+    public Optional<GameLobby> getLobbyFromPLayerID(PlayerId playerId) {
+        return this.jpaLobbyRepository.findByPlayersContaining(playerId.id()).map(JpaGameLobbyEntity::toDomain);
+    }
 
+    @Override
+    public void delete(GameLobby lobby) {
+        this.jpaLobbyRepository.delete(JpaGameLobbyEntity.fromDomain(lobby));
+    }
 }

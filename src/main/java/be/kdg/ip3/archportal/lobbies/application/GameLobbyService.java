@@ -67,8 +67,8 @@ public class GameLobbyService implements LobbiesApi {
 
     public GameLobby joinMultiplayerLobby(PlayerId playerId, GameLobbyId lobbyId) {
 
-        GameLobby lobby = gameLobbies.findById(lobbyId)
-                .orElseThrow(() -> new IllegalArgumentException("No lobby found for id: " + lobbyId));
+        var lobby = gameLobbies.findById(lobbyId)
+                .orElseThrow(lobbyId::notFound);
 
         lobby.addPlayer(playerId);
 
@@ -83,12 +83,22 @@ public class GameLobbyService implements LobbiesApi {
 
     public GameLobby getLobbyInfo(GameLobbyId lobbyId) {
         return gameLobbies.findById(lobbyId)
-                .orElseThrow(() -> new IllegalArgumentException("No lobby found for id: " + lobbyId));
+                .orElseThrow(lobbyId::notFound);
+    }
+
+    public GameSession getPlayerSessionInLobby(PlayerId playerId, GameLobbyId lobbyId) {
+        var lobby = gameLobbies.findById(lobbyId)
+                .orElseThrow(lobbyId::notFound);
+
+        return lobby.getSessions().stream()
+                .filter(s -> s.getPlayerId().equals(playerId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("No session found for playerId: " + playerId + " in lobbyId: " + lobbyId));
     }
 
     public List<PlayerLobbyInfo> getBasicPlayerInfo(GameLobbyId lobbyId) {
         var lobby = gameLobbies.findById(lobbyId)
-                .orElseThrow(() -> new IllegalArgumentException("No lobby found for id: " + lobbyId));
+                .orElseThrow(lobbyId::notFound);
 
         var playerIds = lobby.getPlayers();
         var response = profileApi.getBasicProfiles(playerIds.stream().map(PlayerId::id).toList());
@@ -99,13 +109,13 @@ public class GameLobbyService implements LobbiesApi {
                         p.Gamertag(),
                         p.avatarUrl()
                 )).toList();
-       }
+    }
 
 
     public GameSession startSession(PlayerId playerId, GameLobbyId lobbyId) {
 
-        GameLobby lobby = gameLobbies.findById(lobbyId)
-                .orElseThrow(() -> new IllegalArgumentException("No lobby found for id: " + lobbyId));
+        var lobby = gameLobbies.findById(lobbyId)
+                .orElseThrow(lobbyId::notFound);
 
         String baseLaunchUrl = gamesApi.getGameUrl(lobby.getGameId().id());
 
@@ -122,9 +132,36 @@ public class GameLobbyService implements LobbiesApi {
         return session;
     }
 
+    public GameSession startMultipleSessions(PlayerId ownerId, GameLobbyId lobbyId) {
+
+        var lobby = gameLobbies.findById(lobbyId)
+                .orElseThrow(lobbyId::notFound);
+
+        lobby.requirePlayerIsInLobby(ownerId);
+
+        String baseLaunchUrl = gamesApi.getGameUrl(lobby.getGameId().id());
+
+        List<GameSession> sessions = lobby.getPlayers().stream()
+                .map(playerId -> GameSession.create(
+                        lobby.getGameLobbyId(),
+                        playerId,
+                        baseLaunchUrl
+                )).toList();
+
+        sessions.forEach(lobby::addSession);
+
+        lobby.closeLobby();
+
+        gameLobbies.save(lobby);
+        return sessions.stream()
+                .filter(s -> s.getPlayerId().equals(ownerId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Owner session not found"));
+    }
+
     public GameLobby validateSession(GameSessionId sessionId) {
         return gameLobbies.findLobbyBySessionId(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("No lobby found for sessionId: " + sessionId));
+                .orElseThrow(() -> new SessionNotFoundException(sessionId));
     }
 
     public GameSession getSession(GameSessionId sessionId) {
@@ -144,6 +181,17 @@ public class GameLobbyService implements LobbiesApi {
 
     public UUID getLobbyIdFromPlayerId(PlayerId playerId) {
         return this.gameLobbies.getLobbyIdFromPLayerID(playerId)
-                .orElseThrow(() -> new NotFoundException("No lobby found for playerId: " + playerId));
+                .orElseThrow(playerId::notFound);
+    }
+
+    public void leaveLobby(PlayerId playerId) {
+        var lobby = gameLobbies.getLobbyFromPLayerID(playerId).orElseThrow(playerId::notFound);
+
+        lobby.removePlayer(playerId);
+        if (lobby.getPlayers().isEmpty()) {
+            gameLobbies.delete(lobby);
+            return;
+        }
+        gameLobbies.save(lobby);
     }
 }

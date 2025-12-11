@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.UUID;
 
 public record StartMultiPlayerResponse(
-        UUID lobbyId
+        UUID lobbyId,
+        UUID sessionId,
+        String launchUrl
 )
 {
 }

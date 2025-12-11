@@ -21,12 +21,13 @@ public class GameSession {
 
     private String launchUrl;
 
-    private GameSession(GameSessionId gameSessionId, GameLobbyId gameLorbbyId, PlayerId playerId, String launchUrl) {
+    private GameSession(GameSessionId gameSessionId, GameLobbyId gameLobbyId, PlayerId playerId, String launchUrl) {
         this.gameSessionId = gameSessionId;
         this.playerId = playerId;
         this.startTime = LocalDateTime.now();
         this.endTime = null;
         this.launchUrl = launchUrl;
+        this.gameLobbyId = gameLobbyId;
     }
 
     public GameSession(GameSessionId gameSessionId, GameLobbyId gameLobbyId, PlayerId playerId, LocalDateTime startTime, LocalDateTime endTime, String launchUrl) {
