@@ -49,9 +49,12 @@ public class GameLobby {
         lobby.closeLobby();
         return lobby;
     }
-    public static GameLobby createMultiplayerLobby() {
-        //TODO: implement multiplayer lobby creation logic
-        return null;
+    public static GameLobby createMultiplayerLobby(GameId gameId, int maxPlayers) {
+        return new GameLobby(
+                GameLobbyId.create(),
+                gameId,
+                maxPlayers
+        );
     }
 
     public void addSession(GameSession session) {
@@ -69,6 +72,18 @@ public class GameLobby {
         players.add(playerId);
         if (players.size() == maxPlayers) {
             gameLobbyStatus = GameLobbyStatus.FULL;
+        }
+    }
+    
+    public void removePlayer(PlayerId playerId) {
+        if (!players.contains(playerId))
+            throw new NotFoundException("Player not found");
+        players.remove(playerId);
+    }
+
+    public void requirePlayerIsInLobby(PlayerId playerId) {
+        if (!players.contains(playerId)) {
+            throw new IllegalStateException("Only owner can start the lobby");
         }
     }
 }

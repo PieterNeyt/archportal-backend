@@ -17,4 +17,6 @@ public interface ProfilesApi {
     List<UUID> getFriendIdsWithCreator(UUID creatorId, List<UUID> candidateIds);
 
     String getProfileEmail(UUID id);
+    List<BasicProfileInfo> getBasicProfiles(List<UUID> profileIds);
+
 }

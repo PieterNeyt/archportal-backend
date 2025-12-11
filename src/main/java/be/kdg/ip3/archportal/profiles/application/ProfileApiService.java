@@ -1,13 +1,14 @@
 package be.kdg.ip3.archportal.profiles.application;
 
-import be.kdg.ip3.archportal.analytics.shared.AnalyticsApi;
-import be.kdg.ip3.archportal.analytics.shared.CreateGameStatsDto;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
+import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
-import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
+import be.kdg.ip3.archportal.profiles.shared.BasicProfileInfo;
+import be.kdg.ip3.archportal.profiles.shared.GameAddedToLibraryEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,14 +21,15 @@ import java.util.UUID;
 public class ProfileApiService implements ProfilesApi {
     private final ProfileRepository profileRepository;
     private final GamesApi gamesApi;
-    private final AnalyticsApi analyticsApi;
     private final FriendshipRepository friendshipRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ProfileApiService(ProfileRepository profileRepository, GamesApi gamesApi, AnalyticsApi analyticsApi, FriendshipRepository friendshipRepository) {
+    public ProfileApiService(ProfileRepository profileRepository, GamesApi gamesApi, ApplicationEventPublisher eventPublisher
+    , FriendshipRepository friendshipRepository) {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
-        this.analyticsApi = analyticsApi;
         this.friendshipRepository = friendshipRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -62,6 +64,17 @@ public class ProfileApiService implements ProfilesApi {
                 .orElseThrow(profileId::notFound);
 
         return profile.getEmail();
+    }
+
+    @Override
+    public List<BasicProfileInfo> getBasicProfiles(List<UUID> profileIds) {
+        List<BasicProfileInfo> basicProfileInfos = new ArrayList<>();
+        for (UUID profileId : profileIds) {
+            var id = new ProfileId(profileId);
+            var profile = profileRepository.findById(id).orElseThrow(id::notFound);
+            basicProfileInfos.add(new BasicProfileInfo(profile.getGamerTag(), profile.getIcon()));
+        }
+        return basicProfileInfos;
     }
 
     @Override
@@ -101,11 +114,7 @@ public class ProfileApiService implements ProfilesApi {
         profileRepository.save(profile);
 
         for (var game : games) {
-            List<CreateGameStatsDto> createGameStatsDtos = new ArrayList<>();
-            createGameStatsDtos.add(new CreateGameStatsDto(game, profileId));
-
-            analyticsApi.instantiateGameStatistics(createGameStatsDtos);
+            eventPublisher.publishEvent(new GameAddedToLibraryEvent(this, game, profileId));
         }
-
     }
 }
