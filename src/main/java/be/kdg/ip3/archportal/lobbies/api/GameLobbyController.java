@@ -31,7 +31,7 @@ public class GameLobbyController {
     public ResponseEntity<StartSinglePlayerResponse> startSinglePlayer(
             @Valid @RequestBody StartSinglePlayerRequest request,
             @AuthenticationPrincipal Jwt jwt
-            ) {
+    ) {
 
         var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));
 
@@ -94,7 +94,7 @@ public class GameLobbyController {
     }
 
 
-    @GetMapping ("/multiplayer/{gameid}/lobbies")
+    @GetMapping("/multiplayer/{gameid}/lobbies")
     public ResponseEntity<LobbiesResponse> getAllLobbies(
             @PathVariable UUID gameid
     ) {
@@ -133,12 +133,12 @@ public class GameLobbyController {
         var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));
 
         var playerInLobby = gameLobbyService.isPlayerInLobby(playerId);
-        if(playerInLobby) {
+        if (playerInLobby) {
             var lobbyId = gameLobbyService.getLobbyIdFromPlayerId(playerId);
-            var inLobbyDto =  new InLobbyDto(lobbyId, playerInLobby);
+            var inLobbyDto = new InLobbyDto(lobbyId, playerInLobby);
             return ResponseEntity.ok(inLobbyDto);
         }
-        var inLobbyDto = new InLobbyDto(null,playerInLobby);
+        var inLobbyDto = new InLobbyDto(null, playerInLobby);
         return ResponseEntity.ok(inLobbyDto);
     }
 
@@ -201,5 +201,12 @@ public class GameLobbyController {
                         lobby.getGameId().id()
                 )
         );
+    }
+
+    @PatchMapping()
+    public ResponseEntity<Void> leaveLobby(@AuthenticationPrincipal Jwt jwt) {
+        var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));
+        gameLobbyService.leaveLobby(playerId);
+        return ResponseEntity.ok().build();
     }
 }

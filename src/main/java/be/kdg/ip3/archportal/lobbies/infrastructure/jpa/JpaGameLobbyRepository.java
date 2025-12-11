@@ -38,4 +38,6 @@ public interface JpaGameLobbyRepository extends JpaRepository<JpaGameLobbyEntity
 
     @Query("SELECT l.gameLobbyId FROM JpaGameLobbyEntity l JOIN l.players p WHERE p = :playerId")
     Optional<UUID> findIdByPlayerId(@Param("playerId") UUID playerId);
+
+    Optional<JpaGameLobbyEntity> findByPlayersContaining(UUID playerId);
 }

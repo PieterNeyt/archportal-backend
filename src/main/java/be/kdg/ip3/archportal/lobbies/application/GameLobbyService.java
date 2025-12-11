@@ -99,7 +99,7 @@ public class GameLobbyService implements LobbiesApi {
                         p.Gamertag(),
                         p.avatarUrl()
                 )).toList();
-       }
+    }
 
 
     public GameSession startSession(PlayerId playerId, GameLobbyId lobbyId) {
@@ -174,5 +174,16 @@ public class GameLobbyService implements LobbiesApi {
     public UUID getLobbyIdFromPlayerId(PlayerId playerId) {
         return this.gameLobbies.getLobbyIdFromPLayerID(playerId)
                 .orElseThrow(() -> new NotFoundException("No lobby found for playerId: " + playerId));
+    }
+
+    public void leaveLobby(PlayerId playerId) {
+        var lobby = gameLobbies.getLobbyFromPLayerID(playerId).orElseThrow(() -> new NotFoundException("No lobby found for playerId: " + playerId));
+
+        lobby.removePlayer(playerId);
+        if (lobby.getPlayers().isEmpty()) {
+            gameLobbies.delete(lobby);
+            return;
+        }
+        gameLobbies.save(lobby);
     }
 }
