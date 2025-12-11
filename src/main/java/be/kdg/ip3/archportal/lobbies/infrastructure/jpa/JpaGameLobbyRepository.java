@@ -2,6 +2,7 @@ package be.kdg.ip3.archportal.lobbies.infrastructure.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,4 +32,10 @@ public interface JpaGameLobbyRepository extends JpaRepository<JpaGameLobbyEntity
         WHERE lobby.gameId = :gameId
     """)
     List<JpaGameLobbyEntity> findAllLobbiesByGameId(UUID gameId);
+
+    boolean existsByPlayersContains(UUID player);
+
+
+    @Query("SELECT l.gameLobbyId FROM JpaGameLobbyEntity l JOIN l.players p WHERE p = :playerId")
+    Optional<UUID> findIdByPlayerId(@Param("playerId") UUID playerId);
 }

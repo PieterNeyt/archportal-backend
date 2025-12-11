@@ -1,14 +1,13 @@
 package be.kdg.ip3.archportal.lobbies.application;
 
 import be.kdg.ip3.archportal.games.shared.GamesApi;
-import be.kdg.ip3.archportal.lobbies.api.dto.GameLobbyFace;
 import be.kdg.ip3.archportal.lobbies.api.dto.PlayerLobbyInfo;
 import be.kdg.ip3.archportal.lobbies.domain.GameLobby;
 import be.kdg.ip3.archportal.lobbies.domain.GameLobbyRepository;
 import be.kdg.ip3.archportal.lobbies.domain.GameSession;
+import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.id.*;
 import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
-import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -139,8 +138,12 @@ public class GameLobbyService implements LobbiesApi {
     }
 
 
+    public boolean isPlayerInLobby(PlayerId playerId) {
+        return this.gameLobbies.isPlayerInLobby(playerId);
+    }
 
-
-
-
+    public UUID getLobbyIdFromPlayerId(PlayerId playerId) {
+        return this.gameLobbies.getLobbyIdFromPLayerID(playerId)
+                .orElseThrow(() -> new NotFoundException("No lobby found for playerId: " + playerId));
+    }
 }

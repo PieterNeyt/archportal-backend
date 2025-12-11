@@ -132,6 +132,20 @@ public class GameLobbyController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/player/in-lobby")
+    public ResponseEntity<InLobbyDto> isPlayerInLobby(@AuthenticationPrincipal Jwt jwt) {
+        var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));
+
+        var playerInLobby = gameLobbyService.isPlayerInLobby(playerId);
+        if(playerInLobby) {
+            var lobbyId = gameLobbyService.getLobbyIdFromPlayerId(playerId);
+            var inLobbyDto =  new InLobbyDto(lobbyId, playerInLobby);
+            return ResponseEntity.ok(inLobbyDto);
+        }
+        var inLobbyDto = new InLobbyDto(null,playerInLobby);
+        return ResponseEntity.ok(inLobbyDto);
+    }
+
 
 
 

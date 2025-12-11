@@ -5,6 +5,7 @@ import be.kdg.ip3.archportal.lobbies.domain.GameLobbyRepository;
 import be.kdg.ip3.archportal.lobbies.domain.id.GameId;
 import be.kdg.ip3.archportal.lobbies.domain.id.GameLobbyId;
 import be.kdg.ip3.archportal.lobbies.domain.id.GameSessionId;
+import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
 import be.kdg.ip3.archportal.lobbies.infrastructure.jpa.JpaGameLobbyEntity;
 import be.kdg.ip3.archportal.lobbies.infrastructure.jpa.JpaGameLobbyRepository;
 import org.springframework.stereotype.Repository;
@@ -47,6 +48,16 @@ public class DbLobbyRepository implements GameLobbyRepository {
         return jpaLobbyRepository.findAllLobbiesByGameId(gameId.id()).stream()
                 .map(JpaGameLobbyEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public boolean isPlayerInLobby(PlayerId playerId) {
+        return this.jpaLobbyRepository.existsByPlayersContains(playerId.id());
+    }
+
+    @Override
+    public Optional<UUID> getLobbyIdFromPLayerID(PlayerId playerId) {
+        return this.jpaLobbyRepository.findIdByPlayerId(playerId.id());
     }
 
 
