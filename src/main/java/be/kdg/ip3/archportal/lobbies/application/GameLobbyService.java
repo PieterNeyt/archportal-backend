@@ -122,6 +122,35 @@ public class GameLobbyService implements LobbiesApi {
         return session;
     }
 
+    public GameSession startMultipleSessions(PlayerId ownerId, GameLobbyId lobbyId) {
+
+        GameLobby lobby = gameLobbies.findById(lobbyId)
+                .orElseThrow(() -> new IllegalArgumentException("No lobby found for id: " + lobbyId));
+
+        if (!lobby.getPlayers().contains(ownerId)) {
+            throw new IllegalStateException("Only owner can start the lobby");
+        }
+
+        String baseLaunchUrl = gamesApi.getGameUrl(lobby.getGameId().id());
+
+        List<GameSession> sessions = lobby.getPlayers().stream()
+                .map(playerId -> GameSession.create(
+                        lobby.getGameLobbyId(),
+                        playerId,
+                        baseLaunchUrl
+                )).toList();
+
+        sessions.forEach(lobby::addSession);
+
+        lobby.closeLobby();
+
+        gameLobbies.save(lobby);
+        return sessions.stream()
+                .filter(s -> s.getPlayerId().equals(ownerId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Owner session not found"));
+    }
+
     public GameLobby validateSession(GameSessionId sessionId) {
         return gameLobbies.findLobbyBySessionId(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("No lobby found for sessionId: " + sessionId));

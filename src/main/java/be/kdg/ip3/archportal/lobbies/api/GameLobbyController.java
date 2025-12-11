@@ -9,6 +9,7 @@ import be.kdg.ip3.archportal.lobbies.domain.id.GameLobbyId;
 import be.kdg.ip3.archportal.lobbies.domain.id.GameSessionId;
 import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/lobbies")
 public class GameLobbyController {
@@ -57,7 +59,7 @@ public class GameLobbyController {
     }
 
     @PostMapping("/multiplayer/prepare")
-    public ResponseEntity<StartMultiPlayerResponse> startMultiplayerLobby(
+    public ResponseEntity<UUID> startMultiplayerLobby(
             @Valid @RequestBody StartMultiPlayerRequest request,
             @AuthenticationPrincipal Jwt jwt
     ) {
@@ -69,14 +71,9 @@ public class GameLobbyController {
                 new GameId(request.gameId())
         );
 
-        var response = new StartMultiPlayerResponse(
-                lobby.getGameLobbyId().id()
-        );
-
-
         var location = URI.create("/api/lobbies/" + lobby.getGameLobbyId().id());
 
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.created(location).body(lobby.getGameLobbyId().id());
     }
 
     @PatchMapping("/multiplayer/{lobbyid}/join")
@@ -97,6 +94,7 @@ public class GameLobbyController {
         return ResponseEntity.ok(response);
 
     }
+
 
     @GetMapping ("/multiplayer/{gameid}/lobbies")
     public ResponseEntity<LobbiesResponse> getAllLobbies(
@@ -145,6 +143,50 @@ public class GameLobbyController {
         var inLobbyDto = new InLobbyDto(null,playerInLobby);
         return ResponseEntity.ok(inLobbyDto);
     }
+
+    @PostMapping("/multiplayer/start")
+    public ResponseEntity<StartMultiPlayerResponse> startMultiplayerSession(
+            @Valid @RequestBody StartMultiplayerGameRequest request,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+
+        var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));
+
+        var mySession = gameLobbyService.startMultipleSessions(playerId, new GameLobbyId(request.lobbyId()));
+
+        var response = new StartMultiPlayerResponse(
+                mySession.getGameLobbyId().id(),
+                mySession.getGameSessionId().id(),
+                mySession.getLaunchUrl()
+        );
+
+        var location = URI.create("/api/lobbies/sessions/" + mySession.getGameSessionId().id());
+
+        return ResponseEntity.created(location).body(response);
+
+
+    }
+
+    @GetMapping("/multiplayer/{lobbyid}/session")
+    public ResponseEntity<StartMultiPlayerResponse> getMySession(
+            @PathVariable UUID lobbyid,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));
+        var lobby = gameLobbyService.getLobbyInfo(new GameLobbyId(lobbyid));
+
+        var session = lobby.getSessions().stream()
+                .filter(s -> s.getPlayerId().equals(playerId))
+                .findFirst()
+                .orElseThrow();
+
+        return ResponseEntity.ok(new StartMultiPlayerResponse(
+                session.getGameLobbyId().id(),
+                session.getGameSessionId().id(),
+                session.getLaunchUrl()
+        ));
+    }
+
 
 
 
