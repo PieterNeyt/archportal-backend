@@ -67,7 +67,7 @@ public class GameLobbyService implements LobbiesApi {
 
     public GameLobby joinMultiplayerLobby(PlayerId playerId, GameLobbyId lobbyId) {
 
-        GameLobby lobby = gameLobbies.findById(lobbyId)
+        var lobby = gameLobbies.findById(lobbyId)
                 .orElseThrow(lobbyId::notFound);
 
         lobby.addPlayer(playerId);
