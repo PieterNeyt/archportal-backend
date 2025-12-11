@@ -58,7 +58,11 @@ INSERT INTO analyticsservice.game_statistics (last_played_at, total_playtime_min
 VALUES (NOW(), 120, '1b2d89fa-bd59-4873-b568-8df26c3a047c', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
        (NOW(), 95, '1b2d89fa-bd59-4873-b568-8df26c3a047c', '5a129b2c-3016-4616-bca0-99ec7b067b32'),
        (NOW(), 150, '1b2d89fa-bd59-4873-b568-8df26c3a047c', '58e1a434-0797-4d3d-9140-e846b20b7887'),
-       (NOW(), 80, '1b2d89fa-bd59-4873-b568-8df26c3a047c', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad');
+       (NOW(), 80, '1b2d89fa-bd59-4873-b568-8df26c3a047c', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad'),
+       (NOW(), 120, '1b2d89fa-bd59-4873-b568-8df26c3a047d', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
+       (NOW(), 95, '1b2d89fa-bd59-4873-b568-8df26c3a047d', '5a129b2c-3016-4616-bca0-99ec7b067b32'),
+       (NOW(), 150, '1b2d89fa-bd59-4873-b568-8df26c3a047d', '58e1a434-0797-4d3d-9140-e846b20b7887'),
+       (NOW(), 80, '1b2d89fa-bd59-4873-b568-8df26c3a047d', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad');
 
 INSERT INTO profileservice.friendship(id, profile_a_id, profile_b_id)
 VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840',
@@ -78,41 +82,52 @@ VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c
 
 INSERT INTO communicationservice.message(id, chat_room_id, sender, text, timestamp)
 VALUES ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Hey Axel, hoe gaat het met je vandaag?', now() - interval '30 minutes'),
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Hey Axel, hoe gaat het met je vandaag?'
+       , now() - interval '30 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Hi Cian! Goed, en met jou? Nog plannen voor vanavond?', now() - interval '28 minutes'),
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Hi Cian! Goed, en met jou? Nog plannen voor vanavond?'
+       , now() - interval '28 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaac', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Met mij ook prima. Misschien even gamen later?', now() - interval '25 minutes'),
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Met mij ook prima. Misschien even gamen later?'
+       , now() - interval '25 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaad', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Klinkt goed! Welke game dacht je te spelen?', now() - interval '22 minutes'),
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Klinkt goed! Welke game dacht je te spelen?'
+       , now() - interval '22 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaae', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Misschien wat Fortnite of Apex, hangt van jou af.', now() - interval '20 minutes'),
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Misschien wat Fortnite of Apex, hangt van jou af.'
+       , now() - interval '20 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaf', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Laten we Fortnite doen, lang niet gespeeld!', now() - interval '18 minutes'),
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Laten we Fortnite doen, lang niet gespeeld!'
+       , now() - interval '18 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaba', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Top, dan kunnen we meteen wat squads doen.', now() - interval '15 minutes'),
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Top, dan kunnen we meteen wat squads doen.'
+       , now() - interval '15 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaca', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Perfect, ik zet de stream alvast klaar.', now() - interval '12 minutes'),
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Perfect, ik zet de stream alvast klaar.'
+       , now() - interval '12 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaada', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Nice! Heb je nog iets lekkers om te snacken?', now() - interval '10 minutes'),
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Nice! Heb je nog iets lekkers om te snacken?'
+       , now() - interval '10 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaea', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Chips en cola, klassiekers 😄', now()- interval '9 minutes'),
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Chips en cola, klassiekers 😄', now() - interval '9 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaafa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
        , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Perfect combo! Ready om te starten?', now() - interval '8 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaadaa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Yep, ik join nu.', now()- interval '7 minutes'),
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Yep, ik join nu.', now() - interval '7 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaadda', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
        , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Ok, laten we een paar potjes winnen!', now() - interval '6 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaeaaadea', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Deal! Let’s go 💪', now()- interval '5 minutes'),
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Deal! Let’s go 💪', now() - interval '5 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaeaadda', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Haha ja, team work makes the dream work!', now() - interval '4 minutes'),
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Haha ja, team work makes the dream work!'
+       , now() - interval '4 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaadea', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , '5a129b2c-3016-4616-bca0-99ec7b067b32', '😂 Precies, we hebben dit!', now()- interval '3 days'),
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', '😂 Precies, we hebben dit!', now() - interval '3 days'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaeda', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Start jij de lobby? Ik moet nog even water halen.', now() - interval '2 minutes'),
+       , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Start jij de lobby? Ik moet nog even water halen.'
+       , now() - interval '2 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaeea', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Zal ik doen! Snel terug dan 😉', now()- interval '1 minutes'),
+       , '5a129b2c-3016-4616-bca0-99ec7b067b32', 'Zal ik doen! Snel terug dan 😉', now() - interval '1 minutes'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaefa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
        , 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Ok, ik ben er bijna. Let’s go!', now() - interval '30 seconds'),
        ( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaabaaa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
