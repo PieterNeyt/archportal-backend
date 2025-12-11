@@ -87,7 +87,7 @@ public class GameLobbyService implements LobbiesApi {
     }
 
     public GameSession getPlayerSessionInLobby(PlayerId playerId, GameLobbyId lobbyId) {
-        GameLobby lobby = gameLobbies.findById(lobbyId)
+        var lobby = gameLobbies.findById(lobbyId)
                 .orElseThrow(lobbyId::notFound);
 
         return lobby.getSessions().stream()
@@ -114,7 +114,7 @@ public class GameLobbyService implements LobbiesApi {
 
     public GameSession startSession(PlayerId playerId, GameLobbyId lobbyId) {
 
-        GameLobby lobby = gameLobbies.findById(lobbyId)
+        var lobby = gameLobbies.findById(lobbyId)
                 .orElseThrow(lobbyId::notFound);
 
         String baseLaunchUrl = gamesApi.getGameUrl(lobby.getGameId().id());
@@ -134,7 +134,7 @@ public class GameLobbyService implements LobbiesApi {
 
     public GameSession startMultipleSessions(PlayerId ownerId, GameLobbyId lobbyId) {
 
-        GameLobby lobby = gameLobbies.findById(lobbyId)
+        var lobby = gameLobbies.findById(lobbyId)
                 .orElseThrow(lobbyId::notFound);
 
         lobby.requirePlayerIsInLobby(ownerId);
