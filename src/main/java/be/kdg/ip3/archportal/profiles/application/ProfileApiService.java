@@ -1,13 +1,12 @@
 package be.kdg.ip3.archportal.profiles.application;
 
-import be.kdg.ip3.archportal.analytics.shared.AnalyticsApi;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
-import be.kdg.ip3.archportal.profiles.shared.GameAddedToLibraryEvent;
+import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
-import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
-import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.BasicProfileInfo;
+import be.kdg.ip3.archportal.profiles.shared.GameAddedToLibraryEvent;
+import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -22,14 +21,13 @@ import java.util.UUID;
 public class ProfileApiService implements ProfilesApi {
     private final ProfileRepository profileRepository;
     private final GamesApi gamesApi;
-    private final AnalyticsApi analyticsApi;
     private final FriendshipRepository friendshipRepository;
     private final ApplicationEventPublisher eventPublisher;
 
-    public ProfileApiService(ProfileRepository profileRepository, GamesApi gamesApi, ApplicationEventPublisher eventPublisher) {
+    public ProfileApiService(ProfileRepository profileRepository, GamesApi gamesApi, ApplicationEventPublisher eventPublisher
+    , FriendshipRepository friendshipRepository) {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
-        this.analyticsApi = analyticsApi;
         this.friendshipRepository = friendshipRepository;
         this.eventPublisher = eventPublisher;
     }
@@ -116,13 +114,7 @@ public class ProfileApiService implements ProfilesApi {
         profileRepository.save(profile);
 
         for (var game : games) {
-            List<CreateGameStatsDto> createGameStatsDtos = new ArrayList<>();
-            createGameStatsDtos.add(new CreateGameStatsDto(game, profileId));
-
-            analyticsApi.instantiateGameStatistics(createGameStatsDtos);
+            eventPublisher.publishEvent(new GameAddedToLibraryEvent(this, game, profileId));
         }
-        for (var game: games){
-            eventPublisher.publishEvent(new GameAddedToLibraryEvent(this, game, profileId));        }
-
     }
 }
