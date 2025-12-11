@@ -187,9 +187,9 @@ public class GameLobbyController {
     @GetMapping("/sessions/{sessionId}")
     public ResponseEntity<SessionInfo> validateSession(@PathVariable UUID sessionId) {
 
-        GameLobby lobby = gameLobbyService.validateSession(new GameSessionId(sessionId));
+        var lobby = gameLobbyService.validateSession(new GameSessionId(sessionId));
 
-        GameSession session = gameLobbyService.getSession(new GameSessionId(sessionId));
+        var session = gameLobbyService.getSession(new GameSessionId(sessionId));
 
         return ResponseEntity.ok(
                 new SessionInfo(

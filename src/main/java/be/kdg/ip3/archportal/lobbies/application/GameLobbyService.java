@@ -56,7 +56,7 @@ public class GameLobbyService implements LobbiesApi {
     }
 
     public GameLobby createMultiplayerLobby(PlayerId playerId, GameId gameId) {
-        int maxPlayers = gamesApi.getMaxPlayersForGame(gameId.id());
+        var maxPlayers = gamesApi.getMaxPlayersForGame(gameId.id());
         var lobby = GameLobby.createMultiplayerLobby(gameId, maxPlayers);
 
         lobby.addPlayer(playerId);
