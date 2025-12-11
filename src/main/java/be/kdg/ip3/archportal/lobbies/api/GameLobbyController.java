@@ -58,7 +58,7 @@ public class GameLobbyController {
 
     @PostMapping("/multiplayer/prepare")
     public ResponseEntity<UUID> startMultiplayerLobby(
-            @Valid @RequestBody StartMultiPlayerRequest request,
+            @Valid @RequestBody StartMultiPlayerLobbyRequest request,
             @AuthenticationPrincipal Jwt jwt
     ) {
         var playerId = new PlayerId(UUID.fromString(jwt.getSubject())); // Degene die de lobby heeft aangemaakt
@@ -102,7 +102,7 @@ public class GameLobbyController {
         var lobbies = gameLobbyService.getLobbiesByGameId(new GameId(gameid));
 
         var response = new LobbiesResponse(
-                lobbies.stream().map(lobby -> new GameLobbyFace(
+                lobbies.stream().map(lobby -> new GameLobbyInfo(
                         lobby.getGameLobbyId().id(),
                         lobby.getMaxPlayers(),
                         lobby.getPlayers().size(),
