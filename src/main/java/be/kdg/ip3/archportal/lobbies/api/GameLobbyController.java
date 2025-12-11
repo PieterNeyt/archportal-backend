@@ -171,12 +171,10 @@ public class GameLobbyController {
             @AuthenticationPrincipal Jwt jwt
     ) {
         var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));
-        var lobby = gameLobbyService.getLobbyInfo(new GameLobbyId(lobbyid));
-
-        var session = lobby.getSessions().stream()
-                .filter(s -> s.getPlayerId().equals(playerId))
-                .findFirst()
-                .orElseThrow();
+        var session = gameLobbyService.getPlayerSessionInLobby(
+                playerId,
+                new GameLobbyId(lobbyid)
+        );
 
         return ResponseEntity.ok(new StartMultiPlayerResponse(
                 session.getGameLobbyId().id(),
