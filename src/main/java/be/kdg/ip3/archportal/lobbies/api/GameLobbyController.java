@@ -188,9 +188,6 @@ public class GameLobbyController {
     }
 
 
-
-
-
     @GetMapping("/sessions/{sessionId}")
     public ResponseEntity<SessionInfo> validateSession(@PathVariable UUID sessionId) {
 
