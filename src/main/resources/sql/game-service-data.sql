@@ -36,7 +36,12 @@ VALUES ('f7b56a1e-1c63-4d0c-aa75-3b40e8253e19', '3f071d5d-5d2e-4b5f-9c12-7cf7e90
        ('ab842ad3-7426-492f-bfda-4c61689ec2c4', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', 'Campfire Stories',
         'A family-friendly party game where players build stories using illustrated prompt cards.', 24.99,
         'https://i.kickstarter.com/assets/026/491/434/3d8e598174acdbebfbf2e3348a5b0ff3_original.jpg?anim=false&fit=cover&gravity=auto&height=873&origin=ugc&q=92&v=1568619866&width=1552&sig=w7B94mmyjQcUBHpfytD9pVa5h8Cm9ilkmNnW9hvYoOI%3D',
-        'https://hub.example.com/games/campfire-stories', 'FAMILY', 20);
+        'https://hub.example.com/games/campfire-stories', 'FAMILY', 20)
+        ,
+       ('ab842ad3-7426-492f-bfda-4c61689ec2c5', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', 'Checkers - compose',
+        'Play checkers with the computer or with friends', 24.99,
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwPrFsAjP-cH2rMWGL53Xs3fTwUvSEn4I9QA&s',
+        'http://localhost/checkers/', 'STRATEGY', 2);
 
 INSERT INTO profileservice.profile (id, first_name, last_name, gamer_tag, icon, platform_points, email)
 VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Cian', 'Van Acker', 'cian', null, 0, 'cian.vanacker@student.kdg.be'),
