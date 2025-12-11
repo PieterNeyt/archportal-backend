@@ -3,6 +3,7 @@ package be.kdg.ip3.archportal.profiles.infrastructure.friendship.jpa;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,4 +22,11 @@ public interface JpaFriendShipRepository extends JpaRepository<JpaFriendshipEnti
            or (f.profileAId = :b and f.profileBId = :a)
     """)
     boolean existsBetween(UUID a, UUID b);
+
+    @Query("""
+        select f from JpaFriendshipEntity f
+        where (f.profileAId = :creatorId and f.profileBId in :ids)
+           or (f.profileBId = :creatorId and f.profileAId in :ids)
+    """)
+    List<JpaFriendshipEntity> findFriendsWithCreator(UUID creatorId, List<UUID> ids);
 }

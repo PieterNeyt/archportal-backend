@@ -1,8 +1,11 @@
-package be.kdg.ip3.archportal.notifications;
+package be.kdg.ip3.archportal.communications.notifications;
 
 import be.kdg.ip3.archportal.communications.application.NotificationServices;
 import be.kdg.ip3.archportal.communications.domain.NotFoundException;
-import be.kdg.ip3.archportal.communications.domain.notification.*;
+import be.kdg.ip3.archportal.communications.domain.notification.Notification;
+import be.kdg.ip3.archportal.communications.domain.notification.NotificationId;
+import be.kdg.ip3.archportal.communications.domain.notification.NotificationRepository;
+import be.kdg.ip3.archportal.communications.domain.notification.ReceiverId;
 import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettings;
 import be.kdg.ip3.archportal.communications.domain.settings.NotificationSettingsRepository;
 import be.kdg.ip3.archportal.communications.domain.settings.ProfileId;
@@ -12,18 +15,17 @@ import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
-        import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 public class RemoveAddNotificationsSociableTest {
