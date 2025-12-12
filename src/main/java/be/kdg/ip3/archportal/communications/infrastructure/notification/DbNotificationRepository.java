@@ -27,7 +27,7 @@ public class DbNotificationRepository implements NotificationRepository {
 
     @Override
     public Optional<List<Notification>> findByReceiverId(ReceiverId receiverId) {
-        return this.repository.findByReceiverId(receiverId.id())
+        return this.repository.findByReceiverIdOrderByCreatedAtDesc(receiverId.id())
                 .map(list -> list.stream()
                         .map(JpaNotificationEntity::toDomain)
                         .toList());
@@ -35,10 +35,11 @@ public class DbNotificationRepository implements NotificationRepository {
 
     @Override
     public Optional<List<Notification>> findByReceiverIdFirstAmount(ReceiverId receiverId, int  amount) {
-        return this.repository.findByReceiverId(receiverId.id(), Pageable.ofSize(amount))
+        return this.repository.findByReceiverIdOrderByCreatedAtDesc(receiverId.id(), Pageable.ofSize(amount))
                 .map(list -> list.stream()
                         .map(JpaNotificationEntity::toDomain)
-                        .toList());    }
+                        .toList());
+    }
 
     @Override
     public int getTotalNotificationFromReceiverId(ReceiverId receiverId) {
