@@ -1,3 +1,10 @@
+create schema if not exists gameservice;
+create schema if not exists analyticsservice;
+create schema if not exists lobbyservice;
+create schema if not exists shopservice;
+create schema if not exists communicationservice;
+create schema if not exists profileservice;
+
 -- ===== Owners =====
 INSERT INTO gameservice.owner (id, game_studio_id)
 VALUES ('51d0b9d3-80aa-4d18-9c3b-84b2f8b8d671', '3f071d5d-5d2e-4b5f-9c12-7cf7e902b113'),

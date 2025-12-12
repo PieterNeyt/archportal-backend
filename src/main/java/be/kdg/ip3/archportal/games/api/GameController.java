@@ -26,7 +26,7 @@ public class GameController {
     @PostMapping({"", "/"})
     public ResponseEntity<GameDto> createGame(@Valid @RequestBody GameDto gameDto, @AuthenticationPrincipal Jwt token) {
         var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
-        var game = gameService.createGame(gameDto, ownerId);
+        var game = gameService.createGame(GameCommand.fromDto(gameDto), ownerId);
         var location = URI.create("/api/games/" + game.getId().id());
         return ResponseEntity.created(location).body(GameDto.fromDomain(game));
     }

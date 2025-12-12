@@ -10,9 +10,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface JpaNotificationRepository extends JpaRepository<JpaNotificationEntity, UUID> {
-    Optional<List<JpaNotificationEntity>> findByReceiverId(UUID receiverId);
-
-    Optional<List<JpaNotificationEntity>> findByReceiverId(UUID receiverId, Pageable pageable);
-
     int countByReceiverId(UUID receiverId);
+
+    Optional<List<JpaNotificationEntity>>  findByReceiverIdOrderByCreatedAtDesc(UUID receiverId, Pageable pageable);
+
+    Optional<List<JpaNotificationEntity>>  findByReceiverIdOrderByCreatedAtDesc(UUID receiverId);
+
 }
