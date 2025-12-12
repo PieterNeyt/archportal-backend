@@ -34,9 +34,9 @@ public record GameCommand(
 
     public Game toDomain(GameStudioId gameStudioId) {
         GameId gameId;
-        if (id==null) {
-            gameId=GameId.create();
-        }else {
+        if (id == null) {
+            gameId = GameId.create();
+        } else {
             gameId = new GameId(id);
         }
         return new Game(
@@ -49,6 +49,7 @@ public record GameCommand(
                 gameUrl,
                 genre,
                 maxlobbysize
-        ); }
+        );
+    }
 }
 
