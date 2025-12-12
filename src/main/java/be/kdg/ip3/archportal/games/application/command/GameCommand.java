@@ -33,7 +33,23 @@ public record GameCommand(
     }
 
     public Game toDomain(GameStudioId gameStudioId) {
-        return new Game(new GameId(id),gameStudioId,title,description,price,imageUrl,gameUrl,genre,maxlobbysize);
+        GameId gameId;
+        if (id == null) {
+            gameId = GameId.create();
+        } else {
+            gameId = new GameId(id);
+        }
+        return new Game(
+                gameId,
+                gameStudioId,
+                title,
+                description,
+                price,
+                imageUrl,
+                gameUrl,
+                genre,
+                maxlobbysize
+        );
     }
 }
 
