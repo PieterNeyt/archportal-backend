@@ -6,12 +6,14 @@ import be.kdg.ip3.archportal.games.api.dto.GameDto;
 import be.kdg.ip3.archportal.games.application.command.GameCommand;
 import be.kdg.ip3.archportal.games.domain.NotFoundException;
 import be.kdg.ip3.archportal.games.domain.game.Game;
+import be.kdg.ip3.archportal.games.domain.game.GameGenre;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
 import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -27,12 +29,11 @@ public class GameService {
         this.eventPublisher = eventPublisher;
     }
 
-    public Game createGame(GameDto gameDto, OwnerId ownerId) {
+    public Game createGame(  GameCommand gameCommand, OwnerId ownerId) {
         var studio = gameStudioService.findByOwnerId(ownerId);
         studio.checkOwner(ownerId);
-        
-        var game = new Game(studio.getId(), gameDto.title(), gameDto.description(),
-                gameDto.price(), gameDto.imageUrl(), gameDto.gameUrl(), gameDto.genre(),gameDto.maxlobbysize());
+
+        var game = gameCommand.toDomain(studio.getId());
 
         gameRepository.save(game);
 
