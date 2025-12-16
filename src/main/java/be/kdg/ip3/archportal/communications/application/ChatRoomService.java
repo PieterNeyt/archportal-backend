@@ -7,6 +7,7 @@ import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomRepository;
 import be.kdg.ip3.archportal.communications.domain.chatroom.Message;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
+import be.kdg.ip3.archportal.lobbies.shared.CreatePartyEvent;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
@@ -37,6 +38,13 @@ public class ChatRoomService {
         var chatRoom = new ChatRoom(event.profileAGamertag() + ", " + event.profileBGamertag());
         chatRoom.addMember(event.profileAId());
         chatRoom.addMember(event.profileBId());
+        chatRoomRepository.save(chatRoom);
+    }
+
+    @ApplicationModuleListener
+    public void onPartyCreated(CreatePartyEvent event) {
+        var chatRoom = new ChatRoom("Party chat");
+        chatRoom.addMember(event.hostId());
         chatRoomRepository.save(chatRoom);
     }
 
@@ -91,7 +99,7 @@ public class ChatRoomService {
         var message = new Message(profileId, text);
         chatRoom.addMessage(message);
         chatRoomRepository.save(chatRoom);
-        
+
         chatRoom.getMembers().forEach(member -> eventPublisher.publishEvent(new AddNotificationEvent(member, "New message from " + chatRoom.getTitle(), text, NotificationType.CHAT)));
         return message;
     }
