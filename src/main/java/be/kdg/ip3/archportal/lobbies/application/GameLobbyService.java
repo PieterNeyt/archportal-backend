@@ -110,7 +110,7 @@ public class GameLobbyService implements LobbiesApi {
 
         return response.stream()
                 .map(p -> new PlayerLobbyInfo(
-                        p.Gamertag(),
+                        p.gamertag(),
                         p.avatarUrl()
                 )).toList();
     }

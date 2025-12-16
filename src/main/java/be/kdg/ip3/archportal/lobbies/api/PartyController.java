@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.lobbies.api;
 
+import be.kdg.ip3.archportal.lobbies.api.dto.MemberDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.PartyDto;
 import be.kdg.ip3.archportal.lobbies.application.PartyService;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -30,11 +32,18 @@ public class PartyController {
         var location = URI.create("/api/party/" + party.getId().id());
         return ResponseEntity.created(location).build();
     }
-    
+
     @GetMapping({"/", ""})
     public ResponseEntity<PartyDto> getParty(@AuthenticationPrincipal Jwt token) {
         var memberId = new PlayerId(UUID.fromString(token.getSubject()));
         var party = partyService.findPartyByMemberId(memberId);
-        return ResponseEntity.ok().body(PartyDto.fromDomain(party, memberId));
+        return ResponseEntity.ok(PartyDto.fromDomain(party, memberId));
+    }
+
+    @GetMapping({"/members"})
+    public ResponseEntity<List<MemberDto>> getMembers(@AuthenticationPrincipal Jwt token) {
+        var memberId = new PlayerId(UUID.fromString(token.getSubject()));
+        var members = partyService.findMembers(memberId);
+        return ResponseEntity.ok(members.stream().map(MemberDto::from).toList());
     }
 }
