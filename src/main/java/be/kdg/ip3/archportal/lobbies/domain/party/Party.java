@@ -14,19 +14,21 @@ import java.util.UUID;
 public class Party {
     @Identity
     private PartyId id;
+    private String title;
     private PlayerId hostId;
-    private Set<PlayerId> playerIds;
+    private Set<PlayerId> members;
     private int maxMembers;
     private static int totalMaxMembers = 10;
 
-    public Party(PartyId id, PlayerId hostId, Set<PlayerId> playerIds, int maxMembers) {
+    public Party(PartyId id, String title, PlayerId hostId, Set<PlayerId> members, int maxMembers) {
         this.id = id;
+        this.title = title;
         this.hostId = hostId;
-        this.playerIds = playerIds;
+        this.members = members;
         this.maxMembers = maxMembers;
     }
 
     public Party(PlayerId hostId) {
-        this(new PartyId(UUID.randomUUID()), hostId, new HashSet<>(), totalMaxMembers);
+        this(new PartyId(UUID.randomUUID()),"Pro squad", hostId, new HashSet<>(), totalMaxMembers);
     }
 }

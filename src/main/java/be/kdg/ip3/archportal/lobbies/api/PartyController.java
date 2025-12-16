@@ -1,10 +1,12 @@
 package be.kdg.ip3.archportal.lobbies.api;
 
+import be.kdg.ip3.archportal.lobbies.api.dto.PartyDto;
 import be.kdg.ip3.archportal.lobbies.application.PartyService;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +27,14 @@ public class PartyController {
     public ResponseEntity<Void> createParty(@AuthenticationPrincipal Jwt token) {
         var hostId = new PlayerId(UUID.fromString(token.getSubject()));
         var party = partyService.createParty(hostId);
-        var location = URI.create("/api/party/" + party.getId());
+        var location = URI.create("/api/party/" + party.getId().id());
         return ResponseEntity.created(location).build();
+    }
+    
+    @GetMapping({"/", ""})
+    public ResponseEntity<PartyDto> getParty(@AuthenticationPrincipal Jwt token) {
+        var memberId = new PlayerId(UUID.fromString(token.getSubject()));
+        var party = partyService.findPartyByMemberId(memberId);
+        return ResponseEntity.ok().body(PartyDto.fromDomain(party, memberId));
     }
 }

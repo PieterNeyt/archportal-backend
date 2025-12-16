@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.lobbies.application;
 
+import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import be.kdg.ip3.archportal.lobbies.domain.party.Party;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyRepository;
@@ -23,12 +24,21 @@ public class PartyService {
     }
 
     public Party createParty(PlayerId hostId) {
-        if (profilesApi.existsById(hostId.id()))
+        if (!profilesApi.existsById(hostId.id()))
             throw hostId.notFound();
+        if (partyRepository.existsByPlayerId(hostId))
+            throw new IllegalArgumentException("Already in a party");
 
         var party = new Party(hostId);
         partyRepository.save(party);
         publisher.publishEvent(new CreatePartyEvent(hostId.id()));
         return party;
+    }
+
+    public Party findPartyByMemberId(PlayerId memberId) {
+        if (!profilesApi.existsById(memberId.id()))
+            throw memberId.notFound();
+
+        return partyRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundException("Party not found"));
     }
 }
