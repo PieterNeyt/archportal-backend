@@ -30,6 +30,7 @@ public class JpaGameLobbyEntity {
     @ElementCollection
     @CollectionTable(
             name = "game_lobby_players",
+            schema = "lobbyservice",
             joinColumns = @JoinColumn(name = "game_lobby_id")
     )
     @Column(name = "player_id", nullable = false)
