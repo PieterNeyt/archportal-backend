@@ -1,13 +1,13 @@
-package be.kdg.ip3.archportal.lobbies.infrastructure;
+package be.kdg.ip3.archportal.lobbies.infrastructure.lobby;
 
-import be.kdg.ip3.archportal.lobbies.domain.GameLobby;
-import be.kdg.ip3.archportal.lobbies.domain.GameLobbyRepository;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameId;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameLobbyId;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameSessionId;
-import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
-import be.kdg.ip3.archportal.lobbies.infrastructure.jpa.JpaGameLobbyEntity;
-import be.kdg.ip3.archportal.lobbies.infrastructure.jpa.JpaGameLobbyRepository;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobby;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyRepository;
+import be.kdg.ip3.archportal.lobbies.domain.GameId;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyId;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSessionId;
+import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
+import be.kdg.ip3.archportal.lobbies.infrastructure.lobby.jpa.JpaGameLobbyEntity;
+import be.kdg.ip3.archportal.lobbies.infrastructure.lobby.jpa.JpaGameLobbyRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

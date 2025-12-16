@@ -1,9 +1,8 @@
-package be.kdg.ip3.archportal.lobbies.domain;
+package be.kdg.ip3.archportal.lobbies.domain.lobby;
 
-import be.kdg.ip3.archportal.lobbies.domain.id.GameId;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameLobbyId;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameSessionId;
-import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.GameId;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSessionId;
+import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import org.jmolecules.ddd.annotation.Repository;
 
 import java.util.List;

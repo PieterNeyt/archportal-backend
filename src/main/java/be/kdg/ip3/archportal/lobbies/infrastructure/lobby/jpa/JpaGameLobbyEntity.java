@@ -1,10 +1,10 @@
-package be.kdg.ip3.archportal.lobbies.infrastructure.jpa;
+package be.kdg.ip3.archportal.lobbies.infrastructure.lobby.jpa;
 
-import be.kdg.ip3.archportal.lobbies.domain.GameLobby;
-import be.kdg.ip3.archportal.lobbies.domain.GameLobbyStatus;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameId;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameLobbyId;
-import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobby;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyStatus;
+import be.kdg.ip3.archportal.lobbies.domain.GameId;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyId;
+import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -18,7 +18,7 @@ public class JpaGameLobbyEntity {
     @Id
     private UUID gameLobbyId;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private UUID gameId;
 
     @Column(nullable = false)

@@ -1,7 +1,7 @@
 package be.kdg.ip3.archportal.lobbies.api;
 
 import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
-import be.kdg.ip3.archportal.lobbies.domain.id.SessionNotFoundException;
+import be.kdg.ip3.archportal.lobbies.domain.session.SessionNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

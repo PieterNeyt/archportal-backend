@@ -1,7 +1,7 @@
 package be.kdg.ip3.archportal.lobbies.infrastructure.party.jpa;
 
 import be.kdg.ip3.archportal.lobbies.domain.party.Party;
-import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import jakarta.persistence.*;
 
 import java.util.Set;

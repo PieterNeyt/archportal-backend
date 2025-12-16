@@ -1,7 +1,5 @@
-package be.kdg.ip3.archportal.lobbies.domain.id;
+package be.kdg.ip3.archportal.lobbies.domain;
 
-
-import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 
 import java.util.UUID;
 

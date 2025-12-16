@@ -1,4 +1,4 @@
-package be.kdg.ip3.archportal.lobbies.domain.id;
+package be.kdg.ip3.archportal.lobbies.domain.session;
 
 public class SessionNotFoundException extends RuntimeException {
     public SessionNotFoundException(GameSessionId id) {

@@ -2,11 +2,15 @@ package be.kdg.ip3.archportal.lobbies.application;
 
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.lobbies.api.dto.PlayerLobbyInfo;
-import be.kdg.ip3.archportal.lobbies.domain.GameLobby;
-import be.kdg.ip3.archportal.lobbies.domain.GameLobbyRepository;
-import be.kdg.ip3.archportal.lobbies.domain.GameSession;
+import be.kdg.ip3.archportal.lobbies.domain.GameId;
+import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobby;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyRepository;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
 import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
-import be.kdg.ip3.archportal.lobbies.domain.id.*;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyId;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSessionId;
+import be.kdg.ip3.archportal.lobbies.domain.session.SessionNotFoundException;
 import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.stereotype.Service;
@@ -33,7 +37,7 @@ public class GameLobbyService implements LobbiesApi {
     public UUID getPlayerIdBySessionId(UUID sessionId) {
         var sessionIdObj = new GameSessionId(sessionId);
 
-        GameLobby lobby = validateSession(sessionIdObj);
+        validateSession(sessionIdObj);
         return gameLobbies.findPlayerBySessionId(sessionIdObj)
                 .orElseThrow(() -> new IllegalArgumentException("No player found for sessionId: " + sessionId));
     }

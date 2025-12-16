@@ -1,6 +1,6 @@
 package be.kdg.ip3.archportal.lobbies.domain.party;
 
-import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 import org.jmolecules.ddd.annotation.Identity;
