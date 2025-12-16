@@ -19,21 +19,25 @@ public class JpaPartyEntity {
     @CollectionTable(name = "party_member", schema = "lobbyservice",
             joinColumns = @JoinColumn(name = "party_id"))
     private Set<UUID> playerIds;
+    @Column(nullable = false)
+    private int maxMembers;
 
     protected JpaPartyEntity() {
     }
 
-    public JpaPartyEntity(UUID id, UUID hostId, Set<UUID> playerIds) {
+    public JpaPartyEntity(UUID id, UUID hostId, Set<UUID> playerIds, int maxMembers) {
         this.id = id;
         this.hostId = hostId;
         this.playerIds = playerIds;
+        this.maxMembers = maxMembers;
     }
 
     public static JpaPartyEntity fromDomain(Party party) {
         return new JpaPartyEntity(
                 party.getId().id(),
                 party.getHostId().id(),
-                party.getPlayerIds().stream().map(PlayerId::id).collect(Collectors.toSet())
+                party.getPlayerIds().stream().map(PlayerId::id).collect(Collectors.toSet()),
+                party.getMaxMembers()
         );
     }
 }

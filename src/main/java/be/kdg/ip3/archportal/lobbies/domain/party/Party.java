@@ -16,14 +16,17 @@ public class Party {
     private PartyId id;
     private PlayerId hostId;
     private Set<PlayerId> playerIds;
+    private int maxMembers;
+    private static int totalMaxMembers = 10;
 
-    public Party(PartyId id, PlayerId hostId, Set<PlayerId> playerIds) {
+    public Party(PartyId id, PlayerId hostId, Set<PlayerId> playerIds, int maxMembers) {
         this.id = id;
         this.hostId = hostId;
         this.playerIds = playerIds;
+        this.maxMembers = maxMembers;
     }
 
     public Party(PlayerId hostId) {
-        this(new PartyId(UUID.randomUUID()), hostId, new HashSet<>());
+        this(new PartyId(UUID.randomUUID()), hostId, new HashSet<>(), totalMaxMembers);
     }
 }
