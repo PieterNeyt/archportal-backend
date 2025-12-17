@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.profiles.domain.profile;
 
+import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAlreadyExistsException;
@@ -18,13 +19,13 @@ public class Profile {
     private String email;
     private String icon;
     private String gamerTag;
-    private final List<UUID> library;
+    private final List<Game> games;
     private int platformPoints;
     private final List<UUID> platformBenefits;
     private final Set<FriendRequest> incomingFriendRequests;
 
     public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String email, String icon,
-                   String gamerTag, String firstName, List<UUID> library, Set<FriendRequest> incomingFriendRequests) {
+                   String gamerTag, String firstName, List<Game> games, Set<FriendRequest> incomingFriendRequests) {
         this.id = profileId;
         setEmail(email);
         this.platformBenefits = platformBenefits;
@@ -33,7 +34,7 @@ public class Profile {
         this.icon = icon;
         setGamerTag(gamerTag);
         setFirstName(firstName);
-        this.library = library;
+        this.games = games;
         this.incomingFriendRequests = incomingFriendRequests;
     }
 
@@ -124,11 +125,11 @@ public class Profile {
     }
 
     public boolean hasGame(UUID gameId) {
-        return this.library.contains(gameId);
+        return this.games.contains(gameId);
     }
 
     public void hasGameCheck(UUID gameId) {
-        if (this.library.contains(gameId)) {
+        if (this.games.contains(gameId)) {
             throw new IllegalArgumentException(
                     "Profile %s already owns the games: %s"
                             .formatted(id, gameId)
@@ -137,7 +138,7 @@ public class Profile {
     }
 
     public void acquireGame(UUID gameId) {
-        this.library.add(gameId);
+        this.games.add(Game.create(gameId));
     }
 
     public void update(String firstName, String lastName, String gamerTag, String email,String icon) {

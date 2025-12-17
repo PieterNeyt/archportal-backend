@@ -5,6 +5,8 @@ import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEve
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
+import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
+import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -60,11 +63,28 @@ public class ProfileService {
         return profile;
     }
 
-    public List<GlobalGameDto> getLibrary(ProfileId profileId) {
+    public List<LibraryGameDto> getLibrary(ProfileId profileId) {
         var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
-        var gameIds = profile.getLibrary();
+        var games = profile.getGames();
 
-        return gamesApi.getGamesByIds(gameIds);
+        var gameIds = games.stream()
+                .map(Game::gameId)
+                .toList();
+
+        var gamesDto = gamesApi.getGamesByIds(gameIds);
+
+        var favoriteMap = games.stream()
+                .collect(Collectors.toMap(
+                        Game::gameId,
+                        Game::favorite
+                ));
+
+        return gamesDto.stream()
+                .map(gameDto -> new LibraryGameDto(
+                        gameDto,
+                        favoriteMap.getOrDefault(gameDto.id(), false)
+                ))
+                .toList();
     }
 
     public List<Profile> getAllFriends(ProfileId profileId) {

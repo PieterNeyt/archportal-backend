@@ -2,6 +2,7 @@ package be.kdg.ip3.archportal.profiles.api;
 
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.FriendRequestDto;
+import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.ProfileDto;
 import be.kdg.ip3.archportal.profiles.application.ProfileService;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
@@ -31,7 +32,7 @@ public class ProfileController {
     }
 
     @GetMapping("/library")
-    public ResponseEntity<List<GlobalGameDto>> getLibrary(@AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<List<LibraryGameDto>> getLibrary(@AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
         var library = profileService.getLibrary(profileId);
         return ResponseEntity.ok(library);
