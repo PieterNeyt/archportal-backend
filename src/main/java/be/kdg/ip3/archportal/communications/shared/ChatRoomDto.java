@@ -1,4 +1,4 @@
-package be.kdg.ip3.archportal.communications.api.dto;
+package be.kdg.ip3.archportal.communications.shared;
 
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 

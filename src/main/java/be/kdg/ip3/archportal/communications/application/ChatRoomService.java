@@ -6,8 +6,11 @@ import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomId;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomRepository;
 import be.kdg.ip3.archportal.communications.domain.chatroom.Message;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
+import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
+import be.kdg.ip3.archportal.communications.shared.ChatRoomDto;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.lobbies.shared.CreatePartyEvent;
+import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
@@ -22,7 +25,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
-public class ChatRoomService {
+public class ChatRoomService implements ChatRoomApi {
     private final ChatRoomRepository chatRoomRepository;
     private final ProfilesApi profilesApi;
     private final ApplicationEventPublisher eventPublisher;
@@ -102,5 +105,11 @@ public class ChatRoomService {
 
         chatRoom.getMembers().forEach(member -> eventPublisher.publishEvent(new AddNotificationEvent(member, "New message from " + chatRoom.getTitle(), text, NotificationType.CHAT)));
         return message;
+    }
+
+    @Override
+    public ChatRoomDto findById(UUID chatRoomId, UUID profileId) {
+        var chatRoom = chatRoomRepository.findById(new ChatRoomId(chatRoomId)).orElseThrow(() -> new NotFoundException("Chat room does not exist"));
+        return ChatRoomDto.fromDomain(chatRoom, profileId);
     }
 }

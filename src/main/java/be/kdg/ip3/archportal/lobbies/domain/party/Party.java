@@ -20,6 +20,7 @@ public class Party {
     private int maxMembers;
     private static int totalMaxMembers = 10;
 
+    //TODO een chatroom id koppelen aan de party
     public Party(PartyId id, String title, PlayerId hostId, Set<PlayerId> members, int maxMembers) {
         this.id = id;
         this.title = title;
@@ -29,6 +30,6 @@ public class Party {
     }
 
     public Party(PlayerId hostId) {
-        this(new PartyId(UUID.randomUUID()),"Pro squad", hostId, new HashSet<>(), totalMaxMembers);
+        this(new PartyId(UUID.randomUUID()), "Pro squad", hostId, new HashSet<>(), totalMaxMembers);
     }
 }
