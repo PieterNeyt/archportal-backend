@@ -101,7 +101,7 @@ public class JpaProfileEntity {
 
         List<Game> domainGames = games.stream()
                 .map(JpaGameEntity::toDomain)
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
 
         return new Profile(
                 new ProfileId(id),
