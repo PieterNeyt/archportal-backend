@@ -36,8 +36,7 @@ public class GameController {
 
     @PostMapping("/{gameId}/achievement")
     public ResponseEntity<AchievementDto> addAchievement(@PathVariable("gameId") UUID gameUUId,
-            @Valid @RequestBody AchievementDto achievemntDto,
-                                                  @AuthenticationPrincipal Jwt token) {
+            @Valid @RequestBody AchievementDto achievemntDto, @AuthenticationPrincipal Jwt token) {
         var ownerId = new OwnerId(UUID.fromString(token.getSubject()));
         var gameId = new GameId(gameUUId);
 

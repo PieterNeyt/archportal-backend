@@ -10,7 +10,7 @@ import java.util.UUID;
 public record AchievementDto(
         UUID id,
 
-        UUID externalAchId,
+        String externalAchId,
 
         @NotNull
         @Size(min = 1, max = 100)

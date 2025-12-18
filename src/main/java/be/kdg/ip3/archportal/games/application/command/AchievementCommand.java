@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public record AchievementCommand(
         UUID id,
-        UUID externalAchId,
+        String externalAchId,
         String title,
         String description,
         String imageUrl
@@ -37,7 +37,7 @@ public record AchievementCommand(
                 title,
                 description,
                 imageUrl,
-                new ExternalAchId(id)
+                new ExternalAchId(externalAchId)
         );
     }
 }

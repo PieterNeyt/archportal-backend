@@ -16,7 +16,7 @@ public class JpaAchievementEntity {
     private UUID id;
 
     @Column(nullable = false)
-    private UUID externalAchId;
+    private String externalAchId;
 
     @Column(nullable = false, length = 100)
     private String title;
@@ -34,7 +34,7 @@ public class JpaAchievementEntity {
     protected JpaAchievementEntity() {
     }
 
-    public JpaAchievementEntity(UUID id, UUID externalAchId, String title, String description, String imageUrl, JpaGameEntity game) {
+    public JpaAchievementEntity(UUID id, String externalAchId, String title, String description, String imageUrl, JpaGameEntity game) {
         this.id = id;
         this.externalAchId = externalAchId;
         this.title = title;
@@ -60,7 +60,7 @@ public class JpaAchievementEntity {
                 title,
                 description,
                 imageUrl,
-                new ExternalAchId(id)
+                new ExternalAchId(externalAchId)
         );
     }
 }
