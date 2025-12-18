@@ -65,7 +65,6 @@ public class JpaGameEntity {
                 game.getMaxLobbySize()
         );
 
-        // Als je Game domeinmodel al achievements bevat, map ze hier:
         if (game.getAchievements() != null) {
             entity.achievements = game.getAchievements().stream()
                     .map(a -> JpaAchievementEntity.fromDomain(a, entity))
