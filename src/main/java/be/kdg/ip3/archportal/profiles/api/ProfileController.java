@@ -38,6 +38,22 @@ public class ProfileController {
         return ResponseEntity.ok(library);
     }
 
+    @PutMapping("/library/{gameId}/add-favorite")
+    public ResponseEntity<Void> addFavoriteToGame(@PathVariable("gameId") UUID gameId,
+                                                                  @AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        profileService.addFavoriteToGame(profileId,gameId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/library/{gameId}/remove-favorite")
+    public ResponseEntity<Void> removeFavoriteFromGame(@PathVariable("gameId") UUID gameId,
+                                                                       @AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        profileService.removeFavoriteFromGame(profileId,gameId);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/friend-request")
     public ResponseEntity<Void> sendFriendRequest(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {
         var senderId = new ProfileId(UUID.fromString(token.getSubject()));

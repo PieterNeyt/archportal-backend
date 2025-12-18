@@ -77,7 +77,7 @@ public class JpaProfileEntity {
                 .collect(Collectors.toSet());
 
         List<JpaGameEntity> jpaLibrary = profile.getGames().stream()
-                .map(games -> new JpaGameEntity(games.gameId(), games.favorite()))
+                .map(games -> new JpaGameEntity(games.getGameId(), games.isFavorite()))
                 .collect(Collectors.toList());
 
         return new JpaProfileEntity(

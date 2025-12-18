@@ -66,17 +66,16 @@ public class ProfileService {
     public List<LibraryGameDto> getLibrary(ProfileId profileId) {
         var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
         var games = profile.getGames();
-
         var gameIds = games.stream()
-                .map(Game::gameId)
+                .map(Game::getGameId)
                 .toList();
 
         var gamesDto = gamesApi.getGamesByIds(gameIds);
 
         var favoriteMap = games.stream()
                 .collect(Collectors.toMap(
-                        Game::gameId,
-                        Game::favorite
+                        Game::getGameId,
+                        Game::isFavorite
                 ));
 
         return gamesDto.stream()
@@ -207,5 +206,18 @@ public class ProfileService {
         var friendship = friendshipRepository.findBetween(profile.getId(), friend.getId()).orElseThrow(() -> new NotFoundException("You are not friends with " + gamerTag + "."));
 
         friendshipRepository.delete(friendship);
+    }
+
+
+    public void addFavoriteToGame(ProfileId profileId, UUID gameId) {
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        profile.favorite(gameId);
+        profileRepository.save(profile);
+    }
+
+    public void removeFavoriteFromGame(ProfileId profileId, UUID gameId) {
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        profile.unfavorite(gameId);
+        profileRepository.save(profile);
     }
 }

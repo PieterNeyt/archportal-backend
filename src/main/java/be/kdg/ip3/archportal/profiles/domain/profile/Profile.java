@@ -38,7 +38,7 @@ public class Profile {
         this.incomingFriendRequests = incomingFriendRequests;
     }
 
-    public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag, String email,String icon) {
+    public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag, String email, String icon) {
         return new Profile(profileId, new ArrayList<>(), 0, lastName, email, icon, gamerTag, firstName, new ArrayList<>(), new HashSet<>());
 
     }
@@ -141,11 +141,41 @@ public class Profile {
         this.games.add(Game.create(gameId));
     }
 
-    public void update(String firstName, String lastName, String gamerTag, String email,String icon) {
+    public void update(String firstName, String lastName, String gamerTag, String email, String icon) {
         setFirstName(firstName);
         setLastName(lastName);
         setGamerTag(gamerTag);
         setEmail(email);
         setIcon(icon);
+    }
+
+    public Game findGameInlibrary(UUID gameId) {
+        if (gameId == null)
+            throw new IllegalArgumentException("GameId cannot be null.");
+
+        return games.stream()
+                .filter(g -> g.getGameId().equals(gameId))
+                .findFirst()
+                .orElseThrow(() ->
+                        new NotFoundException("Game %s not found in profile %s"
+                                .formatted(gameId, id)));
+    }
+
+    public void favorite(UUID gameId) {
+        var game = findGameInlibrary(gameId);
+
+        if (game.isFavorite())
+            throw new IllegalArgumentException("Game is already marked as favorite.");
+
+        game.favorite();
+    }
+
+    public void unfavorite(UUID gameId) {
+        var game = findGameInlibrary(gameId);
+
+        if (!game.isFavorite())
+            throw new IllegalArgumentException("Game is already not marked as favorite.");
+
+        game.unfavorite();
     }
 }

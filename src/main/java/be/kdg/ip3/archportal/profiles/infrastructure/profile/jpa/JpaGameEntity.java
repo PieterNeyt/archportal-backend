@@ -25,6 +25,6 @@ public class JpaGameEntity {
     }
 
     public Game toDomain() {
-        return new Game(id, favorite);
+        return new Game(id,favorite);
     }
 }
