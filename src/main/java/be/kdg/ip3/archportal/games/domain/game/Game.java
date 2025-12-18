@@ -2,6 +2,7 @@ package be.kdg.ip3.archportal.games.domain.game;
 
 import be.kdg.ip3.archportal.games.domain.Money;
 import be.kdg.ip3.archportal.games.domain.achievement.Achievement;
+import be.kdg.ip3.archportal.games.domain.achievement.ExternalAchId;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
 import be.kdg.ip3.archportal.games.domain.update.Update;
 import lombok.Getter;
@@ -43,9 +44,9 @@ public class Game {
         this(GameId.create(), studioId, title, description, price, imageUrl, gameUrl, genre, maxLobbySize);
     }
 
-    public Achievement addAchievement(String title, String description, String imageUrl, GameStudioId id) {
+    public Achievement addAchievement(String title, String description, String imageUrl, GameStudioId id, ExternalAchId externalAchId) {
         checkGameStudioFromOwner(id);
-        var achievement = new Achievement(title, description, imageUrl);
+        var achievement = new Achievement(title, description, imageUrl,externalAchId);
         this.achievements.add(achievement);
         return achievement;
     }

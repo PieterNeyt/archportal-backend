@@ -6,6 +6,7 @@ import be.kdg.ip3.archportal.games.application.command.AchievementCommand;
 import be.kdg.ip3.archportal.games.application.command.GameCommand;
 import be.kdg.ip3.archportal.games.domain.NotFoundException;
 import be.kdg.ip3.archportal.games.domain.achievement.Achievement;
+import be.kdg.ip3.archportal.games.domain.achievement.ExternalAchId;
 import be.kdg.ip3.archportal.games.domain.game.Game;
 import be.kdg.ip3.archportal.games.domain.game.GameId;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
@@ -76,7 +77,7 @@ public class GameService {
 
         var achievement = game.addAchievement(
                 achievementCommand.title(), achievementCommand.description(),
-                achievementCommand.imageUrl(),gameStudio.getId());
+                achievementCommand.imageUrl(),gameStudio.getId(),new ExternalAchId(achievementCommand.externalAchId()));
 
         this.gameRepository.save(game);
         return achievement;

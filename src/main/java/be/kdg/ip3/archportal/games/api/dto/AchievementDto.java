@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.games.api.dto;
 
 import be.kdg.ip3.archportal.games.domain.achievement.Achievement;
+import com.fasterxml.jackson.databind.jsontype.impl.AsExternalTypeDeserializer;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -8,6 +9,8 @@ import java.util.UUID;
 
 public record AchievementDto(
         UUID id,
+
+        UUID externalAchId,
 
         @NotNull
         @Size(min = 1, max = 100)
@@ -24,6 +27,7 @@ public record AchievementDto(
     public static AchievementDto fromDomain(Achievement achievement) {
         return new AchievementDto(
                 achievement.getId().id(),
+                achievement.getExternalAchId().id(),
                 achievement.getTitle(),
                 achievement.getDescription(),
                 achievement.getImageUrl()
