@@ -41,7 +41,7 @@ public class GameController {
         var gameId = new GameId(gameUUId);
 
         var achievement = gameService.addAchievement(AchievementCommand.fromDto(achievemntDto), ownerId,gameId);
-        var location = URI.create("/api/games/" + achievement.getId().id());
+        var location = URI.create("/api/games/"+ gameUUId.toString() +"/achievement/"+ achievement.getId().id());
 
         return ResponseEntity.created(location).body(AchievementDto.fromDomain(achievement));
     }
