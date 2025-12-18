@@ -125,13 +125,15 @@ public class Profile {
     }
 
     public boolean hasGame(UUID gameId) {
-        return this.games.contains(gameId);
+        if (gameId == null) return false;
+        return this.games.stream()
+                .anyMatch(g -> g.getGameId().equals(gameId));
     }
 
     public void hasGameCheck(UUID gameId) {
-        if (this.games.contains(gameId)) {
+        if (hasGame(gameId)) {
             throw new IllegalArgumentException(
-                    "Profile %s already owns the games: %s"
+                    "Profile %s already owns the game: %s"
                             .formatted(id, gameId)
             );
         }
