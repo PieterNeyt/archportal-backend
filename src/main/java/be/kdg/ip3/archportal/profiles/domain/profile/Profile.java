@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.profiles.domain.profile;
 
+import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAlreadyExistsException;
@@ -18,13 +19,13 @@ public class Profile {
     private String email;
     private String icon;
     private String gamerTag;
-    private final List<UUID> library;
+    private final List<Game> games;
     private int platformPoints;
     private final List<UUID> platformBenefits;
     private final Set<FriendRequest> incomingFriendRequests;
 
     public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String email, String icon,
-                   String gamerTag, String firstName, List<UUID> library, Set<FriendRequest> incomingFriendRequests) {
+                   String gamerTag, String firstName, List<Game> games, Set<FriendRequest> incomingFriendRequests) {
         this.id = profileId;
         setEmail(email);
         this.platformBenefits = platformBenefits;
@@ -33,11 +34,11 @@ public class Profile {
         this.icon = icon;
         setGamerTag(gamerTag);
         setFirstName(firstName);
-        this.library = library;
+        this.games = games;
         this.incomingFriendRequests = incomingFriendRequests;
     }
 
-    public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag, String email,String icon) {
+    public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag, String email, String icon) {
         return new Profile(profileId, new ArrayList<>(), 0, lastName, email, icon, gamerTag, firstName, new ArrayList<>(), new HashSet<>());
 
     }
@@ -124,27 +125,59 @@ public class Profile {
     }
 
     public boolean hasGame(UUID gameId) {
-        return this.library.contains(gameId);
+        if (gameId == null) return false;
+        return this.games.stream()
+                .anyMatch(g -> g.getGameId().equals(gameId));
     }
 
     public void hasGameCheck(UUID gameId) {
-        if (this.library.contains(gameId)) {
+        if (hasGame(gameId)) {
             throw new IllegalArgumentException(
-                    "Profile %s already owns the games: %s"
+                    "Profile %s already owns the game: %s"
                             .formatted(id, gameId)
             );
         }
     }
 
     public void acquireGame(UUID gameId) {
-        this.library.add(gameId);
+        this.games.add(Game.create(gameId));
     }
 
-    public void update(String firstName, String lastName, String gamerTag, String email,String icon) {
+    public void update(String firstName, String lastName, String gamerTag, String email, String icon) {
         setFirstName(firstName);
         setLastName(lastName);
         setGamerTag(gamerTag);
         setEmail(email);
         setIcon(icon);
+    }
+
+    public Game findGameInlibrary(UUID gameId) {
+        if (gameId == null)
+            throw new IllegalArgumentException("GameId cannot be null.");
+
+        return games.stream()
+                .filter(g -> g.getGameId().equals(gameId))
+                .findFirst()
+                .orElseThrow(() ->
+                        new NotFoundException("Game %s not found in profile %s"
+                                .formatted(gameId, id)));
+    }
+
+    public void favorite(UUID gameId) {
+        var game = findGameInlibrary(gameId);
+
+        if (game.isFavorite())
+            throw new IllegalArgumentException("Game is already marked as favorite.");
+
+        game.favorite();
+    }
+
+    public void unfavorite(UUID gameId) {
+        var game = findGameInlibrary(gameId);
+
+        if (!game.isFavorite())
+            throw new IllegalArgumentException("Game is already not marked as favorite.");
+
+        game.unfavorite();
     }
 }
