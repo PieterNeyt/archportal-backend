@@ -9,17 +9,24 @@ import java.util.UUID;
 @Getter
 public class Achievement {
     private final AchievementId id;
-    private final ExternalAchId externalAchId;
+    private ExternalAchId externalAchId;
     private String title;
     private String description;
     private String imageUrl;
 
     public Achievement(AchievementId id, String title, String description, String imageUrl, ExternalAchId externalAchId) {
         this.id = id;
-        this.externalAchId = externalAchId;
+        setExternalAchId(externalAchId);
         setTitle(title);
         setDescription(description);
         setImageUrl(imageUrl);
+    }
+
+    private void setExternalAchId(ExternalAchId externalAchId) {
+        if (externalAchId.id() == null || externalAchId.id().trim().isEmpty() || externalAchId.id().isEmpty())
+            throw new IllegalArgumentException("The ID provided is invalid.");
+
+        this.externalAchId = externalAchId;
     }
 
     public Achievement(String title, String description, String imageUrl, ExternalAchId externalAchId) {
