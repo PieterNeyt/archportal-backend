@@ -7,7 +7,10 @@ import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "games", schema = "gameservice")
@@ -30,12 +33,14 @@ public class JpaGameEntity {
     private GameGenre genre;
     @Column(nullable = false)
     private int maxLobbySize;
-    // TODO connection to achievement and updates
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<JpaAchievementEntity> achievements = new ArrayList<>();
 
     protected JpaGameEntity() {
     }
 
-    public JpaGameEntity(UUID id, UUID studioId, String title, String description, BigDecimal price, String imageUrl, String gameUrl, GameGenre genre,int maxLobbySize) {
+    public JpaGameEntity(UUID id, UUID studioId, String title, String description, BigDecimal price, String imageUrl, String gameUrl, GameGenre genre, int maxLobbySize) {
         this.id = id;
         this.studioId = studioId;
         this.title = title;
@@ -48,11 +53,45 @@ public class JpaGameEntity {
     }
 
     public static JpaGameEntity fromDomain(Game game) {
-        return new JpaGameEntity(game.getId().id(), game.getStudioId().id(), game.getTitle(), game.getDescription(),
-                game.getPrice().money(), game.getImageUrl(), game.getGameUrl(), game.getGenre(),game.getMaxLobbySize());
+        JpaGameEntity entity = new JpaGameEntity(
+                game.getId().id(),
+                game.getStudioId().id(),
+                game.getTitle(),
+                game.getDescription(),
+                game.getPrice().money(),
+                game.getImageUrl(),
+                game.getGameUrl(),
+                game.getGenre(),
+                game.getMaxLobbySize()
+        );
+
+        // Als je Game domeinmodel al achievements bevat, map ze hier:
+        if (game.getAchievements() != null) {
+            entity.achievements = game.getAchievements().stream()
+                    .map(a -> JpaAchievementEntity.fromDomain(a, entity))
+                    .collect(Collectors.toList());
+        }
+
+        return entity;
     }
 
     public Game toDomain() {
-        return new Game(new GameId(id), new GameStudioId(studioId), title, description, price, imageUrl, gameUrl, genre, maxLobbySize);
+        Game game = new Game(
+                new GameId(id),
+                new GameStudioId(studioId),
+                title,
+                description,
+                price,
+                imageUrl,
+                gameUrl,
+                genre,
+                maxLobbySize
+        );
+
+        if (achievements != null) {
+            achievements.forEach(a -> game.addAchievement(a.toDomain()));
+        }
+
+        return game;
     }
 }

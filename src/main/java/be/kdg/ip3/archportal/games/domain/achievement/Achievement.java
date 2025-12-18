@@ -1,8 +1,45 @@
 package be.kdg.ip3.archportal.games.domain.achievement;
 
+import lombok.Getter;
 import org.jmolecules.ddd.annotation.Entity;
 
 @Entity
+@Getter
 public class Achievement {
-    private AchievementId id;
+    private final AchievementId id;
+    private String title;
+    private String description;
+    private String imageUrl;
+
+    public Achievement(AchievementId id, String title, String description, String imageUrl) {
+        this.id = id;
+        setTitle(title);
+        setDescription(description);
+        setImageUrl(imageUrl);
+    }
+
+    public Achievement(String title, String description, String imageUrl) {
+        this(AchievementId.create(), title, description, imageUrl);
+    }
+
+    public void setTitle(String title) {
+        if (title == null || title.trim().isEmpty() || title.isEmpty() || title.length() > 100)
+            throw new IllegalArgumentException("The title provided is invalid.");
+
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        if (description == null || description.trim().isEmpty() || description.isEmpty() || description.length() > 255)
+            throw new IllegalArgumentException("The description provided is invalid.");
+
+        this.description = description;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        if (imageUrl == null || imageUrl.trim().isEmpty() || imageUrl.isEmpty() || imageUrl.length() > 255)
+            throw new IllegalArgumentException("The imageUrl provided is invalid.");
+
+        this.imageUrl = imageUrl;
+    }
 }

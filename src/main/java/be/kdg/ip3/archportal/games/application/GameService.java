@@ -2,18 +2,18 @@ package be.kdg.ip3.archportal.games.application;
 
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
-import be.kdg.ip3.archportal.games.api.dto.GameDto;
+import be.kdg.ip3.archportal.games.application.command.AchievementCommand;
 import be.kdg.ip3.archportal.games.application.command.GameCommand;
 import be.kdg.ip3.archportal.games.domain.NotFoundException;
+import be.kdg.ip3.archportal.games.domain.achievement.Achievement;
 import be.kdg.ip3.archportal.games.domain.game.Game;
-import be.kdg.ip3.archportal.games.domain.game.GameGenre;
+import be.kdg.ip3.archportal.games.domain.game.GameId;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
 import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -29,7 +29,7 @@ public class GameService {
         this.eventPublisher = eventPublisher;
     }
 
-    public Game createGame(  GameCommand gameCommand, OwnerId ownerId) {
+    public Game createGame(GameCommand gameCommand, OwnerId ownerId) {
         var studio = gameStudioService.findByOwnerId(ownerId);
         studio.checkOwner(ownerId);
 
@@ -38,7 +38,7 @@ public class GameService {
         gameRepository.save(game);
 
         eventPublisher.publishEvent(new AddNotificationEvent(ownerId.id(),
-                String.format("Congrats! You have successfully created your own game %s",game.getTitle()),
+                String.format("Congrats! You have successfully created your own game %s", game.getTitle()),
                 "Now that your project is live, you can head over to the Game Studio page to continue building your experience.\n" +
                         "From there, you can add new features, update existing content, customize your game world, or even create your own achievements and updates to share with your players.\n" +
                         "\n" +
@@ -66,5 +66,19 @@ public class GameService {
 
         this.gameRepository.save(game);
         return game;
+    }
+
+    public Achievement addAchievement(AchievementCommand achievementCommand, OwnerId ownerId, GameId gameId) {
+        var game = this.gameRepository.findById(gameId.id())
+                .orElseThrow(() -> new NotFoundException("game not found"));
+
+        var gameStudio = this.gameStudioService.findByOwnerId(ownerId);
+
+        var achievement = game.addAchievement(
+                achievementCommand.title(), achievementCommand.description(),
+                achievementCommand.imageUrl(),gameStudio.getId());
+
+        this.gameRepository.save(game);
+        return achievement;
     }
 }
