@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.lobbies.domain.party;
 
+import be.kdg.ip3.archportal.lobbies.domain.ChatRoomId;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
@@ -19,17 +20,18 @@ public class Party {
     private Set<PlayerId> members;
     private int maxMembers;
     private static int totalMaxMembers = 10;
+    private ChatRoomId chatRoomId;
 
-    //TODO een chatroom id koppelen aan de party
-    public Party(PartyId id, String title, PlayerId hostId, Set<PlayerId> members, int maxMembers) {
+    public Party(PartyId id, String title, PlayerId hostId, Set<PlayerId> members, int maxMembers, ChatRoomId chatRoomId) {
         this.id = id;
         this.title = title;
         this.hostId = hostId;
         this.members = members;
         this.maxMembers = maxMembers;
+        this.chatRoomId = chatRoomId;
     }
 
-    public Party(PlayerId hostId) {
-        this(new PartyId(UUID.randomUUID()), "Pro squad", hostId, new HashSet<>(), totalMaxMembers);
+    public Party(PlayerId hostId, ChatRoomId chatRoomId) {
+        this(new PartyId(UUID.randomUUID()), "Pro squad", hostId, new HashSet<>(), totalMaxMembers, chatRoomId);
     }
 }

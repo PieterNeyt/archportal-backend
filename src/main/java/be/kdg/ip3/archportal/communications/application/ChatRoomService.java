@@ -7,10 +7,7 @@ import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomRepository;
 import be.kdg.ip3.archportal.communications.domain.chatroom.Message;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
-import be.kdg.ip3.archportal.communications.shared.ChatRoomDto;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
-import be.kdg.ip3.archportal.lobbies.shared.CreatePartyEvent;
-import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
@@ -41,13 +38,6 @@ public class ChatRoomService implements ChatRoomApi {
         var chatRoom = new ChatRoom(event.profileAGamertag() + ", " + event.profileBGamertag());
         chatRoom.addMember(event.profileAId());
         chatRoom.addMember(event.profileBId());
-        chatRoomRepository.save(chatRoom);
-    }
-
-    @ApplicationModuleListener
-    public void onPartyCreated(CreatePartyEvent event) {
-        var chatRoom = new ChatRoom("Party chat");
-        chatRoom.addMember(event.hostId());
         chatRoomRepository.save(chatRoom);
     }
 
@@ -108,8 +98,10 @@ public class ChatRoomService implements ChatRoomApi {
     }
 
     @Override
-    public ChatRoomDto findById(UUID chatRoomId, UUID profileId) {
-        var chatRoom = chatRoomRepository.findById(new ChatRoomId(chatRoomId)).orElseThrow(() -> new NotFoundException("Chat room does not exist"));
-        return ChatRoomDto.fromDomain(chatRoom, profileId);
+    public UUID createChatRoom(UUID hostId) {
+        var chatRoom = new ChatRoom("Party chat");
+        chatRoom.addMember(hostId);
+        chatRoomRepository.save(chatRoom);
+        return chatRoom.getId().id();
     }
 }

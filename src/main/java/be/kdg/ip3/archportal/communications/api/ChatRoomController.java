@@ -1,6 +1,6 @@
 package be.kdg.ip3.archportal.communications.api;
 
-import be.kdg.ip3.archportal.communications.shared.ChatRoomDto;
+import be.kdg.ip3.archportal.communications.api.dto.ChatRoomDto;
 import be.kdg.ip3.archportal.communications.api.dto.CreateChatRoomDto;
 import be.kdg.ip3.archportal.communications.api.dto.CreateMessageDto;
 import be.kdg.ip3.archportal.communications.application.ChatRoomService;

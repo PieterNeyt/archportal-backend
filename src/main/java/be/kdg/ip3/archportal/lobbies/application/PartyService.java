@@ -1,13 +1,13 @@
 package be.kdg.ip3.archportal.lobbies.application;
 
+import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
+import be.kdg.ip3.archportal.lobbies.domain.ChatRoomId;
 import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import be.kdg.ip3.archportal.lobbies.domain.party.Party;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyRepository;
-import be.kdg.ip3.archportal.lobbies.shared.CreatePartyEvent;
 import be.kdg.ip3.archportal.profiles.shared.BasicProfileInfo;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +19,12 @@ import java.util.stream.Stream;
 public class PartyService {
     private final PartyRepository partyRepository;
     private final ProfilesApi profilesApi;
-    private final ApplicationEventPublisher publisher;
+    private final ChatRoomApi chatRoomApi;
 
-    public PartyService(PartyRepository partyRepository, ProfilesApi profilesApi, ApplicationEventPublisher publisher) {
+    public PartyService(PartyRepository partyRepository, ProfilesApi profilesApi, ChatRoomApi chatRoomApi) {
         this.partyRepository = partyRepository;
         this.profilesApi = profilesApi;
-        this.publisher = publisher;
+        this.chatRoomApi = chatRoomApi;
     }
 
     public Party createParty(PlayerId hostId) {
@@ -33,9 +33,9 @@ public class PartyService {
         if (partyRepository.existsByPlayerId(hostId))
             throw new IllegalArgumentException("Already in a party");
 
-        var party = new Party(hostId);
+        var id = chatRoomApi.createChatRoom(hostId.id());
+        var party = new Party(hostId, new ChatRoomId(id));
         partyRepository.save(party);
-        publisher.publishEvent(new CreatePartyEvent(hostId.id()));
         return party;
     }
 

@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.lobbies.infrastructure.party.jpa;
 
+import be.kdg.ip3.archportal.lobbies.domain.ChatRoomId;
 import be.kdg.ip3.archportal.lobbies.domain.party.Party;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyId;
@@ -24,16 +25,19 @@ public class JpaPartyEntity {
     private Set<UUID> members;
     @Column(nullable = false)
     private int maxMembers;
+    @Column(nullable = false)
+    private UUID chatRoomId;
 
     protected JpaPartyEntity() {
     }
 
-    public JpaPartyEntity(UUID id, String title, UUID hostId, Set<UUID> members, int maxMembers) {
+    public JpaPartyEntity(UUID id, String title, UUID hostId, Set<UUID> members, int maxMembers, UUID chatRoomId) {
         this.id = id;
         this.title = title;
         this.hostId = hostId;
         this.members = members;
         this.maxMembers = maxMembers;
+        this.chatRoomId = chatRoomId;
     }
 
     public static JpaPartyEntity fromDomain(Party party) {
@@ -42,7 +46,8 @@ public class JpaPartyEntity {
                 party.getTitle(),
                 party.getHostId().id(),
                 party.getMembers().stream().map(PlayerId::id).collect(Collectors.toSet()),
-                party.getMaxMembers()
+                party.getMaxMembers(),
+                party.getChatRoomId().id()
         );
     }
 
@@ -52,7 +57,8 @@ public class JpaPartyEntity {
                 title,
                 new PlayerId(hostId),
                 members.stream().map(PlayerId::new).collect(Collectors.toSet()),
-                maxMembers
+                maxMembers,
+                new ChatRoomId(chatRoomId)
         );
     }
 }
