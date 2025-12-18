@@ -51,6 +51,11 @@ public class Game {
         return achievement;
     }
 
+    public void addAchievement(Achievement achievement) {
+        if (achievement == null) throw new IllegalArgumentException("Achievement cannot be null");
+        this.achievements.add(achievement);
+    }
+
     public List<Achievement> getAchievements() {
         return Collections.unmodifiableList(achievements);
     }
