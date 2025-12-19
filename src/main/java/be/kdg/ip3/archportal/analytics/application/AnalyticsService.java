@@ -73,11 +73,12 @@ public class AnalyticsService implements AnalyticsApi {
         playerStatisticsRepository.save(playerStats);
     }
 
-    public GameStatistics getGameStatistics(ProfileId profileId, GameId gameId) {
-        var gameStatisticsId = new GameStatisticsId(gameId);
+    public GameStatistics getGameStatistics(PlayerId playerId, GameId gameId) {
+        var gameStatisticsId = new GameStatisticsId(gameId.id());
+        var playerStats = playerStatisticsRepository.findById(playerId)
+                .orElseThrow(() -> new NotFoundException("player stats not found"));
 
-        return gameStatisticsRepository.findById(gameStatisticsId)
-                .orElseThrow(() -> new IllegalArgumentException("No game statistics found for profile id: " + profileId + " and game id: " + gameId));
+        return playerStats.findGameStatisticsById(gameStatisticsId);
     }
 
     public void grantAchievement(String externalAchId, ProfileId userId) {

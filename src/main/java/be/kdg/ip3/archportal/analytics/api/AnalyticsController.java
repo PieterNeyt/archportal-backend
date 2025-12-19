@@ -4,8 +4,8 @@ import be.kdg.ip3.archportal.analytics.api.dto.GameStatisticsDto;
 import be.kdg.ip3.archportal.analytics.application.AnalyticsService;
 import be.kdg.ip3.archportal.analytics.domain.GameStatistics;
 import be.kdg.ip3.archportal.analytics.domain.records.GameId;
+import be.kdg.ip3.archportal.analytics.domain.records.PlayerId;
 import be.kdg.ip3.archportal.analytics.domain.records.ProfileId;
-import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -23,11 +23,11 @@ public class AnalyticsController {
     }
 
     @GetMapping("/gameStats/{gameId}")
-    public ResponseEntity<GameStatisticsDto> getGameStatistics(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID gameId) {
-        var profileId = new ProfileId(UUID.fromString(jwt.getSubject()));
-        var gameIdObj = new GameId(gameId);
+    public ResponseEntity<GameStatisticsDto> getGameStatistics(@AuthenticationPrincipal Jwt jwt, @PathVariable("gameId") UUID gameUUId) {
+        var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));
+        var gameId = new GameId(gameUUId);
 
-        GameStatistics gameStatistics = analyticsService.getGameStatistics(profileId, gameIdObj);
+        GameStatistics gameStatistics = analyticsService.getGameStatistics(playerId, gameId);
         return ResponseEntity.ok(GameStatisticsDto.fromDomain(gameStatistics));
     }
 
