@@ -1,3 +1,25 @@
+create table public.flyway_schema_history
+(
+    installed_rank integer                 not null
+        constraint flyway_schema_history_pk
+            primary key,
+    version        varchar(50),
+    description    varchar(200)            not null,
+    type           varchar(20)             not null,
+    script         varchar(1000)           not null,
+    checksum       integer,
+    installed_by   varchar(100)            not null,
+    installed_on   timestamp default now() not null,
+    execution_time integer                 not null,
+    success        boolean                 not null
+);
+
+alter table public.flyway_schema_history
+    owner to "user";
+
+create index flyway_schema_history_s_idx
+    on public.flyway_schema_history (success);
+
 create table analyticsservice.game_statistics
 (
     last_played_at         timestamp(6),
@@ -133,6 +155,22 @@ create table gameservice.games
 alter table gameservice.games
     owner to "user";
 
+create table gameservice.achievements
+(
+    game_id         uuid
+        constraint fkmm6cv053k2jjggcpcuv3qmpus
+            references gameservice.games,
+    id              uuid         not null
+        primary key,
+    title           varchar(100) not null,
+    description     varchar(255) not null,
+    external_ach_id varchar(255) not null,
+    image_url       varchar(255) not null
+);
+
+alter table gameservice.achievements
+    owner to "user";
+
 create table gameservice.gamestudio
 (
     id          uuid         not null
@@ -241,8 +279,9 @@ alter table profileservice.friend_requests
 
 create table profileservice.profile_library
 (
-    game_id    uuid not null,
-    profile_id uuid not null
+    favorite   boolean not null,
+    id         uuid    not null,
+    profile_id uuid    not null
         constraint fkqcvi1bxqexcua044kqsptultb
             references profileservice.profile
 );

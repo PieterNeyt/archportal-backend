@@ -1,3 +1,10 @@
+create schema if not exists gameservice;
+create schema if not exists analyticsservice;
+create schema if not exists lobbyservice;
+create schema if not exists shopservice;
+create schema if not exists communicationservice;
+create schema if not exists profileservice;
+
 -- ===== Owners =====
 INSERT INTO gameservice.owner (id, game_studio_id)
 VALUES ('51d0b9d3-80aa-4d18-9c3b-84b2f8b8d671', '3f071d5d-5d2e-4b5f-9c12-7cf7e902b113'),
@@ -49,15 +56,15 @@ VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Cian', 'Van Acker', 'cian', nul
        ('58e1a434-0797-4d3d-9140-e846b20b7887', 'Pieter', 'Neyt', 'pieter', null, 0, 'pieter.neyt@student.kdg.be'),
        ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'Hugo', 'Dor', 'hugo', null, 0, 'hugo.dor@student.kdg.be');
 
-INSERT INTO profileservice.profile_library (game_id, profile_id)
-VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
-       ('1b2d89fa-bd59-4873-b568-8df26c3a047c', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
-       ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '5a129b2c-3016-4616-bca0-99ec7b067b32'),
-       ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '5a129b2c-3016-4616-bca0-99ec7b067b32'),
-       ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '58e1a434-0797-4d3d-9140-e846b20b7887'),
-       ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '58e1a434-0797-4d3d-9140-e846b20b7887'),
-       ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad'),
-       ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad');
+INSERT INTO profileservice.profile_library (profile_id, id, favorite)
+VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', '1b2d89fa-bd59-4873-b568-8df26c3a047d', false),
+       ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', '1b2d89fa-bd59-4873-b568-8df26c3a047c', true),
+       ('5a129b2c-3016-4616-bca0-99ec7b067b32', '1b2d89fa-bd59-4873-b568-8df26c3a047d', false),
+       ('5a129b2c-3016-4616-bca0-99ec7b067b32', '1b2d89fa-bd59-4873-b568-8df26c3a047c', false),
+       ('58e1a434-0797-4d3d-9140-e846b20b7887', '1b2d89fa-bd59-4873-b568-8df26c3a047d', true),
+       ('58e1a434-0797-4d3d-9140-e846b20b7887', '1b2d89fa-bd59-4873-b568-8df26c3a047c', false),
+       ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', '1b2d89fa-bd59-4873-b568-8df26c3a047d', false),
+       ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', '1b2d89fa-bd59-4873-b568-8df26c3a047c', true);
 
 INSERT INTO analyticsservice.game_statistics (last_played_at, total_playtime_minutes, game_id, profile_id)
 VALUES (NOW(), 120, '1b2d89fa-bd59-4873-b568-8df26c3a047c', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840'),
