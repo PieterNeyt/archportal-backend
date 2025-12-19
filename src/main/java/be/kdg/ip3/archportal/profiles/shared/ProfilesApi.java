@@ -21,4 +21,6 @@ public interface ProfilesApi {
     List<BasicProfileInfo> getBasicProfiles(List<UUID> profileIds);
     
     List<ProfileDto> getAllFriends(UUID profileId);
+
+    String getProfileGamerTag(UUID id);
 }

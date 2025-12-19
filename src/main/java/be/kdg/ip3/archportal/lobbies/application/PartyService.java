@@ -3,6 +3,7 @@ package be.kdg.ip3.archportal.lobbies.application;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
+import be.kdg.ip3.archportal.lobbies.api.dto.PartyInviteDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.PlayerDto;
 import be.kdg.ip3.archportal.lobbies.domain.ChatRoomId;
 import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
@@ -87,5 +88,18 @@ public class PartyService {
         return notInParty.stream().map(p -> party.hasInvite(new PlayerId(p.id()))
                 ? PlayerDto.hasInvite(p)
                 : PlayerDto.noInvite(p)).toList();
+    }
+
+    public List<PartyInviteDto> getPartiesWhereUserIsInvited(PlayerId playerId) {
+        if (!profilesApi.existsById(playerId.id()))
+            throw playerId.notFound();
+        
+        return partyRepository.findPartyHasInvite(playerId).stream()
+                .map(p -> {
+                    var invite = p.getInvites().stream().filter(i -> i.getReceiverId().equals(playerId))
+                            .findFirst().orElseThrow();
+                    var senderGamerTag = profilesApi.getProfileGamerTag(invite.getSenderId().id());
+                    return PartyInviteDto.from(p, senderGamerTag);
+                }).toList();
     }
 }

@@ -7,6 +7,7 @@ import be.kdg.ip3.archportal.lobbies.infrastructure.party.jpa.JpaPartyEntity;
 import be.kdg.ip3.archportal.lobbies.infrastructure.party.jpa.JpaPartyRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -30,5 +31,10 @@ public class DbPartyRepository implements PartyRepository {
     @Override
     public Optional<Party> findByMemberId(PlayerId playerId) {
         return this.jpaPartyRepository.findByMemberId(playerId.id()).map(JpaPartyEntity::toDomain);
+    }
+
+    @Override
+    public List<Party> findPartyHasInvite(PlayerId playerId) {
+        return jpaPartyRepository.findByInvites_ReceiverId(playerId.id()).stream().map(JpaPartyEntity::toDomain).toList();
     }
 }

@@ -1,13 +1,12 @@
 package be.kdg.ip3.archportal.lobbies.infrastructure.party.jpa;
 
 import be.kdg.ip3.archportal.lobbies.domain.ChatRoomId;
-import be.kdg.ip3.archportal.lobbies.domain.party.Party;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.party.Party;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyId;
 import be.kdg.ip3.archportal.lobbies.infrastructure.partyInvite.JpaPartyInviteEntity;
 import jakarta.persistence.*;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;

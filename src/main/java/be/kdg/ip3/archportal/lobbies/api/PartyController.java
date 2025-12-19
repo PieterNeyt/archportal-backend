@@ -1,9 +1,6 @@
 package be.kdg.ip3.archportal.lobbies.api;
 
-import be.kdg.ip3.archportal.lobbies.api.dto.MemberDto;
-import be.kdg.ip3.archportal.lobbies.api.dto.PartyDto;
-import be.kdg.ip3.archportal.lobbies.api.dto.PlayerDto;
-import be.kdg.ip3.archportal.lobbies.api.dto.SendInviteDto;
+import be.kdg.ip3.archportal.lobbies.api.dto.*;
 import be.kdg.ip3.archportal.lobbies.application.PartyService;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import jakarta.validation.Valid;
@@ -53,6 +50,13 @@ public class PartyController {
         var invite = partyService.sendInvite(memberId, dto.gamerTag());
         var location = URI.create("/api/party/invite" + invite.getId().id());
         return ResponseEntity.created(location).build();
+    }
+
+    @GetMapping("/invite")
+    public ResponseEntity<List<PartyInviteDto>> getPartyInvites(@AuthenticationPrincipal Jwt token) {
+        var playerId = new PlayerId(UUID.fromString(token.getSubject()));
+        var parties = partyService.getPartiesWhereUserIsInvited(playerId);
+        return ResponseEntity.ok(parties);
     }
 
     @GetMapping("/friends")

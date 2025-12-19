@@ -128,4 +128,9 @@ public class ProfileApiService implements ProfilesApi {
     public List<ProfileDto> getAllFriends(UUID profileId) {
         return profileRepository.findAllFriends(new ProfileId(profileId)).stream().map(ProfileDto::from).toList();
     }
+
+    @Override
+    public String getProfileGamerTag(UUID id) {
+        return profileRepository.findById(new ProfileId(id)).orElseThrow(new ProfileId(id)::notFound).getGamerTag();
+    }
 }
