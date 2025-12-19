@@ -205,6 +205,6 @@ public class GameLobbyController {
     public ResponseEntity<Void> leaveLobby(@AuthenticationPrincipal Jwt jwt) {
         var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));
         gameLobbyService.leaveLobby(playerId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

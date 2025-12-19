@@ -9,8 +9,10 @@ import be.kdg.ip3.archportal.lobbies.domain.ChatRoomId;
 import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import be.kdg.ip3.archportal.lobbies.domain.party.Party;
+import be.kdg.ip3.archportal.lobbies.domain.party.PartyId;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyRepository;
 import be.kdg.ip3.archportal.lobbies.domain.partyInvite.PartyInvite;
+import be.kdg.ip3.archportal.lobbies.shared.JoinedPartyEvent;
 import be.kdg.ip3.archportal.profiles.shared.BasicProfileInfo;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.context.ApplicationEventPublisher;
@@ -93,7 +95,7 @@ public class PartyService {
     public List<PartyInviteDto> getPartiesWhereUserIsInvited(PlayerId playerId) {
         if (!profilesApi.existsById(playerId.id()))
             throw playerId.notFound();
-        
+
         return partyRepository.findPartyHasInvite(playerId).stream()
                 .map(p -> {
                     var invite = p.getInvites().stream().filter(i -> i.getReceiverId().equals(playerId))
@@ -101,5 +103,22 @@ public class PartyService {
                     var senderGamerTag = profilesApi.getProfileGamerTag(invite.getSenderId().id());
                     return PartyInviteDto.from(p, senderGamerTag);
                 }).toList();
+    }
+
+    public void acceptPartyInvite(PlayerId playerId, PartyId id) {
+        if (!profilesApi.existsById(playerId.id()))
+            throw playerId.notFound();
+        var party = partyRepository.findById(id).orElseThrow(id::notFound);
+        party.acceptPartyInvite(playerId);
+        partyRepository.save(party);
+        publisher.publishEvent(new JoinedPartyEvent(playerId.id(), party.getChatRoomId().id()));
+    }
+
+    public void declinePartyInvite(PlayerId playerId, PartyId id) {
+        if (!profilesApi.existsById(playerId.id()))
+            throw playerId.notFound();
+        var party = partyRepository.findById(id).orElseThrow(id::notFound);
+        party.declinePartyInvite(playerId);
+        partyRepository.save(party);
     }
 }

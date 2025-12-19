@@ -15,4 +15,6 @@ public interface PartyRepository {
     boolean existsByPlayerId(PlayerId playerId);
 
     List<Party> findPartyHasInvite(PlayerId playerId);
+
+    Optional<Party> findById(PartyId id);
 }

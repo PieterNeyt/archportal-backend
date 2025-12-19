@@ -8,6 +8,7 @@ import be.kdg.ip3.archportal.communications.domain.chatroom.Message;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
+import be.kdg.ip3.archportal.lobbies.shared.JoinedPartyEvent;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
@@ -38,6 +39,14 @@ public class ChatRoomService implements ChatRoomApi {
         var chatRoom = new ChatRoom(event.profileAGamertag() + ", " + event.profileBGamertag());
         chatRoom.addMember(event.profileAId());
         chatRoom.addMember(event.profileBId());
+        chatRoomRepository.save(chatRoom);
+    }
+
+    @ApplicationModuleListener
+    public void onJoinedParty(JoinedPartyEvent event) {
+        var chatRoomId = new ChatRoomId(event.chatRoomId());
+        var chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(chatRoomId::notFound);
+        chatRoom.addMember(event.profileId());
         chatRoomRepository.save(chatRoom);
     }
 

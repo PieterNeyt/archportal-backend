@@ -2,6 +2,7 @@ package be.kdg.ip3.archportal.lobbies.infrastructure.party;
 
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import be.kdg.ip3.archportal.lobbies.domain.party.Party;
+import be.kdg.ip3.archportal.lobbies.domain.party.PartyId;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyRepository;
 import be.kdg.ip3.archportal.lobbies.infrastructure.party.jpa.JpaPartyEntity;
 import be.kdg.ip3.archportal.lobbies.infrastructure.party.jpa.JpaPartyRepository;
@@ -31,6 +32,11 @@ public class DbPartyRepository implements PartyRepository {
     @Override
     public Optional<Party> findByMemberId(PlayerId playerId) {
         return this.jpaPartyRepository.findByMemberId(playerId.id()).map(JpaPartyEntity::toDomain);
+    }
+
+    @Override
+    public Optional<Party> findById(PartyId id) {
+        return this.jpaPartyRepository.findById(id.id()).map(JpaPartyEntity::toDomain);
     }
 
     @Override

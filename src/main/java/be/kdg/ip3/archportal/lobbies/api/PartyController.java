@@ -3,6 +3,7 @@ package be.kdg.ip3.archportal.lobbies.api;
 import be.kdg.ip3.archportal.lobbies.api.dto.*;
 import be.kdg.ip3.archportal.lobbies.application.PartyService;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.party.PartyId;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -64,5 +65,19 @@ public class PartyController {
         var playerId = new PlayerId(UUID.fromString(token.getSubject()));
         var friends = partyService.getInvitableFriends(playerId);
         return ResponseEntity.ok(friends);
+    }
+
+    @DeleteMapping("/{id}/accept")
+    public ResponseEntity<Void> acceptPartyInvite(@PathVariable UUID id, @AuthenticationPrincipal Jwt token) {
+        var playerId = new PlayerId(UUID.fromString(token.getSubject()));
+        partyService.acceptPartyInvite(playerId, new PartyId(id));
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/decline")
+    public ResponseEntity<Void> declinePartyInvite(@PathVariable UUID id, @AuthenticationPrincipal Jwt token) {
+        var playerId = new PlayerId(UUID.fromString(token.getSubject()));
+        partyService.declinePartyInvite(playerId, new PartyId(id));
+        return ResponseEntity.noContent().build();
     }
 }
