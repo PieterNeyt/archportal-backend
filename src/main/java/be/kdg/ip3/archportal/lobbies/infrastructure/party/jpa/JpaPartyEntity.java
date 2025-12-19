@@ -4,8 +4,10 @@ import be.kdg.ip3.archportal.lobbies.domain.ChatRoomId;
 import be.kdg.ip3.archportal.lobbies.domain.party.Party;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyId;
+import be.kdg.ip3.archportal.lobbies.infrastructure.partyInvite.JpaPartyInviteEntity;
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,17 +29,20 @@ public class JpaPartyEntity {
     private int maxMembers;
     @Column(nullable = false)
     private UUID chatRoomId;
+    @OneToMany(mappedBy = "party", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<JpaPartyInviteEntity> invites;
 
     protected JpaPartyEntity() {
     }
 
-    public JpaPartyEntity(UUID id, String title, UUID hostId, Set<UUID> members, int maxMembers, UUID chatRoomId) {
+    public JpaPartyEntity(UUID id, String title, UUID hostId, Set<UUID> members, int maxMembers, UUID chatRoomId, Set<JpaPartyInviteEntity> invites) {
         this.id = id;
         this.title = title;
         this.hostId = hostId;
         this.members = members;
         this.maxMembers = maxMembers;
         this.chatRoomId = chatRoomId;
+        setInvites(invites);
     }
 
     public static JpaPartyEntity fromDomain(Party party) {
@@ -47,7 +52,8 @@ public class JpaPartyEntity {
                 party.getHostId().id(),
                 party.getMembers().stream().map(PlayerId::id).collect(Collectors.toSet()),
                 party.getMaxMembers(),
-                party.getChatRoomId().id()
+                party.getChatRoomId().id(),
+                party.getInvites().stream().map(JpaPartyInviteEntity::fromDomain).collect(Collectors.toSet())
         );
     }
 
@@ -58,7 +64,13 @@ public class JpaPartyEntity {
                 new PlayerId(hostId),
                 members.stream().map(PlayerId::new).collect(Collectors.toSet()),
                 maxMembers,
-                new ChatRoomId(chatRoomId)
+                new ChatRoomId(chatRoomId),
+                invites.stream().map(JpaPartyInviteEntity::toDomain).collect(Collectors.toSet())
         );
+    }
+
+    private void setInvites(Set<JpaPartyInviteEntity> invites) {
+        this.invites = invites;
+        this.invites.forEach(i -> i.setParty(this));
     }
 }

@@ -12,6 +12,7 @@ public interface ProfilesApi {
     void checkAlreadyOwnsGame(UUID profileId, UUID  gameId);
     boolean existsById(UUID id);
     List<ProfileDto> getProfilesFromGamerTags(List<String> gamerTags);
+    UUID getProfileFromGamerTag(String gamerTag);
     boolean areFriends(UUID profileAId, UUID profileBId);
 
     List<UUID> getFriendIdsWithCreator(UUID creatorId, List<UUID> candidateIds);

@@ -6,6 +6,7 @@ import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import be.kdg.ip3.archportal.lobbies.domain.party.Party;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyRepository;
+import be.kdg.ip3.archportal.lobbies.domain.partyInvite.PartyInvite;
 import be.kdg.ip3.archportal.profiles.shared.BasicProfileInfo;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.stereotype.Service;
@@ -56,5 +57,16 @@ public class PartyService {
                 Stream.of(party.getHostId().id())
         ).toList();
         return profilesApi.getBasicProfiles(memberIds);
+    }
+
+    public PartyInvite sendInvite(PlayerId memberId, String gamerTag) {
+        if (!profilesApi.existsById(memberId.id()))
+            throw memberId.notFound();
+        var receiverId = new PlayerId(profilesApi.getProfileFromGamerTag(gamerTag));
+
+        var party = partyRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundException("Party not found"));
+        var invite = party.addInvite(memberId, receiverId);
+        partyRepository.save(party);
+        return invite;
     }
 }

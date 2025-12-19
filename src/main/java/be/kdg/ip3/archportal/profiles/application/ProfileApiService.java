@@ -1,9 +1,12 @@
 package be.kdg.ip3.archportal.profiles.application;
 
 import be.kdg.ip3.archportal.games.shared.GamesApi;
+import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
 import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
+import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
+import be.kdg.ip3.archportal.profiles.infrastructure.profile.jpa.JpaProfileEntity;
 import be.kdg.ip3.archportal.profiles.shared.BasicProfileInfo;
 import be.kdg.ip3.archportal.profiles.shared.GameAddedToLibraryEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
@@ -25,7 +28,7 @@ public class ProfileApiService implements ProfilesApi {
     private final ApplicationEventPublisher eventPublisher;
 
     public ProfileApiService(ProfileRepository profileRepository, GamesApi gamesApi, ApplicationEventPublisher eventPublisher
-    , FriendshipRepository friendshipRepository) {
+            , FriendshipRepository friendshipRepository) {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
         this.friendshipRepository = friendshipRepository;
@@ -41,6 +44,11 @@ public class ProfileApiService implements ProfilesApi {
     @Override
     public List<ProfileDto> getProfilesFromGamerTags(List<String> gamerTags) {
         return profileRepository.findFromGamerTags(gamerTags).stream().map(ProfileDto::from).toList();
+    }
+
+    @Override
+    public UUID getProfileFromGamerTag(String gamerTag) {
+        return profileRepository.findByGamerTag(gamerTag).map(p -> p.getId().id()).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
     }
 
     @Override
