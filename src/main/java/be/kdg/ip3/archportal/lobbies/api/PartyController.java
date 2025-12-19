@@ -42,7 +42,7 @@ public class PartyController {
     public ResponseEntity<List<MemberDto>> getMembers(@AuthenticationPrincipal Jwt token) {
         var memberId = new PlayerId(UUID.fromString(token.getSubject()));
         var members = partyService.findMembers(memberId);
-        return ResponseEntity.ok(members.stream().map(MemberDto::from).toList());
+        return ResponseEntity.ok(members);
     }
 
     @PostMapping("/invite")

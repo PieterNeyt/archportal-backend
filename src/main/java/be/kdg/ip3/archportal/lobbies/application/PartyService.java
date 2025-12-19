@@ -3,6 +3,7 @@ package be.kdg.ip3.archportal.lobbies.application;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
+import be.kdg.ip3.archportal.lobbies.api.dto.MemberDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.PartyInviteDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.PlayerDto;
 import be.kdg.ip3.archportal.lobbies.domain.ChatRoomId;
@@ -13,14 +14,12 @@ import be.kdg.ip3.archportal.lobbies.domain.party.PartyId;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyRepository;
 import be.kdg.ip3.archportal.lobbies.domain.partyInvite.PartyInvite;
 import be.kdg.ip3.archportal.lobbies.shared.JoinedPartyEvent;
-import be.kdg.ip3.archportal.profiles.shared.BasicProfileInfo;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -56,16 +55,13 @@ public class PartyService {
         return partyRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundException("Party not found"));
     }
 
-    public List<BasicProfileInfo> findMembers(PlayerId memberId) {
+    public List<MemberDto> findMembers(PlayerId memberId) {
         if (!profilesApi.existsById(memberId.id()))
             throw memberId.notFound();
 
         var party = partyRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundException("Party not found"));
-        var memberIds = Stream.concat(
-                party.getMembers().stream().map(PlayerId::id),
-                Stream.of(party.getHostId().id())
-        ).toList();
-        return profilesApi.getBasicProfiles(memberIds);
+        var memberIds = party.getAllMembers().stream().map(PlayerId::id).toList();
+        return profilesApi.getBasicProfiles(memberIds).stream().map(p -> MemberDto.from(p, party.getHostId())).toList();
     }
 
     public PartyInvite sendInvite(PlayerId memberId, String gamerTag) {
@@ -86,7 +82,7 @@ public class PartyService {
 
         var party = partyRepository.findByMemberId(playerId).orElseThrow(() -> new NotFoundException("Party not found"));
         var friends = profilesApi.getAllFriends(playerId.id());
-        var notInParty = friends.stream().filter(f -> !party.getMembers().contains(new PlayerId(f.id()))).toList();
+        var notInParty = friends.stream().filter(f -> !party.getAllMembers().contains(new PlayerId(f.id()))).toList();
         return notInParty.stream().map(p -> party.hasInvite(new PlayerId(p.id()))
                 ? PlayerDto.hasInvite(p)
                 : PlayerDto.noInvite(p)).toList();

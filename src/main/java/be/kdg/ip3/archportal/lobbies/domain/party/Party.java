@@ -9,6 +9,7 @@ import org.jmolecules.ddd.annotation.Identity;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 @Getter
 @AggregateRoot
@@ -65,5 +66,9 @@ public class Party {
         var invite = invites.stream().filter(i -> i.getReceiverId().equals(playerId)).findFirst()
                 .orElseThrow(() -> new AccessDeniedException("You have no party invite"));
         invites.remove(invite);
+    }
+    
+    public List<PlayerId> getAllMembers() {
+        return Stream.concat(members.stream(), Stream.of(hostId)).toList();
     }
 }

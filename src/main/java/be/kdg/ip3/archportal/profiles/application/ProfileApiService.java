@@ -78,7 +78,7 @@ public class ProfileApiService implements ProfilesApi {
         for (UUID profileId : profileIds) {
             var id = new ProfileId(profileId);
             var profile = profileRepository.findById(id).orElseThrow(id::notFound);
-            basicProfileInfos.add(new BasicProfileInfo(profile.getGamerTag(), profile.getIcon()));
+            basicProfileInfos.add(BasicProfileInfo.from(profile));
         }
         return basicProfileInfos;
     }
