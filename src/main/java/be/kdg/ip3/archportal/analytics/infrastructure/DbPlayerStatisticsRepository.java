@@ -1,10 +1,8 @@
 package be.kdg.ip3.archportal.analytics.infrastructure;
 
-import be.kdg.ip3.archportal.analytics.domain.GameStatistics;
 import be.kdg.ip3.archportal.analytics.domain.PlayerStatistics;
 import be.kdg.ip3.archportal.analytics.domain.PlayerStatisticsRepository;
 import be.kdg.ip3.archportal.analytics.domain.records.PlayerId;
-import be.kdg.ip3.archportal.analytics.infrastructure.gameStatistics.JpaGameStatisticsRepository;
 import be.kdg.ip3.archportal.analytics.infrastructure.playerStatistics.JpaPlayerStatisticsRepository;
 import be.kdg.ip3.archportal.analytics.infrastructure.playerStatistics.jpa.JpaPlayerStatisticsEntity;
 import org.springframework.stereotype.Repository;

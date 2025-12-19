@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice()
-public class CommunicationsErrorHandling {
+public class AnalyticsErrorHandling {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> notFoundHandler(final NotFoundException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());

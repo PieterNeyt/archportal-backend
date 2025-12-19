@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.analytics.domain;
 
 
+import be.kdg.ip3.archportal.analytics.domain.records.AchievementId;
 import be.kdg.ip3.archportal.analytics.domain.records.GameStatisticsId;
 import be.kdg.ip3.archportal.analytics.domain.records.WinnerRecord;
 import lombok.Getter;
@@ -8,10 +9,7 @@ import org.jmolecules.ddd.annotation.AggregateRoot;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @AggregateRoot
@@ -41,5 +39,9 @@ public class GameStatistics {
 
     public void addWinnerRecord(WinnerRecord winnerRecord) {
         this.winnerRecords.add(winnerRecord);
+    }
+
+    public void addAchievement(AchievementId achievementId) {
+        this.achievements.add(new Achievement(achievementId));
     }
 }

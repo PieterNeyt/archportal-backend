@@ -4,8 +4,10 @@ import be.kdg.ip3.archportal.analytics.api.dto.GameStatisticsDto;
 import be.kdg.ip3.archportal.analytics.application.AnalyticsService;
 import be.kdg.ip3.archportal.analytics.domain.GameStatistics;
 import be.kdg.ip3.archportal.analytics.domain.records.GameId;
+import be.kdg.ip3.archportal.analytics.domain.records.GameStatisticsId;
 import be.kdg.ip3.archportal.analytics.domain.records.PlayerId;
 import be.kdg.ip3.archportal.analytics.domain.records.ProfileId;
+import be.kdg.ip3.archportal.games.domain.game.Game;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -32,13 +34,17 @@ public class AnalyticsController {
     }
 
 
-    @PostMapping("/achievement/{externalAchievementId}/user/{userId}")
-    public ResponseEntity<Void> grantAchievement(@PathVariable("externalAchievementId") String externalAchId,@PathVariable("userId") UUID userUUId) {
-        var userId = new ProfileId(userUUId);
+    @PostMapping("/game/{gameId}/achievement/{externalAchievementId}/user/{userId}")
+    public ResponseEntity<Void> grantAchievement(@PathVariable("externalAchievementId") String externalAchId,
+                                                 @PathVariable("userId") UUID userUUId,
+                                                     @PathVariable("gameId") UUID gameUUID) {
+        var playerId = new PlayerId(userUUId);
+        var gameId = new GameId(gameUUID);
+        var gameStatsId = new GameStatisticsId(gameId,playerId);
 
-        analyticsService.grantAchievement(externalAchId,userId);
+        analyticsService.grantAchievement(externalAchId,playerId,gameStatsId);
 
-        var location = URI.create("/api/analytics/achievement/" + externalAchId + "/user/" + userId);
+        var location = URI.create("/api/analytics/game/"+ gameUUID+"/achievement/" + externalAchId + "/user/" + playerId);
         return ResponseEntity.created(location).build();
     }
 }

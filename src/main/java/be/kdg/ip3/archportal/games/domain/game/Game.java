@@ -1,10 +1,10 @@
 package be.kdg.ip3.archportal.games.domain.game;
 
 import be.kdg.ip3.archportal.games.domain.Money;
+import be.kdg.ip3.archportal.games.domain.NotFoundException;
 import be.kdg.ip3.archportal.games.domain.achievement.Achievement;
 import be.kdg.ip3.archportal.games.domain.achievement.ExternalAchId;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
-import be.kdg.ip3.archportal.games.domain.update.Update;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @AggregateRoot
@@ -116,5 +117,13 @@ public class Game {
         if (imageUrl == null || imageUrl.trim().isEmpty() || imageUrl.length() > 255)
             throw new IllegalArgumentException("The imageUrl provided is invalid.");
         this.imageUrl = imageUrl;
+    }
+
+    public UUID getAchievementByExternalAchId(String externalAchId) {
+        return achievements.stream()
+                .filter(a -> a.getExternalAchId().id().equals(externalAchId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Achievement not found"))
+                .getId().id();
     }
 }

@@ -9,15 +9,14 @@ import lombok.Getter;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
 @Table(name = "game_statistics", schema = "analyticsservice")
 public class JpaGameStatisticsEntity {
 
-    @Id
-    private UUID gameStatisticsId;
+    @EmbeddedId
+    private JpaGameStatisticsId gameStatisticsId;
 
     @Column(name = "total_playtime_minutes")
     private long totalPlayTimeMinutes;
@@ -31,7 +30,7 @@ public class JpaGameStatisticsEntity {
             schema = "analyticsservice",
             joinColumns = {
                     @JoinColumn(name = "game_id", referencedColumnName = "game_id"),
-                    @JoinColumn(name = "profile_id", referencedColumnName = "profile_id")
+                    @JoinColumn(name = "player_statistics_id", referencedColumnName = "player_statistics_id")
             }
     )
     private List<JpaAchievement> achievements;
@@ -42,13 +41,13 @@ public class JpaGameStatisticsEntity {
             schema = "analyticsservice",
             joinColumns = {
                     @JoinColumn(name = "game_id", referencedColumnName = "game_id"),
-                    @JoinColumn(name = "profile_id", referencedColumnName = "profile_id")
+                    @JoinColumn(name = "player_statistics_id", referencedColumnName = "player_statistics_id")
             }
     )
     private List<JpaWinnerRecord> winnerRecords;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "player_statistics_id")
+    @JoinColumn(name = "player_statistics_id", insertable = false, updatable = false)
     private JpaPlayerStatisticsEntity playerStatistics;
 
     protected JpaGameStatisticsEntity() { }
@@ -56,15 +55,16 @@ public class JpaGameStatisticsEntity {
     public static JpaGameStatisticsEntity fromDomain(GameStatistics stats) {
         JpaGameStatisticsEntity entity = new JpaGameStatisticsEntity();
 
-        entity.gameStatisticsId = stats.getGameStatisticsId().gameId();
+        entity.gameStatisticsId = new JpaGameStatisticsId(
+                stats.getGameStatisticsId().gameId().id(),
+                stats.getGameStatisticsId().playerId().id()
+        );
+
         entity.totalPlayTimeMinutes = stats.getTotalPlayTimeMinutes().toMinutes();
         entity.lastPlayedAt = stats.getLastPlayedAt();
 
         entity.achievements = stats.getAchievements().stream()
-                .map(a -> new JpaAchievement(
-                        a.getAchievementId().id(),
-                        a.getTimeUnlocked()
-                ))
+                .map(a -> new JpaAchievement(a.getAchievementId().id(), a.getTimeUnlocked()))
                 .toList();
 
         entity.winnerRecords = stats.getWinnerRecords().stream()
@@ -80,22 +80,14 @@ public class JpaGameStatisticsEntity {
 
     public GameStatistics toDomain() {
         return new GameStatistics(
-                new GameStatisticsId(gameStatisticsId),
+                new GameStatisticsId(
+                        new GameId(gameStatisticsId.getGameId()),
+                        new PlayerId(gameStatisticsId.getPlayerStatisticsId())
+                ),
                 Duration.ofMinutes(totalPlayTimeMinutes),
                 lastPlayedAt,
-                achievements.stream()
-                        .map(a -> new Achievement(
-                                new AchievementId(a.getAchievementId()),
-                                a.getTimeUnlocked()
-                        ))
-                        .toList(),
-                winnerRecords.stream()
-                        .map(w -> new WinnerRecord(
-                                w.getPlayedAt(),
-                                w.getWinner(),
-                                new SessionId(w.getSessionId())
-                        ))
-                        .toList()
+                achievements.stream().map(a -> new Achievement(new AchievementId(a.getAchievementId()), a.getTimeUnlocked())).toList(),
+                winnerRecords.stream().map(w -> new WinnerRecord(w.getPlayedAt(), w.getWinner(), new SessionId(w.getSessionId()))).toList()
         );
     }
 

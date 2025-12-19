@@ -1,29 +1,25 @@
 package be.kdg.ip3.archportal.analytics.infrastructure.gameStatistics.jpa;
 
-import be.kdg.ip3.archportal.analytics.domain.records.GameStatisticsId;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 
 import java.io.Serializable;
 import java.util.UUID;
 
-@Embeddable
 @Getter
+@Embeddable
 public class JpaGameStatisticsId implements Serializable {
+    @Column(name = "game_id")
     private UUID gameId;
-    private UUID profileId;
+
+    @Column(name = "player_statistics_id")
+    private UUID playerStatisticsId;
 
     protected JpaGameStatisticsId() {}
 
-    public JpaGameStatisticsId(UUID gameId, UUID profileId) {
+    public JpaGameStatisticsId(UUID gameId, UUID playerStatisticsId) {
         this.gameId = gameId;
-        this.profileId = profileId;
-    }
-
-    public static JpaGameStatisticsId fromDomain(GameStatisticsId gameStatisticsId) {
-        return new JpaGameStatisticsId(
-                gameStatisticsId.gameId().id(),
-                gameStatisticsId.profileId().id()
-        );
+        this.playerStatisticsId = playerStatisticsId;
     }
 }

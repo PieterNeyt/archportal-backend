@@ -10,18 +10,14 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
 @Table(name = "player_statistics", schema = "analyticsservice")
 public class JpaPlayerStatisticsEntity {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Embedded
-    private PlayerId playerId;
+    private UUID playerId;
 
     @OneToMany(
             mappedBy = "playerStatistics",
@@ -39,7 +35,7 @@ public class JpaPlayerStatisticsEntity {
     private Date lastPlayed;
 
     public JpaPlayerStatisticsEntity(PlayerId playerId, int totalMinutesPlayed, Date lastPlayed) {
-        this.playerId = playerId;
+        this.playerId = playerId.id();
         this.totalMinutesPlayed = totalMinutesPlayed;
         this.lastPlayed = lastPlayed;
     }
@@ -70,7 +66,7 @@ public class JpaPlayerStatisticsEntity {
                 .toList();
 
         return new PlayerStatistics(
-                this.playerId,
+                new PlayerId(playerId),
                 games,
                 this.totalMinutesPlayed,
                 this.lastPlayed

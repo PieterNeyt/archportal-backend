@@ -1,9 +1,9 @@
 package be.kdg.ip3.archportal.games.shared;
 
+import be.kdg.ip3.archportal.analytics.domain.records.GameId;
 import org.springframework.modulith.NamedInterface;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @NamedInterface
@@ -19,4 +19,6 @@ public interface GamesApi {
     int getMaxPlayersForGame(UUID gameId);
 
     boolean validateGame(UUID uuid);
+
+    UUID findAchievementIdByExternalAchId(String externalAchId,UUID gameId);
 }

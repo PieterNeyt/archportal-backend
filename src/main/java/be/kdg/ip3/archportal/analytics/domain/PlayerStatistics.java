@@ -1,9 +1,9 @@
 package be.kdg.ip3.archportal.analytics.domain;
 
+import be.kdg.ip3.archportal.analytics.domain.records.AchievementId;
 import be.kdg.ip3.archportal.analytics.domain.records.GameStatisticsId;
 import be.kdg.ip3.archportal.analytics.domain.records.PlayerId;
 import be.kdg.ip3.archportal.analytics.domain.records.WinnerRecord;
-import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
@@ -21,7 +21,7 @@ public class PlayerStatistics {
 
     public PlayerStatistics(PlayerId playerId, List<GameStatistics> gameStatistics, int totalMinutesPlayed, Date lastPlayed) {
         this.playerId = playerId;
-        this.gameStatistics = gameStatistics;
+        this.gameStatistics = new ArrayList<>(gameStatistics);;
         this.TotalMinutesPlayed = totalMinutesPlayed;
         this.lastPlayed = lastPlayed;
     }
@@ -30,12 +30,12 @@ public class PlayerStatistics {
         this(playerId, new ArrayList<>(), totalMinutesPlayed, lastPlayed);
     }
 
-    public GameStatistics findGameStatisticsById(GameStatisticsId gameId) {
+    public GameStatistics findGameStatisticsById(GameStatisticsId gameStatsId) {
         return gameStatistics.stream()
-                .filter(game -> game.getGameStatisticsId().equals(gameId))
+                .filter(game -> game.getGameStatisticsId().equals(gameStatsId))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(
-                        "GameStatistics with id " + gameId + " not found"
+                        "GameStatistics with id " + gameStatsId + " not found"
                 ));
     }
 
@@ -44,7 +44,14 @@ public class PlayerStatistics {
         gameStats.addWinnerRecord(result);
     }
 
-    public void addGameStatistics(GameStatisticsId gameId) {
-        gameStatistics.add(new GameStatistics(gameId));
+    public void addGameStatistics(GameStatisticsId gameStatsId) {
+        gameStatistics.add(new GameStatistics(gameStatsId));
+    }
+
+    public void addAchievementToGame(AchievementId achievementId, GameStatisticsId gameStatsId) {
+        var gameStats = findGameStatisticsById(gameStatsId);
+
+        gameStats.addAchievement(achievementId);
+
     }
 }

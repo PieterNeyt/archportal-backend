@@ -1,7 +1,7 @@
 package be.kdg.ip3.archportal.games.application;
 
+import be.kdg.ip3.archportal.analytics.domain.records.GameId;
 import be.kdg.ip3.archportal.games.domain.NotFoundException;
-import be.kdg.ip3.archportal.games.domain.game.GameId;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
@@ -51,6 +51,14 @@ public class GamesApiService implements GamesApi {
     @Override
     public boolean validateGame(UUID uuid) {
         return gameRepository.existsById(uuid);
+    }
+
+    @Override
+    public UUID findAchievementIdByExternalAchId(String externalAchId, UUID gameId) {
+        var game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new NotFoundException("Game not found"));
+
+        return game.getAchievementByExternalAchId(externalAchId);
     }
 
     @Override

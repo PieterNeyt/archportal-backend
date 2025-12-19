@@ -17,7 +17,7 @@ public record GameStatisticsDto(
     public static GameStatisticsDto fromDomain(GameStatistics gameStatistics) {
         return new GameStatisticsDto(
                 gameStatistics.getGameStatisticsId().gameId().id(),
-                gameStatistics.getGameStatisticsId().profileId().id(),
+                gameStatistics.getGameStatisticsId().playerId().id(),
                 gameStatistics.getTotalPlayTimeMinutes().toMinutes(),
                 gameStatistics.getLastPlayedAt(),
                 gameStatistics.getAchievements().stream()
