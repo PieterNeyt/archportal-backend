@@ -10,8 +10,10 @@ import java.util.UUID;
 @Embeddable
 @Getter
 public class JpaAchievement {
+
     @Column(nullable = false)
     private UUID achievementId;
+
     @Column(nullable = false)
     private LocalDateTime timeUnlocked;
 

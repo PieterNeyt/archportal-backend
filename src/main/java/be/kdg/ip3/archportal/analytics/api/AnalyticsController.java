@@ -9,11 +9,9 @@ import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
@@ -34,4 +32,13 @@ public class AnalyticsController {
     }
 
 
+    @PostMapping("/achievement/{externalAchievementId}/user/{userId}")
+    public ResponseEntity<Void> grantAchievement(@PathVariable("externalAchievementId") String externalAchId,@PathVariable("userId") UUID userUUId) {
+        var userId = new ProfileId(userUUId);
+
+        analyticsService.grantAchievement(externalAchId,userId);
+
+        var location = URI.create("/api/analytics/achievement/" + externalAchId + "/user/" + userId);
+        return ResponseEntity.created(location).build();
+    }
 }

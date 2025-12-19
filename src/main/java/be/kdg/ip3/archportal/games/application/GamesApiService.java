@@ -49,6 +49,11 @@ public class GamesApiService implements GamesApi {
     }
 
     @Override
+    public boolean validateGame(UUID uuid) {
+        return gameRepository.existsById(uuid);
+    }
+
+    @Override
     public List<UUID> validateGames(List<UUID> gameIds) {
         return gameIds.stream()
                 .filter(gameId -> !gameRepository.existsById(gameId))

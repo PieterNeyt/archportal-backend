@@ -1,9 +1,7 @@
 package be.kdg.ip3.archportal.analytics.domain;
 
 
-import be.kdg.ip3.archportal.analytics.domain.records.GameId;
 import be.kdg.ip3.archportal.analytics.domain.records.GameStatisticsId;
-import be.kdg.ip3.archportal.analytics.domain.records.ProfileId;
 import be.kdg.ip3.archportal.analytics.domain.records.WinnerRecord;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
@@ -16,17 +14,16 @@ import java.util.List;
 import java.util.Set;
 
 
-//TODO: verder uitwerken, dit is skelly, buiten dan voor winnerrecords
 @AggregateRoot
 @Getter
 public class GameStatistics {
     private final GameStatisticsId gameStatisticsId;
     private Duration TotalPlayTimeMinutes;
     private LocalDateTime lastPlayedAt;
-    private Set<Achievements> achievements;
+    private Set<Achievement> achievements;
     private List<WinnerRecord> winnerRecords;
 
-    public GameStatistics(GameStatisticsId gameStatisticsId, Duration totalPlayTimeMinutes, LocalDateTime lastPlayedAt, List<Achievements> achievements, List<WinnerRecord> winnerRecords) {
+    public GameStatistics(GameStatisticsId gameStatisticsId, Duration totalPlayTimeMinutes, LocalDateTime lastPlayedAt, List<Achievement> achievements, List<WinnerRecord> winnerRecords) {
         this.gameStatisticsId = gameStatisticsId;
         this.TotalPlayTimeMinutes = totalPlayTimeMinutes;
         this.lastPlayedAt = lastPlayedAt;

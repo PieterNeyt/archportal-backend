@@ -1,8 +1,8 @@
 package be.kdg.ip3.archportal.analytics.infrastructure.gameStatistics.jpa;
 
-import be.kdg.ip3.archportal.analytics.domain.Achievements;
-import be.kdg.ip3.archportal.analytics.domain.GameStatistics;
+import be.kdg.ip3.archportal.analytics.domain.*;
 import be.kdg.ip3.archportal.analytics.domain.records.*;
+import be.kdg.ip3.archportal.analytics.infrastructure.playerStatistics.jpa.JpaPlayerStatisticsEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -15,9 +15,9 @@ import java.util.UUID;
 @Getter
 @Table(name = "game_statistics", schema = "analyticsservice")
 public class JpaGameStatisticsEntity {
-    @EmbeddedId
-    @Column(name = "game_id")
-    private JpaGameStatisticsId gameStatisticsId;
+
+    @Id
+    private UUID gameStatisticsId;
 
     @Column(name = "total_playtime_minutes")
     private long totalPlayTimeMinutes;
@@ -30,33 +30,36 @@ public class JpaGameStatisticsEntity {
             name = "game_statistics_achievements",
             schema = "analyticsservice",
             joinColumns = {
-                    @JoinColumn(name = "game_id", referencedColumnName = "gameId"),
-                    @JoinColumn(name = "profile_id", referencedColumnName = "profileId")
+                    @JoinColumn(name = "game_id", referencedColumnName = "game_id"),
+                    @JoinColumn(name = "profile_id", referencedColumnName = "profile_id")
             }
     )
     private List<JpaAchievement> achievements;
-
 
     @ElementCollection
     @CollectionTable(
             name = "game_statistics_winner_records",
             schema = "analyticsservice",
             joinColumns = {
-                    @JoinColumn(name = "game_id", referencedColumnName = "gameId"),
-                    @JoinColumn(name = "profile_id", referencedColumnName = "profileId")
+                    @JoinColumn(name = "game_id", referencedColumnName = "game_id"),
+                    @JoinColumn(name = "profile_id", referencedColumnName = "profile_id")
             }
     )
     private List<JpaWinnerRecord> winnerRecords;
-    protected JpaGameStatisticsEntity() { }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "player_statistics_id")
+    private JpaPlayerStatisticsEntity playerStatistics;
+
+    protected JpaGameStatisticsEntity() { }
 
     public static JpaGameStatisticsEntity fromDomain(GameStatistics stats) {
         JpaGameStatisticsEntity entity = new JpaGameStatisticsEntity();
 
-
-        entity.gameStatisticsId = JpaGameStatisticsId.fromDomain(stats.getGameStatisticsId());
+        entity.gameStatisticsId = stats.getGameStatisticsId().gameId();
         entity.totalPlayTimeMinutes = stats.getTotalPlayTimeMinutes().toMinutes();
         entity.lastPlayedAt = stats.getLastPlayedAt();
+
         entity.achievements = stats.getAchievements().stream()
                 .map(a -> new JpaAchievement(
                         a.getAchievementId().id(),
@@ -64,8 +67,7 @@ public class JpaGameStatisticsEntity {
                 ))
                 .toList();
 
-        entity.winnerRecords = stats.getWinnerRecords()
-                .stream()
+        entity.winnerRecords = stats.getWinnerRecords().stream()
                 .map(w -> new JpaWinnerRecord(
                         w.PlayedAt(),
                         w.Winner(),
@@ -78,15 +80,11 @@ public class JpaGameStatisticsEntity {
 
     public GameStatistics toDomain() {
         return new GameStatistics(
-
-                new GameStatisticsId(
-                        new GameId(gameStatisticsId.getGameId()),
-                        new ProfileId(gameStatisticsId.getProfileId())
-                ),
+                new GameStatisticsId(gameStatisticsId),
                 Duration.ofMinutes(totalPlayTimeMinutes),
                 lastPlayedAt,
                 achievements.stream()
-                        .map(a -> new Achievements(
+                        .map(a -> new Achievement(
                                 new AchievementId(a.getAchievementId()),
                                 a.getTimeUnlocked()
                         ))
@@ -99,5 +97,9 @@ public class JpaGameStatisticsEntity {
                         ))
                         .toList()
         );
+    }
+
+    public void setPlayerStatistics(JpaPlayerStatisticsEntity playerStatistics) {
+        this.playerStatistics = playerStatistics;
     }
 }
