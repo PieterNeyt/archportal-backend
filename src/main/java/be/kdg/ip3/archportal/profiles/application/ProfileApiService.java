@@ -3,10 +3,8 @@ package be.kdg.ip3.archportal.profiles.application;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
 import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
-import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
-import be.kdg.ip3.archportal.profiles.infrastructure.profile.jpa.JpaProfileEntity;
 import be.kdg.ip3.archportal.profiles.shared.BasicProfileInfo;
 import be.kdg.ip3.archportal.profiles.shared.GameAddedToLibraryEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
@@ -124,5 +122,10 @@ public class ProfileApiService implements ProfilesApi {
         for (var game : games) {
             eventPublisher.publishEvent(new GameAddedToLibraryEvent(this, game, profileId));
         }
+    }
+
+    @Override
+    public List<ProfileDto> getAllFriends(UUID profileId) {
+        return profileRepository.findAllFriends(new ProfileId(profileId)).stream().map(ProfileDto::from).toList();
     }
 }

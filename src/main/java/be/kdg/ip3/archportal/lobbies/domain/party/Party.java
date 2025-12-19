@@ -48,4 +48,8 @@ public class Party {
             return invite;
         throw new IllegalArgumentException("This user already has an invitation");
     }
+
+    public boolean hasInvite(PlayerId playerId) {
+        return invites.stream().map(PartyInvite::getReceiverId).toList().contains(playerId);
+    }
 }

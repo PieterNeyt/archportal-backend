@@ -1,6 +1,9 @@
 package be.kdg.ip3.archportal.lobbies.application;
 
+import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
+import be.kdg.ip3.archportal.communications.shared.NotificationType;
+import be.kdg.ip3.archportal.lobbies.api.dto.PlayerDto;
 import be.kdg.ip3.archportal.lobbies.domain.ChatRoomId;
 import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
@@ -9,6 +12,7 @@ import be.kdg.ip3.archportal.lobbies.domain.party.PartyRepository;
 import be.kdg.ip3.archportal.lobbies.domain.partyInvite.PartyInvite;
 import be.kdg.ip3.archportal.profiles.shared.BasicProfileInfo;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +25,13 @@ public class PartyService {
     private final PartyRepository partyRepository;
     private final ProfilesApi profilesApi;
     private final ChatRoomApi chatRoomApi;
+    private final ApplicationEventPublisher publisher;
 
-    public PartyService(PartyRepository partyRepository, ProfilesApi profilesApi, ChatRoomApi chatRoomApi) {
+    public PartyService(PartyRepository partyRepository, ProfilesApi profilesApi, ChatRoomApi chatRoomApi, ApplicationEventPublisher publisher) {
         this.partyRepository = partyRepository;
         this.profilesApi = profilesApi;
         this.chatRoomApi = chatRoomApi;
+        this.publisher = publisher;
     }
 
     public Party createParty(PlayerId hostId) {
@@ -67,6 +73,19 @@ public class PartyService {
         var party = partyRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundException("Party not found"));
         var invite = party.addInvite(memberId, receiverId);
         partyRepository.save(party);
+        publisher.publishEvent(new AddNotificationEvent(receiverId.id(), "Party invite", "You have a new party invite.", NotificationType.PARTY_INVITE));
         return invite;
+    }
+
+    public List<PlayerDto> getInvitableFriends(PlayerId playerId) {
+        if (!profilesApi.existsById(playerId.id()))
+            throw playerId.notFound();
+
+        var party = partyRepository.findByMemberId(playerId).orElseThrow(() -> new NotFoundException("Party not found"));
+        var friends = profilesApi.getAllFriends(playerId.id());
+        var notInParty = friends.stream().filter(f -> !party.getMembers().contains(new PlayerId(f.id()))).toList();
+        return notInParty.stream().map(p -> party.hasInvite(new PlayerId(p.id()))
+                ? PlayerDto.hasInvite(p)
+                : PlayerDto.noInvite(p)).toList();
     }
 }

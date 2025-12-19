@@ -19,5 +19,6 @@ public interface ProfilesApi {
 
     String getProfileEmail(UUID id);
     List<BasicProfileInfo> getBasicProfiles(List<UUID> profileIds);
-
+    
+    List<ProfileDto> getAllFriends(UUID profileId);
 }
