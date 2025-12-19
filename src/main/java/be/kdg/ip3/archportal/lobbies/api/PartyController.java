@@ -24,9 +24,9 @@ public class PartyController {
     }
 
     @PostMapping({"/", ""})
-    public ResponseEntity<Void> createParty(@AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<Void> createParty(@Valid @RequestBody CreatePartyDto dto, @AuthenticationPrincipal Jwt token) {
         var hostId = new PlayerId(UUID.fromString(token.getSubject()));
-        var party = partyService.createParty(hostId);
+        var party = partyService.createParty(hostId, dto.title(), dto.maxMembers());
         var location = URI.create("/api/party/" + party.getId().id());
         return ResponseEntity.created(location).build();
     }

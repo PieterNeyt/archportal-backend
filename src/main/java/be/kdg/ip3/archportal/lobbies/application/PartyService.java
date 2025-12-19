@@ -36,14 +36,14 @@ public class PartyService {
         this.publisher = publisher;
     }
 
-    public Party createParty(PlayerId hostId) {
+    public Party createParty(PlayerId hostId, String title, int maxMembers) {
         if (!profilesApi.existsById(hostId.id()))
             throw hostId.notFound();
         if (partyRepository.existsByPlayerId(hostId))
             throw new IllegalArgumentException("Already in a party");
 
         var id = chatRoomApi.createChatRoom(hostId.id());
-        var party = new Party(hostId, new ChatRoomId(id));
+        var party = new Party(hostId, new ChatRoomId(id), title, maxMembers);
         partyRepository.save(party);
         return party;
     }
