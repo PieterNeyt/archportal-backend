@@ -1,6 +1,6 @@
 package be.kdg.ip3.archportal.profiles.infrastructure.profile.jpa;
 
-
+import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
@@ -43,8 +43,7 @@ public class JpaProfileEntity {
 
     @ElementCollection
     @CollectionTable(name = "profile_library", joinColumns = @JoinColumn(name = "profile_id"), schema = "profileservice")
-    @Column(name = "game_id", nullable = false)
-    private List<UUID> library = new ArrayList<>();
+    private List<JpaGameEntity> games = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "friend_requests", schema = "profileservice", joinColumns = @JoinColumn(name = "receiver_id"),
@@ -58,7 +57,7 @@ public class JpaProfileEntity {
     }
 
     public JpaProfileEntity(UUID id, String firstName, String lastName, String email, String icon, String gamerTag,
-                            int platformPoints, List<UUID> platformBenefits, List<UUID> library,
+                            int platformPoints, List<UUID> platformBenefits, List<JpaGameEntity> library,
                             Set<JpaFriendRequest> incomingRequests) {
         this.id = id;
         this.firstName = firstName;
@@ -68,12 +67,19 @@ public class JpaProfileEntity {
         this.gamerTag = gamerTag;
         this.platformPoints = platformPoints;
         this.platformBenefits = platformBenefits;
-        this.library = library;
+        this.games = library;
         this.incomingRequests = incomingRequests;
     }
 
     public static JpaProfileEntity fromDomain(Profile profile) {
-        Set<JpaFriendRequest> incoming = profile.getIncomingFriendRequests().stream().map(JpaFriendRequest::from).collect(Collectors.toSet());
+        Set<JpaFriendRequest> incoming = profile.getIncomingFriendRequests().stream()
+                .map(JpaFriendRequest::from)
+                .collect(Collectors.toSet());
+
+        List<JpaGameEntity> jpaLibrary = profile.getGames().stream()
+                .map(games -> new JpaGameEntity(games.getGameId(), games.isFavorite()))
+                .collect(Collectors.toList());
+
         return new JpaProfileEntity(
                 profile.getId().id(),
                 profile.getFirstName(),
@@ -83,13 +89,20 @@ public class JpaProfileEntity {
                 profile.getGamerTag(),
                 profile.getPlatformPoints(),
                 profile.getPlatformBenefits(),
-                profile.getLibrary(),
+                jpaLibrary,
                 incoming
         );
     }
 
     public Profile toDomain() {
-        Set<FriendRequest> incoming = incomingRequests.stream().map(JpaFriendRequest::toDomain).collect(Collectors.toSet());
+        Set<FriendRequest> incoming = incomingRequests.stream()
+                .map(JpaFriendRequest::toDomain)
+                .collect(Collectors.toSet());
+
+        List<Game> domainGames = games.stream()
+                .map(JpaGameEntity::toDomain)
+                .collect(Collectors.toList());
+
         return new Profile(
                 new ProfileId(id),
                 platformBenefits,
@@ -99,7 +112,7 @@ public class JpaProfileEntity {
                 icon,
                 gamerTag,
                 firstName,
-                library,
+                domainGames,
                 incoming
         );
     }

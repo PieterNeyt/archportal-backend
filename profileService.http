@@ -1,5 +1,5 @@
 // werkt niet omdat je niet aan de access token kan gerkan via hier 
-### Add game to library
+### Add game to games
 PUT http://localhost:8080/api/profile/acquire
 Content-Type: application/json
 
