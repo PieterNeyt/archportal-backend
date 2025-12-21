@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.profiles.application;
 
 import be.kdg.ip3.archportal.games.shared.GamesApi;
+import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
 import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
@@ -25,7 +26,7 @@ public class ProfileApiService implements ProfilesApi {
     private final ApplicationEventPublisher eventPublisher;
 
     public ProfileApiService(ProfileRepository profileRepository, GamesApi gamesApi, ApplicationEventPublisher eventPublisher
-    , FriendshipRepository friendshipRepository) {
+            , FriendshipRepository friendshipRepository) {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
         this.friendshipRepository = friendshipRepository;
@@ -41,6 +42,11 @@ public class ProfileApiService implements ProfilesApi {
     @Override
     public List<ProfileDto> getProfilesFromGamerTags(List<String> gamerTags) {
         return profileRepository.findFromGamerTags(gamerTags).stream().map(ProfileDto::from).toList();
+    }
+
+    @Override
+    public UUID getProfileFromGamerTag(String gamerTag) {
+        return profileRepository.findByGamerTag(gamerTag).map(p -> p.getId().id()).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
     }
 
     @Override
@@ -72,7 +78,7 @@ public class ProfileApiService implements ProfilesApi {
         for (UUID profileId : profileIds) {
             var id = new ProfileId(profileId);
             var profile = profileRepository.findById(id).orElseThrow(id::notFound);
-            basicProfileInfos.add(new BasicProfileInfo(profile.getGamerTag(), profile.getIcon()));
+            basicProfileInfos.add(BasicProfileInfo.from(profile));
         }
         return basicProfileInfos;
     }
@@ -116,5 +122,15 @@ public class ProfileApiService implements ProfilesApi {
         for (var game : games) {
             eventPublisher.publishEvent(new GameAddedToLibraryEvent(this, game, profileId));
         }
+    }
+
+    @Override
+    public List<ProfileDto> getAllFriends(UUID profileId) {
+        return profileRepository.findAllFriends(new ProfileId(profileId)).stream().map(ProfileDto::from).toList();
+    }
+
+    @Override
+    public String getProfileGamerTag(UUID id) {
+        return profileRepository.findById(new ProfileId(id)).orElseThrow(new ProfileId(id)::notFound).getGamerTag();
     }
 }

@@ -5,7 +5,6 @@ import be.kdg.ip3.archportal.analytics.application.AnalyticsService;
 import be.kdg.ip3.archportal.analytics.domain.GameStatistics;
 import be.kdg.ip3.archportal.analytics.domain.records.GameId;
 import be.kdg.ip3.archportal.analytics.domain.records.ProfileId;
-import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;

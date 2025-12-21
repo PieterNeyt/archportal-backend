@@ -1,4 +1,4 @@
-package be.kdg.ip3.archportal.lobbies.domain.id;
+package be.kdg.ip3.archportal.lobbies.domain.lobby;
 
 import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 

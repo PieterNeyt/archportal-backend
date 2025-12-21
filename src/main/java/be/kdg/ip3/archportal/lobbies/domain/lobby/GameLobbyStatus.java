@@ -1,4 +1,4 @@
-package be.kdg.ip3.archportal.lobbies.domain;
+package be.kdg.ip3.archportal.lobbies.domain.lobby;
 
 public enum GameLobbyStatus {
     OPEN,

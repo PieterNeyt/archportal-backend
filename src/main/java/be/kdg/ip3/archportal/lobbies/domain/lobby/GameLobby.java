@@ -1,8 +1,9 @@
-package be.kdg.ip3.archportal.lobbies.domain;
+package be.kdg.ip3.archportal.lobbies.domain.lobby;
 
-import be.kdg.ip3.archportal.lobbies.domain.id.GameId;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameLobbyId;
-import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
+import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
+import be.kdg.ip3.archportal.lobbies.domain.GameId;
+import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 import org.jmolecules.ddd.annotation.Identity;
