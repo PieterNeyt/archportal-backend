@@ -8,7 +8,10 @@ import org.jmolecules.ddd.annotation.AggregateRoot;
 import org.jmolecules.ddd.annotation.Identity;
 import org.springframework.security.access.AccessDeniedException;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @Getter
@@ -22,14 +25,14 @@ public class Party {
     private int maxMembers;
     private final ChatRoomId chatRoomId;
     private final Set<PartyInvite> invites;
-    private final static int totalMaxMembers = 10;
+    private final static int TOTAL_MAX_MEMBERS = 10;
 
     public Party(PartyId id, String title, PlayerId hostId, Set<PlayerId> members, int maxMembers, ChatRoomId chatRoomId, Set<PartyInvite> invites) {
         this.id = id;
         this.title = title;
         this.hostId = hostId;
         this.members = members;
-        this.maxMembers = maxMembers;
+        setMaxMembers(maxMembers);
         this.chatRoomId = chatRoomId;
         this.invites = invites;
     }
@@ -76,5 +79,11 @@ public class Party {
 
     public List<PlayerId> getAllMembers() {
         return Stream.concat(members.stream(), Stream.of(hostId)).toList();
+    }
+    
+    public void setMaxMembers(int maxMembers) {
+        if (maxMembers > TOTAL_MAX_MEMBERS)
+            throw new IllegalArgumentException("The maximum amount of members is too high");
+        this.maxMembers = maxMembers;
     }
 }
