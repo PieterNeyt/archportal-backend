@@ -4,9 +4,12 @@ import be.kdg.ip3.archportal.analytics.domain.*;
 import be.kdg.ip3.archportal.analytics.domain.records.*;
 import be.kdg.ip3.archportal.analytics.shared.AnalyticsApi;
 import be.kdg.ip3.archportal.analytics.shared.CreateGameStatsDto;
+import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
+import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,12 +20,14 @@ import java.util.List;
 @Transactional
 public class AnalyticsService implements AnalyticsApi {
     private final PlayerStatisticsRepository playerStatisticsRepository;
+    private final ApplicationEventPublisher publisher;
     private final LobbiesApi lobbiesApi;
     private final GamesApi gamesApi;
     private final ProfilesApi profilesApi;
 
-    public AnalyticsService(PlayerStatisticsRepository playerStatisticsRepository, LobbiesApi lobbiesApi, GamesApi gamesApi, ProfilesApi profilesApi) {
+    public AnalyticsService(PlayerStatisticsRepository playerStatisticsRepository, ApplicationEventPublisher publisher, LobbiesApi lobbiesApi, GamesApi gamesApi, ProfilesApi profilesApi) {
         this.playerStatisticsRepository = playerStatisticsRepository;
+        this.publisher = publisher;
         this.lobbiesApi = lobbiesApi;
         this.gamesApi = gamesApi;
         this.profilesApi = profilesApi;
@@ -88,9 +93,16 @@ public class AnalyticsService implements AnalyticsApi {
         var playerStats = playerStatisticsRepository.findById(playerId)
                 .orElseThrow(() -> new NotFoundException("player stats not found"));
 
-        var achievementId = gamesApi.findAchievementIdByExternalAchId(externalAchId,gameStatsId.gameId().id());
+        var achievement = gamesApi.findAchievementByExternalAchId(externalAchId,gameStatsId.gameId().id());
 
-        playerStats.addAchievementToGame(new AchievementId(achievementId),gameStatsId);
+        playerStats.addAchievementToGame(new AchievementId(achievement.achievementId()),gameStatsId);
         playerStatisticsRepository.save(playerStats);
+
+        publisher.publishEvent(new AddNotificationEvent(
+                playerId.id(),
+                "New achievement unlocked!",
+                "You unlocked \"" + achievement.title() + "\". Well done!",
+                NotificationType.ACHIEVEMENT
+        ));
     }
 }

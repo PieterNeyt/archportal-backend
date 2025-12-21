@@ -44,7 +44,7 @@ public class AnalyticsController {
 
         analyticsService.grantAchievement(externalAchId,playerId,gameStatsId);
 
-        var location = URI.create("/api/analytics/game/"+ gameUUID+"/achievement/" + externalAchId + "/user/" + playerId);
+        var location = URI.create("/api/analytics/game/"+ gameUUID+"/achievement/" + externalAchId + "/user/" + playerId.id());
         return ResponseEntity.created(location).build();
     }
 }

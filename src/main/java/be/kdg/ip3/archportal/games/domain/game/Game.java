@@ -119,11 +119,10 @@ public class Game {
         this.imageUrl = imageUrl;
     }
 
-    public UUID getAchievementByExternalAchId(String externalAchId) {
+    public Achievement getAchievementByExternalAchId(String externalAchId) {
         return achievements.stream()
                 .filter(a -> a.getExternalAchId().id().equals(externalAchId))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("Achievement not found"))
-                .getId().id();
+                .orElseThrow(() -> new NotFoundException("Achievement not found"));
     }
 }
