@@ -2,12 +2,12 @@ package be.kdg.ip3.archportal.lobbies.api;
 
 import be.kdg.ip3.archportal.lobbies.api.dto.*;
 import be.kdg.ip3.archportal.lobbies.application.GameLobbyService;
-import be.kdg.ip3.archportal.lobbies.domain.GameLobby;
-import be.kdg.ip3.archportal.lobbies.domain.GameSession;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameId;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameLobbyId;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameSessionId;
-import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobby;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
+import be.kdg.ip3.archportal.lobbies.domain.GameId;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyId;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSessionId;
+import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -205,6 +205,6 @@ public class GameLobbyController {
     public ResponseEntity<Void> leaveLobby(@AuthenticationPrincipal Jwt jwt) {
         var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));
         gameLobbyService.leaveLobby(playerId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

@@ -107,7 +107,7 @@ create table communicationservice.notifications
     type        varchar(255)  not null
         constraint notifications_type_check
             check ((type)::text = ANY
-        ((ARRAY ['CHAT'::character varying, 'SYSTEM'::character varying, 'ACHIEVEMENT'::character varying, 'GAME_INVITE'::character varying, 'FRIEND_REQUEST'::character varying, 'TURN_REMINDER'::character varying])::text[]))
+        ((ARRAY ['CHAT'::character varying, 'SYSTEM'::character varying, 'ACHIEVEMENT'::character varying, 'PARTY_INVITE'::character varying, 'GAME_INVITE'::character varying, 'FRIEND_REQUEST'::character varying, 'TURN_REMINDER'::character varying])::text[]))
     );
 
 alter table communicationservice.notifications
@@ -131,6 +131,22 @@ create table gameservice.games
 );
 
 alter table gameservice.games
+    owner to "user";
+
+create table gameservice.achievements
+(
+    game_id         uuid
+        constraint fkmm6cv053k2jjggcpcuv3qmpus
+            references gameservice.games,
+    id              uuid         not null
+        primary key,
+    title           varchar(100) not null,
+    description     varchar(255) not null,
+    external_ach_id varchar(255) not null,
+    image_url       varchar(255) not null
+);
+
+alter table gameservice.achievements
     owner to "user";
 
 create table gameservice.gamestudio
@@ -198,6 +214,44 @@ create table lobbyservice.game_sessions
 alter table lobbyservice.game_sessions
     owner to "user";
 
+create table lobbyservice.party
+(
+    max_members  integer      not null,
+    chat_room_id uuid         not null,
+    host_id      uuid         not null,
+    id           uuid         not null
+        primary key,
+    title        varchar(100) not null
+);
+
+alter table lobbyservice.party
+    owner to "user";
+
+create table lobbyservice.party_invite
+(
+    id          uuid not null
+        primary key,
+    party_id    uuid not null
+        constraint fkg0d7md7nqv6y8unxo7tfr722f
+            references lobbyservice.party,
+    receiver_id uuid not null,
+    sender_id   uuid not null
+);
+
+alter table lobbyservice.party_invite
+    owner to "user";
+
+create table lobbyservice.party_member
+(
+    members  uuid,
+    party_id uuid not null
+        constraint fkctrpcp93h130dwe6j1jlhf960
+            references lobbyservice.party
+);
+
+alter table lobbyservice.party_member
+    owner to "user";
+
 create table profileservice.friendship
 (
     id           uuid not null
@@ -241,8 +295,9 @@ alter table profileservice.friend_requests
 
 create table profileservice.profile_library
 (
-    game_id    uuid not null,
-    profile_id uuid not null
+    favorite   boolean not null,
+    id         uuid    not null,
+    profile_id uuid    not null
         constraint fkqcvi1bxqexcua044kqsptultb
             references profileservice.profile
 );

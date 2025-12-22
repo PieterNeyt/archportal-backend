@@ -1,9 +1,9 @@
-package be.kdg.ip3.archportal.lobbies.infrastructure.jpa;
+package be.kdg.ip3.archportal.lobbies.infrastructure.lobby.jpa;
 
-import be.kdg.ip3.archportal.lobbies.domain.GameSession;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameLobbyId;
-import be.kdg.ip3.archportal.lobbies.domain.id.GameSessionId;
-import be.kdg.ip3.archportal.lobbies.domain.id.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyId;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSessionId;
+import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
