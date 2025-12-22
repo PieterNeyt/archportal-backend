@@ -1,14 +1,17 @@
 package be.kdg.ip3.archportal.games.application;
 
 import be.kdg.ip3.archportal.games.domain.NotFoundException;
-import be.kdg.ip3.archportal.games.domain.game.GameId;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
+import be.kdg.ip3.archportal.games.shared.AchievementDto;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
+import be.kdg.ip3.archportal.games.shared.GrantedAchievementDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -33,6 +36,21 @@ public class GamesApiService implements GamesApi {
     }
 
     @Override
+    public List<AchievementDto> getAchievements(Map<UUID, LocalDateTime> achievementData, UUID gameId) {
+        var game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new NotFoundException("Game not found"));
+
+        return game.getAchievements().stream()
+                .filter(achievement -> achievementData.containsKey(achievement.getId().id()))
+                .map(achievement -> {
+                    LocalDateTime unlockedAt = achievementData.get(achievement.getId().id());
+                    return AchievementDto.fromDomain(achievement, unlockedAt);
+                })
+                .toList();
+    }
+
+
+    @Override
     public GlobalGameDto getGameById(UUID gameId) {
         var game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new NotFoundException("Game Id["+gameId+"] not found"));
@@ -46,6 +64,20 @@ public class GamesApiService implements GamesApi {
                 .orElseThrow(() -> new NotFoundException("Game Id["+gameId+"] not found"));
 
         return game.getMaxLobbySize();
+    }
+
+    @Override
+    public boolean validateGame(UUID uuid) {
+        return gameRepository.existsById(uuid);
+    }
+
+    @Override
+    public GrantedAchievementDto findAchievementByExternalAchId(String externalAchId, UUID gameId) {
+        var game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new NotFoundException("Game not found"));
+
+        var achievement = game.getAchievementByExternalAchId(externalAchId);
+        return new GrantedAchievementDto(achievement.getId().id(), achievement.getTitle());
     }
 
     @Override

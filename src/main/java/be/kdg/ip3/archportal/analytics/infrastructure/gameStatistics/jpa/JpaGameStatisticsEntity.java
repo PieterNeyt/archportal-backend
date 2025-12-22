@@ -1,22 +1,21 @@
 package be.kdg.ip3.archportal.analytics.infrastructure.gameStatistics.jpa;
 
-import be.kdg.ip3.archportal.analytics.domain.Achievements;
-import be.kdg.ip3.archportal.analytics.domain.GameStatistics;
+import be.kdg.ip3.archportal.analytics.domain.*;
 import be.kdg.ip3.archportal.analytics.domain.records.*;
+import be.kdg.ip3.archportal.analytics.infrastructure.playerStatistics.jpa.JpaPlayerStatisticsEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
 @Table(name = "game_statistics", schema = "analyticsservice")
 public class JpaGameStatisticsEntity {
+
     @EmbeddedId
-    @Column(name = "game_id")
     private JpaGameStatisticsId gameStatisticsId;
 
     @Column(name = "total_playtime_minutes")
@@ -30,42 +29,45 @@ public class JpaGameStatisticsEntity {
             name = "game_statistics_achievements",
             schema = "analyticsservice",
             joinColumns = {
-                    @JoinColumn(name = "game_id", referencedColumnName = "gameId"),
-                    @JoinColumn(name = "profile_id", referencedColumnName = "profileId")
+                    @JoinColumn(name = "game_id", referencedColumnName = "game_id"),
+                    @JoinColumn(name = "player_statistics_id", referencedColumnName = "player_statistics_id")
             }
     )
     private List<JpaAchievement> achievements;
-
 
     @ElementCollection
     @CollectionTable(
             name = "game_statistics_winner_records",
             schema = "analyticsservice",
             joinColumns = {
-                    @JoinColumn(name = "game_id", referencedColumnName = "gameId"),
-                    @JoinColumn(name = "profile_id", referencedColumnName = "profileId")
+                    @JoinColumn(name = "game_id", referencedColumnName = "game_id"),
+                    @JoinColumn(name = "player_statistics_id", referencedColumnName = "player_statistics_id")
             }
     )
     private List<JpaWinnerRecord> winnerRecords;
-    protected JpaGameStatisticsEntity() { }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "player_statistics_id", insertable = false, updatable = false)
+    private JpaPlayerStatisticsEntity playerStatistics;
+
+    protected JpaGameStatisticsEntity() { }
 
     public static JpaGameStatisticsEntity fromDomain(GameStatistics stats) {
         JpaGameStatisticsEntity entity = new JpaGameStatisticsEntity();
 
+        entity.gameStatisticsId = new JpaGameStatisticsId(
+                stats.getGameStatisticsId().gameId().id(),
+                stats.getGameStatisticsId().playerId().id()
+        );
 
-        entity.gameStatisticsId = JpaGameStatisticsId.fromDomain(stats.getGameStatisticsId());
         entity.totalPlayTimeMinutes = stats.getTotalPlayTimeMinutes().toMinutes();
         entity.lastPlayedAt = stats.getLastPlayedAt();
+
         entity.achievements = stats.getAchievements().stream()
-                .map(a -> new JpaAchievement(
-                        a.getAchievementId().id(),
-                        a.getTimeUnlocked()
-                ))
+                .map(a -> new JpaAchievement(a.getAchievementId().id(), a.getTimeUnlocked()))
                 .toList();
 
-        entity.winnerRecords = stats.getWinnerRecords()
-                .stream()
+        entity.winnerRecords = stats.getWinnerRecords().stream()
                 .map(w -> new JpaWinnerRecord(
                         w.PlayedAt(),
                         w.Winner(),
@@ -78,26 +80,18 @@ public class JpaGameStatisticsEntity {
 
     public GameStatistics toDomain() {
         return new GameStatistics(
-
                 new GameStatisticsId(
                         new GameId(gameStatisticsId.getGameId()),
-                        new ProfileId(gameStatisticsId.getProfileId())
+                        new PlayerId(gameStatisticsId.getPlayerStatisticsId())
                 ),
                 Duration.ofMinutes(totalPlayTimeMinutes),
                 lastPlayedAt,
-                achievements.stream()
-                        .map(a -> new Achievements(
-                                new AchievementId(a.getAchievementId()),
-                                a.getTimeUnlocked()
-                        ))
-                        .toList(),
-                winnerRecords.stream()
-                        .map(w -> new WinnerRecord(
-                                w.getPlayedAt(),
-                                w.getWinner(),
-                                new SessionId(w.getSessionId())
-                        ))
-                        .toList()
+                achievements.stream().map(a -> new Achievement(new AchievementId(a.getAchievementId()), a.getTimeUnlocked())).toList(),
+                winnerRecords.stream().map(w -> new WinnerRecord(w.getPlayedAt(), w.getWinner(), new SessionId(w.getSessionId()))).toList()
         );
+    }
+
+    public void setPlayerStatistics(JpaPlayerStatisticsEntity playerStatistics) {
+        this.playerStatistics = playerStatistics;
     }
 }

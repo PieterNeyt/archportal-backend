@@ -1,11 +1,16 @@
 package be.kdg.ip3.archportal.analytics.application;
 
-import be.kdg.ip3.archportal.analytics.domain.GameStatistics;
-import be.kdg.ip3.archportal.analytics.domain.GameStatisticsRepository;
+import be.kdg.ip3.archportal.analytics.domain.*;
 import be.kdg.ip3.archportal.analytics.domain.records.*;
 import be.kdg.ip3.archportal.analytics.shared.AnalyticsApi;
 import be.kdg.ip3.archportal.analytics.shared.CreateGameStatsDto;
+import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
+import be.kdg.ip3.archportal.communications.shared.NotificationType;
+import be.kdg.ip3.archportal.games.shared.AchievementDto;
+import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
+import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,30 +20,40 @@ import java.util.List;
 @Service
 @Transactional
 public class AnalyticsService implements AnalyticsApi {
-    private final GameStatisticsRepository gameStatisticsRepository;
+    private final PlayerStatisticsRepository playerStatisticsRepository;
+    private final ApplicationEventPublisher publisher;
     private final LobbiesApi lobbiesApi;
+    private final GamesApi gamesApi;
+    private final ProfilesApi profilesApi;
 
-    public AnalyticsService(GameStatisticsRepository gameStatisticsRepository, LobbiesApi lobbiesApi) {
-        this.gameStatisticsRepository = gameStatisticsRepository;
+    public AnalyticsService(PlayerStatisticsRepository playerStatisticsRepository, ApplicationEventPublisher publisher, LobbiesApi lobbiesApi, GamesApi gamesApi, ProfilesApi profilesApi) {
+        this.playerStatisticsRepository = playerStatisticsRepository;
+        this.publisher = publisher;
         this.lobbiesApi = lobbiesApi;
+        this.gamesApi = gamesApi;
+        this.profilesApi = profilesApi;
     }
 
-    public void recordGameResult(SessionId sessionId,  String winner, LocalDateTime timestamp) {
-        var proUuid =  lobbiesApi.getPlayerIdBySessionId(sessionId.id());
+    public void recordGameResult(SessionId sessionId, String winner, LocalDateTime timestamp) {
+        var proUuid = lobbiesApi.getPlayerIdBySessionId(sessionId.id());
         var gameUUid = lobbiesApi.getGameIdBySessionId(sessionId.id());
 
-        var profileId = new ProfileId(proUuid);
+        var playerId = new PlayerId(proUuid);
         var gameId = new GameId(gameUUid);
-        GameStatistics gameStats = gameStatisticsRepository.findById(new GameStatisticsId(gameId, profileId))
-                .orElseThrow(() -> new IllegalArgumentException("No gameStatistic found for id: " + new GameStatisticsId(gameId, profileId)));
-        ;
+        var gameStatsId = new GameStatisticsId(gameId,playerId);
+
+        if (!profilesApi.existsById(playerId.id()))
+            throw new NotFoundException("Profile not found");
+
+
+        var playerStats = playerStatisticsRepository.findById(playerId)
+                .orElseThrow(() -> new NotFoundException("Player not found"));
 
         var result = new WinnerRecord(
                 timestamp, winner, sessionId
         );
-
-        gameStats.addWinnerRecord(result);
-        gameStatisticsRepository.save(gameStats);
+        playerStats.addWinnerRecord(result, gameStatsId);
+        playerStatisticsRepository.save(playerStats);
     }
 
 
@@ -48,17 +63,56 @@ public class AnalyticsService implements AnalyticsApi {
     }
 
     private void instantiateSingleGameStatistics(CreateGameStatsDto dto) {
+        var playerId = new PlayerId(dto.profileID());
         var gameId = new GameId(dto.gameID());
-        var profileId = new ProfileId(dto.profileID());
+        var gameStatsId = new GameStatisticsId(gameId,playerId);
 
-        var gameStatistics = new GameStatistics(new GameStatisticsId(gameId, profileId));
-        this.gameStatisticsRepository.save(gameStatistics);
+        if (!gamesApi.validateGame(gameId.id()))
+            throw new NotFoundException("Game not found");
+
+        var playerStats = playerStatisticsRepository.findById(playerId)
+                .orElseThrow(() -> new NotFoundException("player stats not found"));
+
+        playerStats.addGameStatistics(gameStatsId);
+
+        playerStatisticsRepository.save(playerStats);
     }
 
-    public GameStatistics getGameStatistics(ProfileId profileId, GameId gameId) {
-        var gameStatisticsId = new GameStatisticsId(gameId, profileId);
+    public GameStatistics getGameStatistics(PlayerId playerId, GameId gameId) {
+        var gameStatsId = new GameStatisticsId(gameId,playerId);
 
-        return gameStatisticsRepository.findById(gameStatisticsId)
-                .orElseThrow(() -> new IllegalArgumentException("No game statistics found for profile id: " + profileId + " and game id: " + gameId));
+        var playerStats = playerStatisticsRepository.findById(playerId)
+                .orElseThrow(() -> new NotFoundException("player stats not found"));
+
+        return playerStats.findGameStatisticsById(gameStatsId);
+    }
+
+    public void grantAchievement(String externalAchId, PlayerId playerId, GameStatisticsId gameStatsId) {
+        if (!profilesApi.existsById(playerId.id()))
+            throw new NotFoundException("Profile not found");
+
+        var playerStats = playerStatisticsRepository.findById(playerId)
+                .orElseThrow(() -> new NotFoundException("player stats not found"));
+
+        var achievement = gamesApi.findAchievementByExternalAchId(externalAchId,gameStatsId.gameId().id());
+
+        playerStats.addAchievementToGame(new AchievementId(achievement.achievementId()),gameStatsId);
+        playerStatisticsRepository.save(playerStats);
+
+        publisher.publishEvent(new AddNotificationEvent(
+                playerId.id(),
+                "New achievement unlocked!",
+                "You unlocked \"" + achievement.title() + "\". Well done!",
+                NotificationType.ACHIEVEMENT
+        ));
+    }
+
+    public List<AchievementDto> getAchievements(PlayerId playerId, GameStatisticsId gameStatsId) {
+        var playerStats = playerStatisticsRepository.findById(playerId)
+                .orElseThrow(() -> new NotFoundException("player stats not found"));
+
+        var achievementIds = playerStats.getAchievementIds(gameStatsId);
+
+        return gamesApi.getAchievements(achievementIds,gameStatsId.gameId().id());
     }
 }

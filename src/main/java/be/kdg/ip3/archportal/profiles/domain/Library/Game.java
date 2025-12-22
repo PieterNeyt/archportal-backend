@@ -13,7 +13,7 @@ public class Game {
 
     public Game(UUID gameId, boolean favorite) {
         if (gameId == null)
-            throw new IllegalArgumentException("gameId cannot be null");
+            throw new IllegalArgumentException("id cannot be null");
 
         this.gameId = gameId;
         this.favorite = favorite;
