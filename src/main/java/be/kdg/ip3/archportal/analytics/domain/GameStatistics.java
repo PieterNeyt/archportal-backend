@@ -10,6 +10,7 @@ import org.jmolecules.ddd.annotation.AggregateRoot;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @AggregateRoot
@@ -42,6 +43,22 @@ public class GameStatistics {
     }
 
     public void addAchievement(AchievementId achievementId) {
+        boolean alreadyUnlocked = this.achievements.stream()
+                .anyMatch(a -> a.getAchievementId().equals(achievementId));
+
+        if (alreadyUnlocked)
+            throw new IllegalStateException("Achievement '" + achievementId.id() + "' has already been unlocked for this player.");
+
+
         this.achievements.add(new Achievement(achievementId));
+    }
+
+    public Map<UUID, LocalDateTime> getAchievementIds() {
+        return achievements.stream()
+                .collect(Collectors.toMap(
+                        achievement -> achievement.getAchievementId().id(),
+                        Achievement::getTimeUnlocked,
+                        (existing, replacement) -> existing
+                ));
     }
 }

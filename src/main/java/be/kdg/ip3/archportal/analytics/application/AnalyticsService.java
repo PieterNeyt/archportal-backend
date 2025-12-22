@@ -6,6 +6,7 @@ import be.kdg.ip3.archportal.analytics.shared.AnalyticsApi;
 import be.kdg.ip3.archportal.analytics.shared.CreateGameStatsDto;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
+import be.kdg.ip3.archportal.games.shared.AchievementDto;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
@@ -104,5 +105,14 @@ public class AnalyticsService implements AnalyticsApi {
                 "You unlocked \"" + achievement.title() + "\". Well done!",
                 NotificationType.ACHIEVEMENT
         ));
+    }
+
+    public List<AchievementDto> getAchievements(PlayerId playerId, GameStatisticsId gameStatsId) {
+        var playerStats = playerStatisticsRepository.findById(playerId)
+                .orElseThrow(() -> new NotFoundException("player stats not found"));
+
+        var achievementIds = playerStats.getAchievementIds(gameStatsId);
+
+        return gamesApi.getAchievements(achievementIds,gameStatsId.gameId().id());
     }
 }

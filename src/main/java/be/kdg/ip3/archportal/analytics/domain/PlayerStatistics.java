@@ -7,9 +7,8 @@ import be.kdg.ip3.archportal.analytics.domain.records.WinnerRecord;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Getter
 @AggregateRoot
@@ -52,6 +51,11 @@ public class PlayerStatistics {
         var gameStats = findGameStatisticsById(gameStatsId);
 
         gameStats.addAchievement(achievementId);
+    }
 
+    public Map<UUID, LocalDateTime> getAchievementIds(GameStatisticsId gameStatsId) {
+        var gameStats = findGameStatisticsById(gameStatsId);
+
+        return gameStats.getAchievementIds();
     }
 }
