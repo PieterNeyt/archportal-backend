@@ -10,6 +10,7 @@ import org.jmolecules.ddd.annotation.Identity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @AggregateRoot
@@ -75,11 +76,24 @@ public class GameLobby {
             gameLobbyStatus = GameLobbyStatus.FULL;
         }
     }
-    
-    public void removePlayer(PlayerId playerId) {
+
+    public Optional<GameSession> removePlayer(PlayerId playerId) {
         if (!players.contains(playerId))
             throw new NotFoundException("Player not found");
+
         players.remove(playerId);
+
+        Optional<GameSession> playerSession = sessions.stream()
+                .filter(s -> s.getPlayerId().equals(playerId))
+                .findFirst();
+
+        if (playerSession.isPresent()) {
+            GameSession session = playerSession.get();
+            session.endSession();
+            return Optional.of(session);
+        }
+
+        return Optional.empty();
     }
 
     public void requirePlayerIsInLobby(PlayerId playerId) {

@@ -6,13 +6,16 @@ import be.kdg.ip3.archportal.lobbies.domain.GameId;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobby;
 import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyRepository;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyStatus;
 import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
 import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyId;
 import be.kdg.ip3.archportal.lobbies.domain.session.GameSessionId;
 import be.kdg.ip3.archportal.lobbies.domain.session.SessionNotFoundException;
 import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
+import be.kdg.ip3.archportal.lobbies.shared.SessionEndedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +29,13 @@ public class GameLobbyService implements LobbiesApi {
     private final GameLobbyRepository gameLobbies;
     private final GamesApi gamesApi;
     private final ProfilesApi profileApi;
+    private final ApplicationEventPublisher publisher;
 
-    public GameLobbyService(GameLobbyRepository gameLobbies, GamesApi gamesApi, ProfilesApi profileApi) {
+    public GameLobbyService(GameLobbyRepository gameLobbies, GamesApi gamesApi, ProfilesApi profileApi, ApplicationEventPublisher publisher) {
         this.gameLobbies = gameLobbies;
         this.gamesApi = gamesApi;
         this.profileApi = profileApi;
+        this.publisher = publisher;
     }
 
     @Override
@@ -191,7 +196,17 @@ public class GameLobbyService implements LobbiesApi {
     public void leaveLobby(PlayerId playerId) {
         var lobby = gameLobbies.getLobbyFromPLayerID(playerId).orElseThrow(playerId::notFound);
 
-        lobby.removePlayer(playerId);
+        var endedSession = lobby.removePlayer(playerId);
+
+        endedSession.ifPresent(session ->
+                publisher.publishEvent(new SessionEndedEvent(
+                        lobby.getGameId().id(),
+                        session.getPlayerId().id(),
+                        session.getStartTime(),
+                        session.getEndTime()
+                ))
+        );
+
         if (lobby.getPlayers().isEmpty()) {
             gameLobbies.delete(lobby);
             return;
