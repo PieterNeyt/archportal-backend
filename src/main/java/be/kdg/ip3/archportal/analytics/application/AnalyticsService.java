@@ -9,7 +9,9 @@ import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.shared.AchievementDto;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
+import be.kdg.ip3.archportal.profiles.shared.GrantPlatformPointsEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +27,15 @@ public class AnalyticsService implements AnalyticsApi {
     private final LobbiesApi lobbiesApi;
     private final GamesApi gamesApi;
     private final ProfilesApi profilesApi;
+    private final int defaultPlatformAchievementPoints;
 
-    public AnalyticsService(PlayerStatisticsRepository playerStatisticsRepository, ApplicationEventPublisher publisher, LobbiesApi lobbiesApi, GamesApi gamesApi, ProfilesApi profilesApi) {
+    public AnalyticsService(PlayerStatisticsRepository playerStatisticsRepository, ApplicationEventPublisher publisher, LobbiesApi lobbiesApi, GamesApi gamesApi, ProfilesApi profilesApi,@Value("${achievement.defaultplatformpoints}") int defaultPlatformAchievementPoints) {
         this.playerStatisticsRepository = playerStatisticsRepository;
         this.publisher = publisher;
         this.lobbiesApi = lobbiesApi;
         this.gamesApi = gamesApi;
         this.profilesApi = profilesApi;
+        this.defaultPlatformAchievementPoints = defaultPlatformAchievementPoints;
     }
 
     public void recordGameResult(SessionId sessionId, String winner, LocalDateTime timestamp) {
@@ -104,6 +108,10 @@ public class AnalyticsService implements AnalyticsApi {
                 "New achievement unlocked!",
                 "You unlocked \"" + achievement.title() + "\". Well done!",
                 NotificationType.ACHIEVEMENT
+        ));
+        publisher.publishEvent(new GrantPlatformPointsEvent(
+                playerId.id(),
+                defaultPlatformAchievementPoints
         ));
     }
 
