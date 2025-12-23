@@ -2,12 +2,12 @@ package be.kdg.ip3.archportal.lobbies.api;
 
 import be.kdg.ip3.archportal.lobbies.api.dto.*;
 import be.kdg.ip3.archportal.lobbies.application.GameLobbyService;
-import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobby;
-import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
 import be.kdg.ip3.archportal.lobbies.domain.GameId;
-import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyId;
-import be.kdg.ip3.archportal.lobbies.domain.session.GameSessionId;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobby;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyId;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSessionId;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -183,7 +183,7 @@ public class GameLobbyController {
         ));
     }
 
-    @GetMapping("/multiplayer/{lobbyid}/session/player/{playerUUId}")
+    @GetMapping("/multiplayer/{lobbyUUId}/session/player/{playerUUId}")
     public ResponseEntity<Void> endPlayerSession(
             @PathVariable UUID lobbyUUId,
             @PathVariable UUID playerUUId) {

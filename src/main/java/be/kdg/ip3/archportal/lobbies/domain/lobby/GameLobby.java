@@ -1,9 +1,9 @@
 package be.kdg.ip3.archportal.lobbies.domain.lobby;
 
-import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
-import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.GameId;
+import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 import org.jmolecules.ddd.annotation.Identity;
@@ -16,12 +16,12 @@ import java.util.Optional;
 @AggregateRoot
 public class GameLobby {
     @Identity
-    private GameLobbyId gameLobbyId;
-    private GameId gameId;
-    private int maxPlayers;
+    private final GameLobbyId gameLobbyId;
+    private final GameId gameId;
+    private final int maxPlayers;
     private GameLobbyStatus gameLobbyStatus;
-    private List<PlayerId> players;
-    private List<GameSession> sessions;
+    private final List<PlayerId> players;
+    private final List<GameSession> sessions;
 
     public GameLobby(GameLobbyId id, GameId gameId, int maxPlayers) {
         this.gameLobbyId = id;
