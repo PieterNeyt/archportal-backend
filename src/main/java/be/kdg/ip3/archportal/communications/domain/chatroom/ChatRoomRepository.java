@@ -13,4 +13,6 @@ public interface ChatRoomRepository {
     Optional<ChatRoom> findById(ChatRoomId id);
     
     List<ChatRoom> findChatRoomsOfProfileIdWithLastMessage(UUID profileId);
+
+    void deleteById(ChatRoomId chatRoomId);
 }

@@ -25,6 +25,11 @@ public class DbPartyRepository implements PartyRepository {
     }
 
     @Override
+    public void deleteById(PartyId partyId) {
+        this.jpaPartyRepository.deleteById(partyId.id());
+    }
+
+    @Override
     public boolean existsByPlayerId(PlayerId playerId) {
         return jpaPartyRepository.existsByPlayerId(playerId.id());
     }

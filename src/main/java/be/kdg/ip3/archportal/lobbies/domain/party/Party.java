@@ -80,10 +80,37 @@ public class Party {
     public List<PlayerId> getAllMembers() {
         return Stream.concat(members.stream(), Stream.of(hostId)).toList();
     }
-    
+
     public void setMaxMembers(int maxMembers) {
         if (maxMembers > TOTAL_MAX_MEMBERS)
             throw new IllegalArgumentException("The maximum amount of members is too high");
         this.maxMembers = maxMembers;
+    }
+
+    public void leaveParty(PlayerId playerId) {
+        if (!isMemberOrHost(playerId))
+            return;
+
+
+        if (playerId.equals(hostId)) {
+            assignNewHostOrDisband();
+        } else {
+            members.remove(playerId);
+        }
+    }
+    
+    private void assignNewHostOrDisband() {
+        if (members.isEmpty()) {
+            hostId = null;
+            return;
+        }
+
+        var newHost = members.iterator().next();
+        members.remove(newHost);
+        hostId = newHost;
+    }
+
+    private boolean isMemberOrHost(PlayerId playerId) {
+        return playerId.equals(hostId) || members.contains(playerId);
     }
 }

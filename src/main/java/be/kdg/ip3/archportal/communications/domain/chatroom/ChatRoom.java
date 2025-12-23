@@ -94,4 +94,9 @@ public class ChatRoom {
             throw new IllegalArgumentException("Title is too long");
         this.title = title;
     }
+
+    public void leave(UUID profileId) {
+        validateMember(profileId);
+        members.remove(profileId);
+    }
 }

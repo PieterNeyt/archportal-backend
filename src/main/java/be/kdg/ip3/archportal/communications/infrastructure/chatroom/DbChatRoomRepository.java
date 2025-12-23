@@ -35,4 +35,9 @@ public class DbChatRoomRepository implements ChatRoomRepository {
     public void save(ChatRoom chatRoom) {
         chatRoomRepository.save(JpaChatRoomEntity.fromDomain(chatRoom));
     }
+
+    @Override
+    public void deleteById(ChatRoomId chatRoomId) {
+        chatRoomRepository.deleteById(chatRoomId.id());
+    }
 }

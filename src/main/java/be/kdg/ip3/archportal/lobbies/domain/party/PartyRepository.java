@@ -17,4 +17,6 @@ public interface PartyRepository {
     List<Party> findPartyHasInvite(PlayerId playerId);
 
     Optional<Party> findById(PartyId id);
+
+    void deleteById(PartyId partyId);
 }

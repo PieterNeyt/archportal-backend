@@ -80,4 +80,11 @@ public class PartyController {
         partyService.declinePartyInvite(playerId, new PartyId(id));
         return ResponseEntity.noContent().build();
     }
+    
+    @PatchMapping("/leave")
+    public ResponseEntity<Void> leaveParty(@AuthenticationPrincipal Jwt token) {
+        var playerId = new PlayerId(UUID.fromString(token.getSubject()));
+        partyService.leaveParty(playerId);
+        return ResponseEntity.noContent().build();
+    }
 }
