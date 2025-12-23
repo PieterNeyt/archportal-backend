@@ -101,4 +101,18 @@ public class GameLobby {
             throw new IllegalStateException("Only owner can start the lobby");
         }
     }
+
+    public GameSession endPlayerSession(PlayerId playerId) {
+        Optional<GameSession> playerSession = sessions.stream()
+                .filter(s -> s.getPlayerId().equals(playerId))
+                .findFirst();
+
+        if (playerSession.isEmpty())
+            throw new NotFoundException("Player session not found for player " + playerId);
+
+        GameSession session = playerSession.get();
+        session.endSession();
+        sessions.remove(session);
+        return session;
+    }
 }

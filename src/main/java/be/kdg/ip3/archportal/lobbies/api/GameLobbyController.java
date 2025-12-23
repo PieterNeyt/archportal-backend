@@ -183,6 +183,19 @@ public class GameLobbyController {
         ));
     }
 
+    @GetMapping("/multiplayer/{lobbyid}/session/player/{playerUUId}")
+    public ResponseEntity<Void> endPlayerSession(
+            @PathVariable UUID lobbyUUId,
+            @PathVariable UUID playerUUId) {
+
+        var playerId = new PlayerId(playerUUId);
+        var lobbyId = new GameLobbyId(lobbyUUId);
+
+        gameLobbyService.endPlayerSession(playerId,lobbyId);
+
+        return ResponseEntity.ok().build();
+    }
+
 
     @GetMapping("/sessions/{sessionId}")
     public ResponseEntity<SessionInfo> validateSession(@PathVariable UUID sessionId) {

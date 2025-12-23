@@ -213,4 +213,19 @@ public class GameLobbyService implements LobbiesApi {
         }
         gameLobbies.save(lobby);
     }
+
+    public void endPlayerSession(PlayerId playerId, GameLobbyId lobbyId) {
+        var lobby = gameLobbies.findById(lobbyId)
+                .orElseThrow(lobbyId::notFound);
+
+        var session = lobby.endPlayerSession(playerId);
+        gameLobbies.save(lobby);
+
+        publisher.publishEvent(new SessionEndedEvent(
+                lobby.getGameId().id(),
+                session.getPlayerId().id(),
+                session.getStartTime(),
+                session.getEndTime()
+        ));
+    }
 }
