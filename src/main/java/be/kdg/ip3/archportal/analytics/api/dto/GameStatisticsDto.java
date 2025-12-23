@@ -18,7 +18,7 @@ public record GameStatisticsDto(
         return new GameStatisticsDto(
                 gameStatistics.getGameStatisticsId().gameId().id(),
                 gameStatistics.getGameStatisticsId().playerId().id(),
-                gameStatistics.getTotalPlayTimeMinutes().toMinutes(),
+                gameStatistics.getTotalTimePlayed().toMinutes(),
                 gameStatistics.getLastPlayedAt(),
                 gameStatistics.getAchievements().stream()
                         .map(achievement -> new AchievementDto(achievement.getAchievementId().id(), achievement.getTimeUnlocked()))

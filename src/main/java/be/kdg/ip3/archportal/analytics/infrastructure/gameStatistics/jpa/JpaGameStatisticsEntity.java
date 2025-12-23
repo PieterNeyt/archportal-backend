@@ -60,7 +60,7 @@ public class JpaGameStatisticsEntity {
                 stats.getGameStatisticsId().playerId().id()
         );
 
-        entity.totalPlayTimeMinutes = stats.getTotalPlayTimeMinutes().toMinutes();
+        entity.totalPlayTimeMinutes = stats.getTotalTimePlayed().toMinutes();
         entity.lastPlayedAt = stats.getLastPlayedAt();
 
         entity.achievements = stats.getAchievements().stream()

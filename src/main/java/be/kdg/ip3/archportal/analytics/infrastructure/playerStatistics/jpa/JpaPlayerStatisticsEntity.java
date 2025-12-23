@@ -46,7 +46,7 @@ public class JpaPlayerStatisticsEntity {
     public static JpaPlayerStatisticsEntity fromDomain(PlayerStatistics stats) {
         JpaPlayerStatisticsEntity entity = new JpaPlayerStatisticsEntity(
                 stats.getPlayerId(),
-                stats.getTotalMinutesPlayed(),
+                stats.getTotalTimePlayed(),
                 stats.getLastPlayed()
         );
 
