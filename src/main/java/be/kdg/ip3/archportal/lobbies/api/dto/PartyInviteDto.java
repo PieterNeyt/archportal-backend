@@ -11,7 +11,7 @@ public record PartyInviteDto(UUID partyId, String title, String gamerTag, int ma
                 party.getTitle(),
                 senderGamerTag,
                 party.getMaxMembers(),
-                party.getInvites().size()
+                party.getMembers().size() + 1
         );
     }
 }
