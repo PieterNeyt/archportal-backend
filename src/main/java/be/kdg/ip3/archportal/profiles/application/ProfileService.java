@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.profiles.application;
 
+import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEvent;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
@@ -17,7 +18,9 @@ import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
+import be.kdg.ip3.archportal.profiles.shared.GrantPlatformPointsEvent;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +43,14 @@ public class ProfileService {
         this.gamesApi = gamesApi;
         this.eventPublisher = eventPublisher;
         this.friendshipRepository = friendshipRepository;
+    }
+
+    @ApplicationModuleListener
+    public void onGrantPlatformPoints(GrantPlatformPointsEvent event) {
+        var profileId= new ProfileId(event.profileId());
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        profile.AddPoints(event.points());
+        profileRepository.save(profile);
     }
 
     public Profile syncUser(Jwt token) {

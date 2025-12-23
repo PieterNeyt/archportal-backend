@@ -2,6 +2,7 @@ package be.kdg.ip3.archportal.shops.application;
 
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
+import be.kdg.ip3.archportal.profiles.shared.GrantPlatformPointsEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import be.kdg.ip3.archportal.shops.api.dto.PaymentCreationDto;
 import be.kdg.ip3.archportal.shops.domain.cart.Cart;
@@ -10,9 +11,13 @@ import be.kdg.ip3.archportal.shops.domain.mollie.IMollieService;
 import be.kdg.ip3.archportal.shops.domain.order.Order;
 import be.kdg.ip3.archportal.shops.domain.order.OrderLine;
 import be.kdg.ip3.archportal.shops.domain.order.OrderRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,13 +29,17 @@ public class ShopService {
     private final CartRepository cartRepo;
     private final OrderRepository orderRepo;
     private final IMollieService mollieService;
+    private final ApplicationEventPublisher publisher;
+    private final int platformPointsMultiplier;
 
-    public ShopService(GamesApi gameApi, ProfilesApi profilesApi, CartRepository cartRepo, OrderRepository orderRepo, IMollieService mollieService) {
+    public ShopService(GamesApi gameApi, ProfilesApi profilesApi, CartRepository cartRepo, OrderRepository orderRepo, IMollieService mollieService, ApplicationEventPublisher publisher, @Value("${shop.platformPointsMultiplier}") int platformPointsMultiplier) {
         this.gameApi = gameApi;
         this.profilesApi = profilesApi;
         this.cartRepo = cartRepo;
         this.orderRepo = orderRepo;
         this.mollieService = mollieService;
+        this.publisher = publisher;
+        this.platformPointsMultiplier = platformPointsMultiplier;
     }
 
     public List<GlobalGameDto> getGamesForCart(Cart cart) {
@@ -113,6 +122,15 @@ public class ShopService {
             profilesApi.addGamesToLibrary(order.getProfileId(), gameIds);
             order.markAsCompleted();
             orderRepo.save(order);
+
+            publisher.publishEvent(new GrantPlatformPointsEvent(
+                    order.getProfileId(),
+                    order.totalPrice()
+                            .multiply(new BigDecimal(platformPointsMultiplier))
+                            .setScale(0, RoundingMode.HALF_UP)
+                            .intValue()
+            ));
+
         }
 
         return success;
