@@ -18,8 +18,8 @@ public class JpaGameStatisticsEntity {
     @EmbeddedId
     private JpaGameStatisticsId gameStatisticsId;
 
-    @Column(name = "total_playtime_minutes")
-    private long totalPlayTimeMinutes;
+    @Column(name = "total_time_played")
+    private long totalTimePlayed;
 
     @Column(name = "last_played_at")
     private LocalDateTime lastPlayedAt;
@@ -60,7 +60,7 @@ public class JpaGameStatisticsEntity {
                 stats.getGameStatisticsId().playerId().id()
         );
 
-        entity.totalPlayTimeMinutes = stats.getTotalTimePlayed().toMinutes();
+        entity.totalTimePlayed = stats.getTotalTimePlayed().toMinutes();
         entity.lastPlayedAt = stats.getLastPlayedAt();
 
         entity.achievements = stats.getAchievements().stream()
@@ -84,7 +84,7 @@ public class JpaGameStatisticsEntity {
                         new GameId(gameStatisticsId.getGameId()),
                         new PlayerId(gameStatisticsId.getPlayerStatisticsId())
                 ),
-                Duration.ofMinutes(totalPlayTimeMinutes),
+                Duration.ofMinutes(totalTimePlayed),
                 lastPlayedAt,
                 achievements.stream().map(a -> new Achievement(new AchievementId(a.getAchievementId()), a.getTimeUnlocked())).toList(),
                 winnerRecords.stream().map(w -> new WinnerRecord(w.getPlayedAt(), w.getWinner(), new SessionId(w.getSessionId()))).toList()

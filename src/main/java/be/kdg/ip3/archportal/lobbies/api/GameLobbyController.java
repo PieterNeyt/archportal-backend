@@ -183,7 +183,7 @@ public class GameLobbyController {
         ));
     }
 
-    @GetMapping("/multiplayer/{lobbyUUId}/session/player/{playerUUId}")
+    @DeleteMapping("/multiplayer/{lobbyUUId}/session/player/{playerUUId}")
     public ResponseEntity<Void> endPlayerSession(
             @PathVariable UUID lobbyUUId,
             @PathVariable UUID playerUUId) {

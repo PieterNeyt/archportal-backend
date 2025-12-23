@@ -28,8 +28,8 @@ public class JpaPlayerStatisticsEntity {
     )
     private List<JpaGameStatisticsEntity> gameStatistics = new ArrayList<>();
 
-    @Column(name = "total_minutes_played", nullable = false)
-    private Duration totalMinutesPlayed;
+    @Column(name = "total_time_played", nullable = false)
+    private Duration totalTimePlayed;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_played")
@@ -37,7 +37,7 @@ public class JpaPlayerStatisticsEntity {
 
     public JpaPlayerStatisticsEntity(PlayerId playerId, Duration totalMinutesPlayed, Date lastPlayed) {
         this.playerId = playerId.id();
-        this.totalMinutesPlayed = totalMinutesPlayed;
+        this.totalTimePlayed = totalMinutesPlayed;
         this.lastPlayed = lastPlayed;
     }
 
@@ -69,7 +69,7 @@ public class JpaPlayerStatisticsEntity {
         return new PlayerStatistics(
                 new PlayerId(playerId),
                 games,
-                this.totalMinutesPlayed,
+                this.totalTimePlayed,
                 this.lastPlayed
         );
     }

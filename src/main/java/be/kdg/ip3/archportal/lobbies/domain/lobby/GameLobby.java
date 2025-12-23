@@ -51,6 +51,7 @@ public class GameLobby {
         lobby.closeLobby();
         return lobby;
     }
+
     public static GameLobby createMultiplayerLobby(GameId gameId, int maxPlayers) {
         return new GameLobby(
                 GameLobbyId.create(),
@@ -80,15 +81,11 @@ public class GameLobby {
     public Optional<GameSession> removePlayer(PlayerId playerId) {
         if (!players.contains(playerId))
             throw new NotFoundException("Player not found");
-
         players.remove(playerId);
 
-        Optional<GameSession> playerSession = sessions.stream()
-                .filter(s -> s.getPlayerId().equals(playerId))
-                .findFirst();
-
-        if (playerSession.isPresent()) {
-            GameSession session = playerSession.get();
+        var Optionalsession = getGameSession(playerId);
+        if (Optionalsession.isPresent()) {
+            var session = Optionalsession.get();
             session.endSession();
             return Optional.of(session);
         }
@@ -103,16 +100,21 @@ public class GameLobby {
     }
 
     public GameSession endPlayerSession(PlayerId playerId) {
-        Optional<GameSession> playerSession = sessions.stream()
-                .filter(s -> s.getPlayerId().equals(playerId))
-                .findFirst();
+        var Optionalsession = getGameSession(playerId);
 
-        if (playerSession.isEmpty())
+        if (Optionalsession.isEmpty())
             throw new NotFoundException("Player session not found for player " + playerId);
 
-        GameSession session = playerSession.get();
+        var session = Optionalsession.get();
         session.endSession();
         sessions.remove(session);
         return session;
+    }
+
+    public Optional<GameSession> getGameSession(PlayerId playerId) {
+        return sessions.stream()
+                .filter(s -> s.getPlayerId().equals(playerId))
+                .findFirst();
+
     }
 }
