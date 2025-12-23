@@ -113,4 +113,8 @@ public class Party {
     private boolean isMemberOrHost(PlayerId playerId) {
         return playerId.equals(hostId) || members.contains(playerId);
     }
+
+    public void checkHost(PlayerId playerId) {
+        if (!hostId.equals(playerId)) throw new AccessDeniedException("You are not the party leader");
+    }
 }

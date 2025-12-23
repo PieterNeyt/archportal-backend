@@ -56,6 +56,7 @@ public class PartyService {
         return partyRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundException("Party not found"));
     }
 
+    @Transactional(readOnly = true)
     public List<MemberDto> findMembers(PlayerId memberId) {
         if (!profilesApi.existsById(memberId.id()))
             throw memberId.notFound();
@@ -127,5 +128,16 @@ public class PartyService {
         if (party.getHostId() == null) partyRepository.deleteById(party.getId());
         else partyRepository.save(party);
         publisher.publishEvent(new LeftPartyEvent(party.getChatRoomId().id(), playerId.id()));
+    }
+
+    public void kickFromParty(PlayerId playerId, String gamertag) {
+        if (!profilesApi.existsById(playerId.id()))
+            throw playerId.notFound();
+        var memberId = new PlayerId(profilesApi.getProfileFromGamerTag(gamertag));
+        var party = partyRepository.findByMemberId(playerId).orElseThrow(() -> new NotFoundException("Party not found"));
+        party.checkHost(playerId);
+        party.leaveParty(memberId);
+        partyRepository.save(party);
+        publisher.publishEvent(new LeftPartyEvent(party.getChatRoomId().id(), memberId.id()));
     }
 }
