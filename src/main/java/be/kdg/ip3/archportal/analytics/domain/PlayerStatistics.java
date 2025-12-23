@@ -60,10 +60,11 @@ public class PlayerStatistics {
 
     public void update(GameStatisticsId gameStatisticsId, LocalDateTime startTime, LocalDateTime endTime) {
         this.lastPlayed = Date.from(Instant.now());
-        var timePlayed = Duration.between(startTime, endTime);
-        this.totalTimePlayed = totalTimePlayed.plus(timePlayed);
+         var minutesPlayed = Duration.between(startTime, endTime).toMinutes();
+
+        this.totalTimePlayed = totalTimePlayed.plusMinutes(minutesPlayed);
 
         var gameStats = findGameStatisticsById(gameStatisticsId);
-        gameStats.update(timePlayed);
+        gameStats.update(minutesPlayed);
     }
 }

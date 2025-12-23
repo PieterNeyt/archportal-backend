@@ -61,7 +61,7 @@ public class GameLobbyController {
             @Valid @RequestBody StartMultiPlayerLobbyRequest request,
             @AuthenticationPrincipal Jwt jwt
     ) {
-        var playerId = new PlayerId(UUID.fromString(jwt.getSubject())); // Degene die de lobby heeft aangemaakt
+        var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));
 
 
         GameLobby lobby = gameLobbyService.createMultiplayerLobby(

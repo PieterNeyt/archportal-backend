@@ -62,8 +62,8 @@ public class GameStatistics {
                 ));
     }
 
-    public void update(Duration timePlayed) {
+    public void update(Long timePlayed) {
         this.lastPlayedAt = LocalDateTime.now();
-        this.totalTimePlayed = totalTimePlayed.plus(timePlayed);
+        this.totalTimePlayed = totalTimePlayed.plusMinutes(timePlayed);
     }
 }
