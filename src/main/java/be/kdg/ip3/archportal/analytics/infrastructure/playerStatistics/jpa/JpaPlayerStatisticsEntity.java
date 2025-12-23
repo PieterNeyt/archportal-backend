@@ -7,6 +7,7 @@ import be.kdg.ip3.archportal.analytics.infrastructure.gameStatistics.jpa.JpaGame
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,13 +29,13 @@ public class JpaPlayerStatisticsEntity {
     private List<JpaGameStatisticsEntity> gameStatistics = new ArrayList<>();
 
     @Column(name = "total_minutes_played", nullable = false)
-    private int totalMinutesPlayed;
+    private Duration totalMinutesPlayed;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_played")
     private Date lastPlayed;
 
-    public JpaPlayerStatisticsEntity(PlayerId playerId, int totalMinutesPlayed, Date lastPlayed) {
+    public JpaPlayerStatisticsEntity(PlayerId playerId, Duration totalMinutesPlayed, Date lastPlayed) {
         this.playerId = playerId.id();
         this.totalMinutesPlayed = totalMinutesPlayed;
         this.lastPlayed = lastPlayed;

@@ -32,7 +32,9 @@ public class AnalyticsEventListener {
 
     @Async
     @EventListener
-    public void handleGameAddedToLibrary(SessionEndedEvent event) {
-        log.info("Session ended");
+    public void handleSessionEnd(SessionEndedEvent event) {
+        var command = GameStatsCommand.fromEvent(event);
+
+        analyticsService.updateStatistics(command);
     }
 }
