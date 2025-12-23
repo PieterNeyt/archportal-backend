@@ -229,7 +229,7 @@ VALUES ('44444444-4444-4444-4444-444444444441', '56c1596a-ec26-4c5d-aa01-31f7a34
 
 -- ===== Player Statistics =====
 -- Player statistics voor elk profiel
-INSERT INTO analyticsservice.player_statistics (player_id, total_minutes_played, last_played)
+INSERT INTO analyticsservice.player_statistics (player_id, total_time_played, last_played)
 VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 450, NOW() - INTERVAL '2 hours'),
        ('5a129b2c-3016-4616-bca0-99ec7b067b32', 680, NOW() - INTERVAL '1 day'),
        ('58e1a434-0797-4d3d-9140-e846b20b7887', 320, NOW() - INTERVAL '3 days'),
@@ -238,24 +238,24 @@ VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 450, NOW() - INTERVAL '2 hours')
 -- ===== Game Statistics =====
 -- Game statistics voor Cian (ed7b6a30-a12f-4ae5-9d25-b1ea51c89840)
 -- Games in library: Tic-Tac-Toe Deluxe compose (favorite), Tic-Tac-Toe Deluxe
-INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_playtime_minutes, last_played_at)
+INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_time_played, last_played_at)
 VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 180, NOW() - INTERVAL '2 hours'),
        ('1b2d89fa-bd59-4873-b568-8df26c3a047c', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 270, NOW() - INTERVAL '1 day');
 
 -- Game statistics voor Axel (5a129b2c-3016-4616-bca0-99ec7b067b32)
 -- Games in library: Tic-Tac-Toe Deluxe compose, Tic-Tac-Toe Deluxe
-INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_playtime_minutes, last_played_at)
+INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_time_played, last_played_at)
 VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '5a129b2c-3016-4616-bca0-99ec7b067b32', 320, NOW() - INTERVAL '1 day'),
        ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '5a129b2c-3016-4616-bca0-99ec7b067b32', 360, NOW() - INTERVAL '2 days');
 
 -- Game statistics voor Pieter (58e1a434-0797-4d3d-9140-e846b20b7887)
 -- Games in library: Tic-Tac-Toe Deluxe compose (favorite), Tic-Tac-Toe Deluxe
-INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_playtime_minutes, last_played_at)
+INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_time_played, last_played_at)
 VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '58e1a434-0797-4d3d-9140-e846b20b7887', 150, NOW() - INTERVAL '3 days'),
        ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '58e1a434-0797-4d3d-9140-e846b20b7887', 170, NOW() - INTERVAL '4 days');
 
 -- Game statistics voor Hugo (56c1596a-ec26-4c5d-aa01-31f7a34b76ad)
 -- Games in library: Tic-Tac-Toe Deluxe compose, Tic-Tac-Toe Deluxe (favorite)
-INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_playtime_minutes, last_played_at)
+INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_time_played, last_played_at)
 VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 420, NOW() - INTERVAL '5 hours'),
        ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 470, NOW() - INTERVAL '1 day');

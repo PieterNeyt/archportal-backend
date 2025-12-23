@@ -2,12 +2,12 @@ package be.kdg.ip3.archportal.lobbies.api;
 
 import be.kdg.ip3.archportal.lobbies.api.dto.*;
 import be.kdg.ip3.archportal.lobbies.application.GameLobbyService;
-import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobby;
-import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
 import be.kdg.ip3.archportal.lobbies.domain.GameId;
-import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyId;
-import be.kdg.ip3.archportal.lobbies.domain.session.GameSessionId;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobby;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyId;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSessionId;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -61,7 +61,7 @@ public class GameLobbyController {
             @Valid @RequestBody StartMultiPlayerLobbyRequest request,
             @AuthenticationPrincipal Jwt jwt
     ) {
-        var playerId = new PlayerId(UUID.fromString(jwt.getSubject())); // Degene die de lobby heeft aangemaakt
+        var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));
 
 
         GameLobby lobby = gameLobbyService.createMultiplayerLobby(
@@ -181,6 +181,19 @@ public class GameLobbyController {
                 session.getGameSessionId().id(),
                 session.getLaunchUrl()
         ));
+    }
+
+    @DeleteMapping("/multiplayer/{lobbyUUId}/session/player/{playerUUId}")
+    public ResponseEntity<Void> endPlayerSession(
+            @PathVariable UUID lobbyUUId,
+            @PathVariable UUID playerUUId) {
+
+        var playerId = new PlayerId(playerUUId);
+        var lobbyId = new GameLobbyId(lobbyUUId);
+
+        gameLobbyService.endPlayerSession(playerId,lobbyId);
+
+        return ResponseEntity.ok().build();
     }
 
 

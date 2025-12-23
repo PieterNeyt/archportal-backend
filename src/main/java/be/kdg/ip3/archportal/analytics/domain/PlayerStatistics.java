@@ -1,12 +1,11 @@
 package be.kdg.ip3.archportal.analytics.domain;
 
-import be.kdg.ip3.archportal.analytics.domain.records.AchievementId;
-import be.kdg.ip3.archportal.analytics.domain.records.GameStatisticsId;
-import be.kdg.ip3.archportal.analytics.domain.records.PlayerId;
-import be.kdg.ip3.archportal.analytics.domain.records.WinnerRecord;
+import be.kdg.ip3.archportal.analytics.domain.records.*;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -15,17 +14,17 @@ import java.util.*;
 public class PlayerStatistics {
     private final PlayerId playerId;
     private List<GameStatistics> gameStatistics;
-    private int TotalMinutesPlayed;
+    private Duration totalTimePlayed;
     private Date lastPlayed;
 
-    public PlayerStatistics(PlayerId playerId, List<GameStatistics> gameStatistics, int totalMinutesPlayed, Date lastPlayed) {
+    public PlayerStatistics(PlayerId playerId, List<GameStatistics> gameStatistics, Duration totalMinutesPlayed, Date lastPlayed) {
         this.playerId = playerId;
         this.gameStatistics = new ArrayList<>(gameStatistics);;
-        this.TotalMinutesPlayed = totalMinutesPlayed;
+        this.totalTimePlayed = totalMinutesPlayed;
         this.lastPlayed = lastPlayed;
     }
 
-    public PlayerStatistics(PlayerId playerId, int totalMinutesPlayed, Date lastPlayed) {
+    public PlayerStatistics(PlayerId playerId, Duration totalMinutesPlayed, Date lastPlayed) {
         this(playerId, new ArrayList<>(), totalMinutesPlayed, lastPlayed);
     }
 
@@ -57,5 +56,15 @@ public class PlayerStatistics {
         var gameStats = findGameStatisticsById(gameStatsId);
 
         return gameStats.getAchievementIds();
+    }
+
+    public void update(GameStatisticsId gameStatisticsId, LocalDateTime startTime, LocalDateTime endTime) {
+        this.lastPlayed = Date.from(Instant.now());
+         var minutesPlayed = Duration.between(startTime, endTime).toMinutes();
+
+        this.totalTimePlayed = totalTimePlayed.plusMinutes(minutesPlayed);
+
+        var gameStats = findGameStatisticsById(gameStatisticsId);
+        gameStats.update(minutesPlayed);
     }
 }

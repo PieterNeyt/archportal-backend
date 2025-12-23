@@ -17,14 +17,14 @@ import java.util.stream.Collectors;
 @Getter
 public class GameStatistics {
     private final GameStatisticsId gameStatisticsId;
-    private Duration TotalPlayTimeMinutes;
+    private Duration totalTimePlayed;
     private LocalDateTime lastPlayedAt;
     private Set<Achievement> achievements;
     private List<WinnerRecord> winnerRecords;
 
     public GameStatistics(GameStatisticsId gameStatisticsId, Duration totalPlayTimeMinutes, LocalDateTime lastPlayedAt, List<Achievement> achievements, List<WinnerRecord> winnerRecords) {
         this.gameStatisticsId = gameStatisticsId;
-        this.TotalPlayTimeMinutes = totalPlayTimeMinutes;
+        this.totalTimePlayed = totalPlayTimeMinutes;
         this.lastPlayedAt = lastPlayedAt;
         this.achievements = new HashSet<>(achievements);
         this.winnerRecords = new ArrayList<>(winnerRecords);
@@ -32,7 +32,7 @@ public class GameStatistics {
 
     public GameStatistics(GameStatisticsId gameStatisticsId) {
         this.gameStatisticsId = gameStatisticsId;
-        this.TotalPlayTimeMinutes = Duration.ofMinutes(0);
+        this.totalTimePlayed = Duration.ZERO;
         this.lastPlayedAt = LocalDateTime.of(0,  1, 1, 0, 0, 0 );
         this.achievements = new HashSet<>();
         this.winnerRecords = new ArrayList<>();
@@ -60,5 +60,10 @@ public class GameStatistics {
                         Achievement::getTimeUnlocked,
                         (existing, replacement) -> existing
                 ));
+    }
+
+    public void update(Long timePlayed) {
+        this.lastPlayedAt = LocalDateTime.now();
+        this.totalTimePlayed = totalTimePlayed.plusMinutes(timePlayed);
     }
 }

@@ -1,8 +1,10 @@
 package be.kdg.ip3.archportal.analytics.application;
 
 import be.kdg.ip3.archportal.analytics.shared.CreateGameStatsDto;
+import be.kdg.ip3.archportal.lobbies.shared.SessionEndedEvent;
 import be.kdg.ip3.archportal.profiles.shared.GameAddedToLibraryEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,11 +19,20 @@ public class AnalyticsEventListener {
         this.analyticsService = analyticsService;
     }
 
+    @Async
     @EventListener
     public void handleGameAddedToLibrary(GameAddedToLibraryEvent event) {
         List<CreateGameStatsDto> createGameStatsDtos = new ArrayList<>();
         createGameStatsDtos.add(new CreateGameStatsDto(event.getGameId(), event.getProfileId()));
 
         analyticsService.instantiateGameStatistics(createGameStatsDtos);
+    }
+
+    @Async
+    @EventListener
+    public void handleSessionEnd(SessionEndedEvent event) {
+        var command = GameStatsCommand.fromEvent(event);
+
+        analyticsService.updateStatistics(command);
     }
 }

@@ -7,6 +7,7 @@ import be.kdg.ip3.archportal.analytics.infrastructure.gameStatistics.jpa.JpaGame
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,16 +28,16 @@ public class JpaPlayerStatisticsEntity {
     )
     private List<JpaGameStatisticsEntity> gameStatistics = new ArrayList<>();
 
-    @Column(name = "total_minutes_played", nullable = false)
-    private int totalMinutesPlayed;
+    @Column(name = "total_time_played", nullable = false)
+    private Duration totalTimePlayed;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_played")
     private Date lastPlayed;
 
-    public JpaPlayerStatisticsEntity(PlayerId playerId, int totalMinutesPlayed, Date lastPlayed) {
+    public JpaPlayerStatisticsEntity(PlayerId playerId, Duration totalMinutesPlayed, Date lastPlayed) {
         this.playerId = playerId.id();
-        this.totalMinutesPlayed = totalMinutesPlayed;
+        this.totalTimePlayed = totalMinutesPlayed;
         this.lastPlayed = lastPlayed;
     }
 
@@ -45,7 +46,7 @@ public class JpaPlayerStatisticsEntity {
     public static JpaPlayerStatisticsEntity fromDomain(PlayerStatistics stats) {
         JpaPlayerStatisticsEntity entity = new JpaPlayerStatisticsEntity(
                 stats.getPlayerId(),
-                stats.getTotalMinutesPlayed(),
+                stats.getTotalTimePlayed(),
                 stats.getLastPlayed()
         );
 
@@ -68,7 +69,7 @@ public class JpaPlayerStatisticsEntity {
         return new PlayerStatistics(
                 new PlayerId(playerId),
                 games,
-                this.totalMinutesPlayed,
+                this.totalTimePlayed,
                 this.lastPlayed
         );
     }

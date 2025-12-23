@@ -1,26 +1,27 @@
 package be.kdg.ip3.archportal.lobbies.domain.lobby;
 
-import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
-import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.GameId;
+import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 import org.jmolecules.ddd.annotation.Identity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @AggregateRoot
 public class GameLobby {
     @Identity
-    private GameLobbyId gameLobbyId;
-    private GameId gameId;
-    private int maxPlayers;
+    private final GameLobbyId gameLobbyId;
+    private final GameId gameId;
+    private final int maxPlayers;
     private GameLobbyStatus gameLobbyStatus;
-    private List<PlayerId> players;
-    private List<GameSession> sessions;
+    private final List<PlayerId> players;
+    private final List<GameSession> sessions;
 
     public GameLobby(GameLobbyId id, GameId gameId, int maxPlayers) {
         this.gameLobbyId = id;
@@ -50,6 +51,7 @@ public class GameLobby {
         lobby.closeLobby();
         return lobby;
     }
+
     public static GameLobby createMultiplayerLobby(GameId gameId, int maxPlayers) {
         return new GameLobby(
                 GameLobbyId.create(),
@@ -75,16 +77,44 @@ public class GameLobby {
             gameLobbyStatus = GameLobbyStatus.FULL;
         }
     }
-    
-    public void removePlayer(PlayerId playerId) {
+
+    public Optional<GameSession> removePlayer(PlayerId playerId) {
         if (!players.contains(playerId))
             throw new NotFoundException("Player not found");
         players.remove(playerId);
+
+        var optionalSession = getGameSession(playerId);
+        if (optionalSession.isPresent()) {
+            var session = optionalSession.get();
+            session.endSession();
+            return Optional.of(session);
+        }
+
+        return Optional.empty();
     }
 
     public void requirePlayerIsInLobby(PlayerId playerId) {
         if (!players.contains(playerId)) {
             throw new IllegalStateException("Only owner can start the lobby");
         }
+    }
+
+    public GameSession endPlayerSession(PlayerId playerId) {
+        var optionalSession = getGameSession(playerId);
+
+        if (optionalSession.isEmpty())
+            throw new NotFoundException("Player session not found for player " + playerId);
+
+        var session = optionalSession.get();
+        session.endSession();
+        sessions.remove(session);
+        return session;
+    }
+
+    public Optional<GameSession> getGameSession(PlayerId playerId) {
+        return sessions.stream()
+                .filter(s -> s.getPlayerId().equals(playerId))
+                .findFirst();
+
     }
 }

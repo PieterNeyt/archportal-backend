@@ -123,4 +123,14 @@ public class AnalyticsService implements AnalyticsApi {
 
         return gamesApi.getAchievements(achievementIds,gameStatsId.gameId().id());
     }
+
+    public void updateStatistics(GameStatsCommand command) {
+        var playerStats = playerStatisticsRepository.findById(command.playerId())
+                .orElseThrow(() -> new NotFoundException("player stats not found"));
+
+        var gameStatsId = new GameStatisticsId(command.gameId(),command.playerId());
+        playerStats.update(gameStatsId,command.startTime(),command.endTime());
+
+        playerStatisticsRepository.save(playerStats);
+    }
 }
