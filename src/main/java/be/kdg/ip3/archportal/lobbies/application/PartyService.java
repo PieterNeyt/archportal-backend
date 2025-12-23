@@ -13,6 +13,7 @@ import be.kdg.ip3.archportal.lobbies.domain.party.Party;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyId;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyRepository;
 import be.kdg.ip3.archportal.lobbies.domain.partyInvite.PartyInvite;
+import be.kdg.ip3.archportal.lobbies.shared.DeletedPartyEvent;
 import be.kdg.ip3.archportal.lobbies.shared.JoinedPartyEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.context.ApplicationEventPublisher;
@@ -116,5 +117,18 @@ public class PartyService {
         var party = partyRepository.findById(id).orElseThrow(id::notFound);
         party.declinePartyInvite(playerId);
         partyRepository.save(party);
+    }
+
+    public void leaveParty(PlayerId playerId) {
+        if (!profilesApi.existsById(playerId.id()))
+            throw playerId.notFound();
+        var party = partyRepository.findByMemberId(playerId).orElseThrow(() -> new NotFoundException("Party not found"));
+        party.leaveParty(playerId);
+        if (party.getHostId() == null) {
+            partyRepository.deleteById(party.getId());
+            publisher.publishEvent(new DeletedPartyEvent(party.getChatRoomId().id()));
+        } else {
+            partyRepository.save(party);
+        }
     }
 }
