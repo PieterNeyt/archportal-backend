@@ -56,6 +56,7 @@ public class PartyService {
         return partyRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundException("Party not found"));
     }
 
+    @Transactional(readOnly = true)
     public List<MemberDto> findMembers(PlayerId memberId) {
         if (!profilesApi.existsById(memberId.id()))
             throw memberId.notFound();

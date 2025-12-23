@@ -126,6 +126,7 @@ public class ProfileApiService implements ProfilesApi {
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProfileDto> getAllFriends(UUID profileId) {
         return profileRepository.findAllFriends(new ProfileId(profileId)).stream().map(ProfileDto::from).toList();
     }
