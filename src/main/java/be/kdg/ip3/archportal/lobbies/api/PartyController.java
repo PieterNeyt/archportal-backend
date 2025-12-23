@@ -87,4 +87,11 @@ public class PartyController {
         partyService.leaveParty(playerId);
         return ResponseEntity.noContent().build();
     }
+    
+    @PatchMapping("/kick/{gamertag}")
+    public ResponseEntity<Void> kickFromParty(@PathVariable String gamertag, @AuthenticationPrincipal Jwt token) {
+        var playerId = new PlayerId(UUID.fromString(token.getSubject()));
+        partyService.kickFromParty(playerId, gamertag);
+        return ResponseEntity.noContent().build();
+    }
 }
