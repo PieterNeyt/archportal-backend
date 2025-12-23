@@ -8,8 +8,8 @@ import be.kdg.ip3.archportal.communications.domain.chatroom.Message;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
-import be.kdg.ip3.archportal.lobbies.shared.DeletedPartyEvent;
 import be.kdg.ip3.archportal.lobbies.shared.JoinedPartyEvent;
+import be.kdg.ip3.archportal.lobbies.shared.LeftPartyEvent;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
@@ -50,11 +50,14 @@ public class ChatRoomService implements ChatRoomApi {
         chatRoom.addMember(event.profileId());
         chatRoomRepository.save(chatRoom);
     }
-    
+
     @ApplicationModuleListener
-    public void onDeletedParty(DeletedPartyEvent event) {
+    public void onLeftParty(LeftPartyEvent event) {
         var chatRoomId = new ChatRoomId(event.chatRoomId());
-        chatRoomRepository.deleteById(chatRoomId);
+        var chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(chatRoomId::notFound);
+        chatRoom.leave(event.profileId());
+        if (chatRoom.getMembers().isEmpty()) chatRoomRepository.deleteById(chatRoomId);
+        else chatRoomRepository.save(chatRoom);
     }
 
     public List<ChatRoom> getChatRoomsWithLastMessage(UUID profileId) {
