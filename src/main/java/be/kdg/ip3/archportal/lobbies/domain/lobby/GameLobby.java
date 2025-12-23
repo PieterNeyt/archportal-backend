@@ -83,9 +83,9 @@ public class GameLobby {
             throw new NotFoundException("Player not found");
         players.remove(playerId);
 
-        var Optionalsession = getGameSession(playerId);
-        if (Optionalsession.isPresent()) {
-            var session = Optionalsession.get();
+        var optionalSession = getGameSession(playerId);
+        if (optionalSession.isPresent()) {
+            var session = optionalSession.get();
             session.endSession();
             return Optional.of(session);
         }
@@ -100,12 +100,12 @@ public class GameLobby {
     }
 
     public GameSession endPlayerSession(PlayerId playerId) {
-        var Optionalsession = getGameSession(playerId);
+        var optionalSession = getGameSession(playerId);
 
-        if (Optionalsession.isEmpty())
+        if (optionalSession.isEmpty())
             throw new NotFoundException("Player session not found for player " + playerId);
 
-        var session = Optionalsession.get();
+        var session = optionalSession.get();
         session.endSession();
         sessions.remove(session);
         return session;
