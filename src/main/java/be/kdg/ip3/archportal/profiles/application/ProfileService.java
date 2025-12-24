@@ -1,11 +1,9 @@
 package be.kdg.ip3.archportal.profiles.application;
 
-import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEvent;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
-import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
 import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
@@ -230,5 +228,10 @@ public class ProfileService {
         var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
         profile.unfavorite(gameId);
         profileRepository.save(profile);
+    }
+
+    public Profile getAllFromProfile(ProfileId id) {
+        return profileRepository.findById(id)
+                .orElseThrow(id::notFound);
     }
 }

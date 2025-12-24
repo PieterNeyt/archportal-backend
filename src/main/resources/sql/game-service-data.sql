@@ -259,3 +259,15 @@ VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '58e1a434-0797-4d3d-9140-e846b20
 INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_time_played, last_played_at)
 VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 420, NOW() - INTERVAL '5 hours'),
        ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 470, NOW() - INTERVAL '1 day');
+
+INSERT INTO profileservice.profile_sections (profile_id, type, visibility)
+SELECT p.id, s.type, 'FRIENDS'
+FROM profileservice.profile p
+         CROSS JOIN (
+    VALUES
+        ('GAMES'),
+        ('FAVORIETES'),
+        ('STATISTICS'),
+        ('FRIENDS'),
+        ('ACHIEVEMENTS')
+) AS s(type);

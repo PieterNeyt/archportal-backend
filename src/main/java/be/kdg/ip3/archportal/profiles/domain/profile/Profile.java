@@ -23,9 +23,10 @@ public class Profile {
     private int platformPoints;
     private final List<UUID> platformBenefits;
     private final Set<FriendRequest> incomingFriendRequests;
+    private final List<Section> sections;
 
     public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String email, String icon,
-                   String gamerTag, String firstName, List<Game> games, Set<FriendRequest> incomingFriendRequests) {
+                   String gamerTag, String firstName, List<Game> games, Set<FriendRequest> incomingFriendRequests,List<Section> sections) {
         this.id = profileId;
         setEmail(email);
         this.platformBenefits = platformBenefits;
@@ -36,11 +37,17 @@ public class Profile {
         setFirstName(firstName);
         this.games = games;
         this.incomingFriendRequests = incomingFriendRequests;
+        this.sections = Objects.requireNonNullElseGet(sections, Profile::createDefaultSections);
     }
 
     public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag, String email, String icon) {
-        return new Profile(profileId, new ArrayList<>(), 0, lastName, email, icon, gamerTag, firstName, new ArrayList<>(), new HashSet<>());
+        return new Profile(profileId, new ArrayList<>(), 0, lastName, email, icon, gamerTag, firstName, new ArrayList<>(), new HashSet<>(), null);
+    }
 
+    private static List<Section> createDefaultSections() {
+        return Arrays.stream(SectionType.values())
+                .map(Section::createDefault)
+                .toList();
     }
 
     private void setEmail(String email) {
@@ -180,4 +187,13 @@ public class Profile {
 
         game.unfavorite();
     }
+
+    public Section findSection(SectionType type) {
+        return sections.stream()
+                .filter(s -> s.getType() == type)
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Section %s not found in profile %s"
+                        .formatted(type, id)));
+    }
+
 }
