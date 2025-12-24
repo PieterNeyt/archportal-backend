@@ -2,9 +2,14 @@ package be.kdg.ip3.archportal.shops.application;
 
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
+import be.kdg.ip3.archportal.profiles.shared.GrantPlatformBenefitEvent;
 import be.kdg.ip3.archportal.profiles.shared.GrantPlatformPointsEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
+import be.kdg.ip3.archportal.shops.api.dto.BenefitDto;
 import be.kdg.ip3.archportal.shops.api.dto.PaymentCreationDto;
+import be.kdg.ip3.archportal.shops.domain.benefit.Benefit;
+import be.kdg.ip3.archportal.shops.domain.benefit.BenefitId;
+import be.kdg.ip3.archportal.shops.domain.benefit.BenefitRepository;
 import be.kdg.ip3.archportal.shops.domain.cart.Cart;
 import be.kdg.ip3.archportal.shops.domain.cart.CartRepository;
 import be.kdg.ip3.archportal.shops.domain.mollie.IMollieService;
@@ -28,15 +33,17 @@ public class ShopService {
     private final ProfilesApi profilesApi;
     private final CartRepository cartRepo;
     private final OrderRepository orderRepo;
+    private final BenefitRepository benefitRepo;
     private final IMollieService mollieService;
     private final ApplicationEventPublisher publisher;
     private final int platformPointsMultiplier;
 
-    public ShopService(GamesApi gameApi, ProfilesApi profilesApi, CartRepository cartRepo, OrderRepository orderRepo, IMollieService mollieService, ApplicationEventPublisher publisher, @Value("${shop.platformPointsMultiplier}") int platformPointsMultiplier) {
+    public ShopService(GamesApi gameApi, ProfilesApi profilesApi, CartRepository cartRepo, OrderRepository orderRepo, BenefitRepository benefitRepo, IMollieService mollieService, ApplicationEventPublisher publisher, @Value("${shop.platformPointsMultiplier}") int platformPointsMultiplier) {
         this.gameApi = gameApi;
         this.profilesApi = profilesApi;
         this.cartRepo = cartRepo;
         this.orderRepo = orderRepo;
+        this.benefitRepo = benefitRepo;
         this.mollieService = mollieService;
         this.publisher = publisher;
         this.platformPointsMultiplier = platformPointsMultiplier;
@@ -49,6 +56,7 @@ public class ShopService {
     public List<GlobalGameDto> getAllGames() {
         return gameApi.getAllGames();
     }
+
 
     public Cart getOrCreateCart(UUID profileId) {
         return cartRepo.findByProfileId(profileId)
@@ -139,4 +147,34 @@ public class ShopService {
     public GlobalGameDto getGame(UUID gameId) {
         return gameApi.getGameById(gameId);
     }
+
+    //benefits
+
+    public List<BenefitDto> getAllBenefits() {
+        return benefitRepo.findAll()
+                .stream()
+                .map(BenefitDto::fromDomain)
+                .toList();
+    }
+
+    public void buyBenefit(UUID profileId, BenefitId benefitId) {
+
+        Benefit benefit = benefitRepo.findById(benefitId)
+                .orElseThrow(() -> new IllegalArgumentException("Benefit niet gevonden"));
+
+        publisher.publishEvent(new GrantPlatformBenefitEvent(
+                profileId,
+                benefit.getBenefitId().id(),
+                benefit.getPointCost()
+        ));
+    }
+
+    public BenefitDto getBenefit(BenefitId id) {
+        return benefitRepo.findById(id)
+                .map(BenefitDto::fromDomain)
+                .orElseThrow(() -> new IllegalArgumentException("Benefit niet gevonden: " + id));
+    }
+
+
+
 }

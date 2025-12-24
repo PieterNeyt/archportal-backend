@@ -5,6 +5,7 @@ import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEve
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
+import be.kdg.ip3.archportal.profiles.application.command.AcquirePlatformBenefitCommand;
 import be.kdg.ip3.archportal.profiles.application.command.AcquirePlatformPointsCommand;
 import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
@@ -43,8 +44,18 @@ public class ProfileService {
     }
     public void aquirePlatformPoints(AcquirePlatformPointsCommand command){
         var profile = profileRepository.findById(command.profileId()).orElseThrow(command.profileId()::notFound);
-        profile.AddPoints(command.platformPoints());
+        profile.addPoints(command.platformPoints());
         profileRepository.save(profile);
+    }
+    public void aquirePlatformBenefit(AcquirePlatformBenefitCommand command){
+        var profile = profileRepository.findById(command.profileId()).orElseThrow(command.profileId()::notFound);
+        profile.acquirePlatformBenefit(command.benefitId(),command.cost());
+        profileRepository.save(profile);
+    }
+    public int getPlatformPoints(ProfileId profileId) {
+        var profile = profileRepository.findById(profileId)
+                .orElseThrow(profileId::notFound);
+        return profile.getPlatformPoints();
     }
 
     public Profile syncUser(Jwt token) {

@@ -21,10 +21,10 @@ public class Profile {
     private String gamerTag;
     private final List<Game> games;
     private int platformPoints;
-    private final List<UUID> platformBenefits;
+    private final Set<UUID> platformBenefits;
     private final Set<FriendRequest> incomingFriendRequests;
 
-    public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String email, String icon,
+    public Profile(ProfileId profileId, Set<UUID> platformBenefits, int platformPoints, String lastName, String email, String icon,
                    String gamerTag, String firstName, List<Game> games, Set<FriendRequest> incomingFriendRequests) {
         this.id = profileId;
         setEmail(email);
@@ -39,7 +39,7 @@ public class Profile {
     }
 
     public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag, String email, String icon) {
-        return new Profile(profileId, new ArrayList<>(), 0, lastName, email, icon, gamerTag, firstName, new ArrayList<>(), new HashSet<>());
+        return new Profile(profileId, new HashSet<>(), 0, lastName, email, icon, gamerTag, firstName, new ArrayList<>(), new HashSet<>());
 
     }
 
@@ -98,12 +98,32 @@ public class Profile {
         incomingFriendRequests.remove(friendRequest);
     }
 
-    public void AddPoints(int points) {
+    public void addPoints(int points) {
         if (points < 0) {
             throw new IllegalArgumentException("Points cannot be lower than 0");
         }
         this.platformPoints += points;
     }
+    public void acquirePlatformBenefit(UUID platformBenefit, int cost) {
+        if (platformBenefit == null) {
+            throw new IllegalArgumentException("Platform benefit cannot be null.");
+        }
+        if (cost < 0) {
+            throw new IllegalArgumentException("Cost cannot be negative.");
+        }
+        if (platformPoints < cost) {
+            throw new IllegalArgumentException("Not enough platform points.");
+        }
+        if (!platformBenefits.add(platformBenefit)) {
+            throw new IllegalArgumentException(
+                    "Profile %s already acquired platform benefit: %s"
+                            .formatted(id, platformBenefit)
+            );
+        }
+
+        this.platformPoints -= cost;
+    }
+
 
     public void validateNotSameProfile(Profile receiver) {
         if (this.id.equals(receiver.getId()))
