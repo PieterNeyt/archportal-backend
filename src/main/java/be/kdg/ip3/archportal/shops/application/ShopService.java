@@ -77,7 +77,7 @@ public class ShopService {
     public Cart removeFromCart(UUID profileId, UUID gameId) {
 
         var cart = cartRepo.findByProfileId(profileId)
-                .orElseThrow(() -> new IllegalStateException("No cart found"));
+                .orElseThrow(() -> new NotFoundException("No cart found for user with id: " + profileId));
 
         if (!cart.getCartItems().contains(gameId)) {
             throw new IllegalArgumentException("Game is not in cart");
@@ -161,7 +161,7 @@ public class ShopService {
     public void buyBenefit(UUID profileId, BenefitId benefitId) {
 
         Benefit benefit = benefitRepo.findById(benefitId)
-                .orElseThrow(() -> new NotFoundException("Benefit not found"));
+                .orElseThrow(benefitId::notFound);
 
         publisher.publishEvent(new GrantPlatformBenefitEvent(
                 profileId,
@@ -173,7 +173,7 @@ public class ShopService {
     public BenefitDto getBenefit(BenefitId id) {
         return benefitRepo.findById(id)
                 .map(BenefitDto::fromDomain)
-                .orElseThrow(() -> new NotFoundException("Benefit not found: " + id));
+                .orElseThrow(id::notFound);
     }
 
 
