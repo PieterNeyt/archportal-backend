@@ -363,3 +363,20 @@ create table shopservice.order_line
 alter table shopservice.order_line
     owner to "user";
 
+
+create table benefits
+(
+    point_cost    integer      not null,
+    id            uuid         not null
+        primary key,
+    configuration varchar(255),
+    description   varchar(255),
+    name          varchar(255) not null,
+    type          varchar(255) not null
+        constraint benefits_type_check
+            check ((type)::text = ANY
+                   ((ARRAY ['USERNAME_COLOR'::character varying, 'GAME_DISCOUNT'::character varying, 'UNIQUE_PROFILE_PICTURE'::character varying])::text[]))
+);
+
+alter table benefits
+    owner to "user";

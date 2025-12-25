@@ -233,3 +233,19 @@ VALUES ('44444444-4444-4444-4444-444444444441', '56c1596a-ec26-4c5d-aa01-31f7a34
         'Je hebt al even niet gespeeld, kom eens terug!', 'TURN_REMINDER', NOW()),
        ('44444444-4444-4444-4444-444444444446', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'Nieuwsupdate',
         'Er is een nieuwe platform-update beschikbaar.', 'SYSTEM', NOW());
+
+
+-- benefits
+INSERT INTO shopservice.benefits (id, type, name, description, point_cost, configuration)
+VALUES ('11111111-1111-1111-1111-111111111111', 'USERNAME_COLOR', 'Purple username',
+        'Give your username a purple colour', 5000, '#743089'),
+       ('22222222-2222-2222-2222-222222222222', 'USERNAME_COLOR', 'Green username',
+        'Give your username a green colour', 5000, '#00FF00'),
+       ('33333333-3333-3333-3333-333333333333', 'GAME_DISCOUNT', '10% discount',
+        'Get 10% dicount on your next purchase', 2500, '10%'),
+       ('44444444-4444-4444-4444-444444444444', 'GAME_DISCOUNT', '25% discount',
+        'Get 25% dicount on your next purchase', 5000, '25%'),
+       ('55555555-5555-5555-5555-555555555555', 'UNIQUE_PROFILE_PICTURE', 'Archportal avatar',
+        'Get a custom archportal avatar', 3000, 'https://hd2.tudocdn.net/1255807?w=1200&h=900'),
+       ('66666666-6666-6666-6666-666666666666', 'UNIQUE_PROFILE_PICTURE', 'King avatar',
+        'Get a custom king profile picture', 6000, 'https://prod-img.standaard.be/public/nieuws/2dfsyh-koning-filip.jpg/alternates/THREE_TWO_1620/koning-filip.jpg');

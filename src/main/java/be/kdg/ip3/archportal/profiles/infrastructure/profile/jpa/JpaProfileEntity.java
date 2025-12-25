@@ -37,9 +37,12 @@ public class JpaProfileEntity {
     private int platformPoints;
 
     @ElementCollection
-    @CollectionTable(name = "profile_platform_benefits", joinColumns = @JoinColumn(name = "profile_id"), schema = "profileservice")
+    @CollectionTable(name = "profile_platform_benefits",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            schema = "profileservice")
     @Column(name = "benefit_id", nullable = false)
-    private List<UUID> platformBenefits = new ArrayList<>();
+    private Set<UUID> platformBenefits = new HashSet<>();
+
 
     @ElementCollection
     @CollectionTable(name = "profile_library", joinColumns = @JoinColumn(name = "profile_id"), schema = "profileservice")
@@ -57,7 +60,7 @@ public class JpaProfileEntity {
     }
 
     public JpaProfileEntity(UUID id, String firstName, String lastName, String email, String icon, String gamerTag,
-                            int platformPoints, List<UUID> platformBenefits, List<JpaGameEntity> library,
+                            int platformPoints, Set<UUID> platformBenefits, List<JpaGameEntity> library,
                             Set<JpaFriendRequest> incomingRequests) {
         this.id = id;
         this.firstName = firstName;

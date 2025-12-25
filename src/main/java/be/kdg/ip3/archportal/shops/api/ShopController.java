@@ -1,10 +1,13 @@
 package be.kdg.ip3.archportal.shops.api;
 
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
+import be.kdg.ip3.archportal.shops.api.dto.BenefitDto;
 import be.kdg.ip3.archportal.shops.api.dto.CartDto;
 import be.kdg.ip3.archportal.shops.api.dto.PaymentCreationDto;
 import be.kdg.ip3.archportal.shops.application.ShopService;
+import be.kdg.ip3.archportal.shops.domain.benefit.BenefitId;
 import be.kdg.ip3.archportal.shops.domain.cart.Cart;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -18,8 +21,10 @@ import java.util.UUID;
 public class ShopController {
     private final ShopService shopService;
 
+
     public ShopController(ShopService shopService) {
         this.shopService = shopService;
+
     }
 
     @GetMapping("/games")
@@ -71,4 +76,31 @@ public class ShopController {
         boolean verified = shopService.verifyPayment(orderId);
         return ResponseEntity.ok(verified);
     }
+
+
+
+    // benefits
+
+    @GetMapping("/benefits")
+    public ResponseEntity<List<BenefitDto>> getAllBenefits() {
+        return ResponseEntity.ok(shopService.getAllBenefits());
+    }
+
+    @PostMapping("/benefits/{benefitId}/buy")
+    public ResponseEntity<Void> buyBenefit(
+            @PathVariable UUID benefitId,
+            @AuthenticationPrincipal Jwt token) {
+
+        var profileId = UUID.fromString(token.getSubject());
+        shopService.buyBenefit(profileId, new BenefitId(benefitId));
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/benefits/{id}")
+    public ResponseEntity<BenefitDto> getBenefit(@PathVariable UUID id) {
+        return ResponseEntity.ok(shopService.getBenefit(new  BenefitId(id)));
+    }
+
+
 }

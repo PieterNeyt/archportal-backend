@@ -1,12 +1,12 @@
 package be.kdg.ip3.archportal.profiles.application;
 
-import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEvent;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
-import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
+import be.kdg.ip3.archportal.profiles.application.command.AcquirePlatformBenefitCommand;
+import be.kdg.ip3.archportal.profiles.application.command.AcquirePlatformPointsCommand;
 import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
@@ -18,9 +18,7 @@ import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
-import be.kdg.ip3.archportal.profiles.shared.GrantPlatformPointsEvent;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,13 +42,20 @@ public class ProfileService {
         this.eventPublisher = eventPublisher;
         this.friendshipRepository = friendshipRepository;
     }
-
-    @ApplicationModuleListener
-    public void onGrantPlatformPoints(GrantPlatformPointsEvent event) {
-        var profileId= new ProfileId(event.profileId());
-        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
-        profile.AddPoints(event.points());
+    public void aquirePlatformPoints(AcquirePlatformPointsCommand command){
+        var profile = profileRepository.findById(command.profileId()).orElseThrow(command.profileId()::notFound);
+        profile.addPoints(command.platformPoints());
         profileRepository.save(profile);
+    }
+    public void aquirePlatformBenefit(AcquirePlatformBenefitCommand command){
+        var profile = profileRepository.findById(command.profileId()).orElseThrow(command.profileId()::notFound);
+        profile.acquirePlatformBenefit(command.benefitId(),command.cost());
+        profileRepository.save(profile);
+    }
+    public int getPlatformPoints(ProfileId profileId) {
+        var profile = profileRepository.findById(profileId)
+                .orElseThrow(profileId::notFound);
+        return profile.getPlatformPoints();
     }
 
     public Profile syncUser(Jwt token) {

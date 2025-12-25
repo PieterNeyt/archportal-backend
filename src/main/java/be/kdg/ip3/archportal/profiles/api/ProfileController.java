@@ -30,6 +30,12 @@ public class ProfileController {
         var profile = profileService.syncUser(token);
         return ResponseEntity.ok(ProfileDto.from(profile));
     }
+    @GetMapping("/points")
+    public ResponseEntity<Integer> getMyProfilePoints(@AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var points = profileService.getPlatformPoints(profileId);
+        return ResponseEntity.ok(points);
+    }
 
     @GetMapping("/library")
     public ResponseEntity<List<LibraryGameDto>> getLibrary(@AuthenticationPrincipal Jwt token) {
@@ -83,6 +89,7 @@ public class ProfileController {
         var profiles = profileService.findAllProfilesOutgoingRequests(profileId).stream().map(ProfileDto::from).toList();
         return ResponseEntity.ok(profiles);
     }
+
 
     @PutMapping("/friend-request/accept")
     public ResponseEntity<Void> acceptFriendRequest(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {

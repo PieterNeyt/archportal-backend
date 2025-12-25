@@ -259,3 +259,19 @@ VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '58e1a434-0797-4d3d-9140-e846b20
 INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_time_played, last_played_at)
 VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 420, NOW() - INTERVAL '5 hours'),
        ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 470, NOW() - INTERVAL '1 day');
+
+
+-- benefits
+INSERT INTO shopservice.benefits (id, type, name, description, point_cost, configuration)
+VALUES ('11111111-1111-1111-1111-111111111111', 'USERNAME_COLOR', 'Orange username',
+        'Give your username a orange colour', 5000, '#EC7D3C'),
+       ('22222222-2222-2222-2222-222222222222', 'USERNAME_COLOR', 'Green username',
+        'Give your username a green colour', 5000, '#00FF00'),
+       ('33333333-3333-3333-3333-333333333333', 'GAME_DISCOUNT', '10% discount',
+        'Get 10% dicount on your next purchase', 2500, '10%'),
+       ('44444444-4444-4444-4444-444444444444', 'GAME_DISCOUNT', '25% discount',
+        'Get 25% dicount on your next purchase', 5000, '25%'),
+       ('55555555-5555-5555-5555-555555555555', 'UNIQUE_PROFILE_PICTURE', 'Archportal avatar',
+        'Get a custom archportal avatar', 3000, 'https://hd2.tudocdn.net/1255807?w=1200&h=900'),
+       ('66666666-6666-6666-6666-666666666666', 'UNIQUE_PROFILE_PICTURE', 'King avatar',
+        'Get a custom king profile picture', 6000, 'https://prod-img.standaard.be/public/nieuws/2dfsyh-koning-filip.jpg/alternates/THREE_TWO_1620/koning-filip.jpg');
