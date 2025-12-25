@@ -7,6 +7,7 @@ import be.kdg.ip3.archportal.profiles.shared.GrantPlatformPointsEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import be.kdg.ip3.archportal.shops.api.dto.BenefitDto;
 import be.kdg.ip3.archportal.shops.api.dto.PaymentCreationDto;
+import be.kdg.ip3.archportal.shops.domain.NotFoundException;
 import be.kdg.ip3.archportal.shops.domain.benefit.Benefit;
 import be.kdg.ip3.archportal.shops.domain.benefit.BenefitId;
 import be.kdg.ip3.archportal.shops.domain.benefit.BenefitRepository;
@@ -160,7 +161,7 @@ public class ShopService {
     public void buyBenefit(UUID profileId, BenefitId benefitId) {
 
         Benefit benefit = benefitRepo.findById(benefitId)
-                .orElseThrow(() -> new IllegalArgumentException("Benefit niet gevonden"));
+                .orElseThrow(() -> new NotFoundException("Benefit not found"));
 
         publisher.publishEvent(new GrantPlatformBenefitEvent(
                 profileId,
@@ -172,7 +173,7 @@ public class ShopService {
     public BenefitDto getBenefit(BenefitId id) {
         return benefitRepo.findById(id)
                 .map(BenefitDto::fromDomain)
-                .orElseThrow(() -> new IllegalArgumentException("Benefit niet gevonden: " + id));
+                .orElseThrow(() -> new NotFoundException("Benefit not found: " + id));
     }
 
 

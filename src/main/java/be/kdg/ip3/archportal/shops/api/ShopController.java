@@ -20,11 +20,11 @@ import java.util.UUID;
 @RequestMapping("/api/shop")
 public class ShopController {
     private final ShopService shopService;
-    private final ApplicationEventPublisher eventPublisher;
 
-    public ShopController(ShopService shopService, ApplicationEventPublisher eventPublisher) {
+
+    public ShopController(ShopService shopService) {
         this.shopService = shopService;
-        this.eventPublisher = eventPublisher;
+
     }
 
     @GetMapping("/games")
