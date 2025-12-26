@@ -8,6 +8,7 @@ import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
 import be.kdg.ip3.archportal.profiles.application.command.AcquirePlatformPointsCommand;
 import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
+import be.kdg.ip3.archportal.profiles.domain.benefit.ProfileBenefitType;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAction;
@@ -42,7 +43,7 @@ public class ProfileService {
         this.friendshipRepository = friendshipRepository;
     }
 
-    public Profile toggleBenefit(ProfileId profileId, UUID benefitId, String type, String config, boolean active) {
+    public Profile toggleBenefit(ProfileId profileId, UUID benefitId, ProfileBenefitType type, String config, boolean active) {
         var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
         if (active) {
             profile.activateBenefit(benefitId, type, config);
