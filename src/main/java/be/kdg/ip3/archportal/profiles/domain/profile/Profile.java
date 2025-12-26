@@ -18,14 +18,18 @@ public class Profile {
     private String lastName;
     private String email;
     private String icon;
+    private String originalIcon;
     private String gamerTag;
     private final List<Game> games;
     private int platformPoints;
     private final Set<UUID> platformBenefits;
     private final Set<FriendRequest> incomingFriendRequests;
 
+    private UUID activeProfilePictureId;
+    private UUID activeUsernameColorId;
+
     public Profile(ProfileId profileId, Set<UUID> platformBenefits, int platformPoints, String lastName, String email, String icon,
-                   String gamerTag, String firstName, List<Game> games, Set<FriendRequest> incomingFriendRequests) {
+                   String gamerTag, String firstName, List<Game> games, Set<FriendRequest> incomingFriendRequests, String originalIcon, UUID activeProfilePictureId, UUID activeUsernameColorId) {
         this.id = profileId;
         setEmail(email);
         this.platformBenefits = platformBenefits;
@@ -36,10 +40,13 @@ public class Profile {
         setFirstName(firstName);
         this.games = games;
         this.incomingFriendRequests = incomingFriendRequests;
+        this.activeProfilePictureId = activeProfilePictureId;
+        this.activeUsernameColorId = activeUsernameColorId;
+        this.originalIcon = originalIcon;
     }
 
     public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag, String email, String icon) {
-        return new Profile(profileId, new HashSet<>(), 0, lastName, email, icon, gamerTag, firstName, new ArrayList<>(), new HashSet<>());
+        return new Profile(profileId, new HashSet<>(), 0, lastName, email, icon, gamerTag, firstName, new ArrayList<>(), new HashSet<>(),null,null,null);
 
     }
 
@@ -101,7 +108,28 @@ public class Profile {
             throw new IllegalArgumentException("Friend request does not exists.");
         incomingFriendRequests.remove(friendRequest);
     }
+    public void activateBenefit(UUID benefitId, String type, String configuration) {
+        if (!platformBenefits.contains(benefitId)) {
+            throw new IllegalArgumentException("User does not own this benefit");
+        }
 
+        if ("UNIQUE_PROFILE_PICTURE".equals(type)) {
+            this.activeProfilePictureId = benefitId;
+            this.originalIcon = this.icon;
+            this.icon = configuration;
+        } else if ("USERNAME_COLOR".equals(type)) {
+            this.activeUsernameColorId = benefitId;
+        }
+    }
+
+    public void deactivateBenefit(String type) {
+        if ("UNIQUE_PROFILE_PICTURE".equals(type)) {
+            this.activeProfilePictureId = null;
+            this.icon = originalIcon;
+        } else if ("USERNAME_COLOR".equals(type)) {
+            this.activeUsernameColorId = null;
+        }
+    }
     public void addPoints(int points) {
         if (points < 0) {
             throw new IllegalArgumentException("Points cannot be lower than 0");
@@ -167,12 +195,13 @@ public class Profile {
         this.games.add(Game.create(gameId));
     }
 
-    public void update(String firstName, String lastName, String gamerTag, String email, String icon) {
+    public void update(String firstName, String lastName, String gamerTag, String email, String currentIcon, String keycloakIcon) {
         setFirstName(firstName);
         setLastName(lastName);
         setGamerTag(gamerTag);
         setEmail(email);
-        setIcon(icon);
+        this.icon = currentIcon;
+        this.originalIcon = keycloakIcon;
     }
 
     public Game findGameInlibrary(UUID gameId) {

@@ -4,6 +4,7 @@ import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.FriendRequestDto;
 import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.ProfileDto;
+import be.kdg.ip3.archportal.profiles.api.dto.ToggleBenefitRequest;
 import be.kdg.ip3.archportal.profiles.application.ProfileService;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import jakarta.validation.Valid;
@@ -28,6 +29,21 @@ public class ProfileController {
     @GetMapping({"", "/"})
     public ResponseEntity<ProfileDto> syncUser(@AuthenticationPrincipal Jwt token) {
         var profile = profileService.syncUser(token);
+        return ResponseEntity.ok(ProfileDto.from(profile));
+    }
+
+    @PutMapping("/benefits/toggle")
+    public ResponseEntity<ProfileDto> toggleBenefit(
+            @RequestBody ToggleBenefitRequest request,
+            @AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var profile = profileService.toggleBenefit(
+                profileId,
+                request.benefitId(),
+                request.type(),
+                request.config(),
+                request.active()
+        );
         return ResponseEntity.ok(ProfileDto.from(profile));
     }
     @GetMapping("/points")

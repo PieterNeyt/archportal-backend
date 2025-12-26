@@ -11,7 +11,9 @@ public record ProfileDto(
         String icon,
         String gamerTag,
         String email,
-        Set<UUID> platformBenefits
+        Set<UUID> platformBenefits,
+        UUID activeProfilePictureId,
+        UUID activeUsernameColorId
 ) {
     public static ProfileDto from(Profile profile) {
         return new ProfileDto(
@@ -20,7 +22,9 @@ public record ProfileDto(
                 profile.getIcon(),
                 profile.getGamerTag(),
                 profile.getEmail(),
-                profile.getPlatformBenefits()
+                profile.getPlatformBenefits(),
+                profile.getActiveProfilePictureId(),
+                profile.getActiveUsernameColorId()
         );
     }
 }

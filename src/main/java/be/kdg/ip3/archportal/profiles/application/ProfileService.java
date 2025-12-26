@@ -8,7 +8,6 @@ import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
 import be.kdg.ip3.archportal.profiles.application.command.AcquirePlatformPointsCommand;
 import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
-import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAction;
@@ -17,6 +16,7 @@ import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
+import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -41,11 +41,23 @@ public class ProfileService {
         this.eventPublisher = eventPublisher;
         this.friendshipRepository = friendshipRepository;
     }
-    public void aquirePlatformPoints(AcquirePlatformPointsCommand command){
+
+    public Profile toggleBenefit(ProfileId profileId, UUID benefitId, String type, String config, boolean active) {
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        if (active) {
+            profile.activateBenefit(benefitId, type, config);
+        } else {
+            profile.deactivateBenefit(type);
+        }
+        profileRepository.save(profile);
+        return profile;
+    }
+    public void aquirePlatformPoints(AcquirePlatformPointsCommand command) {
         var profile = profileRepository.findById(command.profileId()).orElseThrow(command.profileId()::notFound);
         profile.addPoints(command.platformPoints());
         profileRepository.save(profile);
     }
+
     public int getPlatformPoints(ProfileId profileId) {
         var profile = profileRepository.findById(profileId)
                 .orElseThrow(profileId::notFound);
@@ -54,23 +66,40 @@ public class ProfileService {
 
     public Profile syncUser(Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+
         String firstName = token.getClaim("given_name");
         String lastName = token.getClaim("family_name");
         String gamerTag = token.getClaim("preferred_username");
-        String icon = token.getClaim("icon");
         String email = token.getClaim("email");
+        String keycloakIcon = token.getClaim("icon");
 
-        var profile = profileRepository.findById(profileId).orElseGet(() -> {
-            Profile newProfile = Profile.createProfile(profileId, firstName, lastName, gamerTag, email,icon);
+        var profileOptional = profileRepository.findById(profileId);
+
+        if (profileOptional.isEmpty()) {
+
+            Profile newProfile = Profile.createProfile(profileId, firstName, lastName, gamerTag, email, keycloakIcon);
+
             eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
+            profileRepository.save(newProfile);
             return newProfile;
-        });
 
+        } else {
 
-        profile.update(firstName,lastName,gamerTag,email,icon);
+            Profile profile = profileOptional.get();
 
-        profileRepository.save(profile);
-        return profile;
+            String iconToUse = (profile.getActiveProfilePictureId() != null) ? profile.getIcon() : keycloakIcon;
+
+            profile.update(
+                    firstName,
+                    lastName,
+                    gamerTag,
+                    email,
+                    iconToUse,
+                    keycloakIcon
+            );
+            profileRepository.save(profile);
+            return profile;
+        }
     }
 
     public List<LibraryGameDto> getLibrary(ProfileId profileId) {
@@ -177,7 +206,7 @@ public class ProfileService {
                         
                         Kind regards,
                         The Arch Portal Team""";
-                eventPublisher.publishEvent(new FriendShipCreatedEvent(receiver.getId().id(),receiver.getGamerTag(), sender.getId().id(), sender.getGamerTag()));
+                eventPublisher.publishEvent(new FriendShipCreatedEvent(receiver.getId().id(), receiver.getGamerTag(), sender.getId().id(), sender.getGamerTag()));
             }
             case DECLINE -> {
                 receiver.removeFriendRequest(request);
