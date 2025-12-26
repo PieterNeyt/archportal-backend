@@ -74,34 +74,21 @@ public class ProfileService {
         String email = token.getClaim("email");
         String keycloakIcon = token.getClaim("icon");
 
-        var profileOptional = profileRepository.findById(profileId);
+        var profile = profileRepository.findById(profileId)
+                .orElseGet(() -> {
+                    Profile p = Profile.createProfile(profileId, firstName, lastName, gamerTag, email, keycloakIcon);
+                    eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
+                    return p;
+                });
 
-        if (profileOptional.isEmpty()) {
+        String iconToUse = (profile.getActiveProfilePictureId() != null) ? profile.getIcon() : keycloakIcon;
 
-            Profile newProfile = Profile.createProfile(profileId, firstName, lastName, gamerTag, email, keycloakIcon);
+        profile.update(firstName, lastName, gamerTag, email, iconToUse, keycloakIcon);
 
-            eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
-            profileRepository.save(newProfile);
-            return newProfile;
-
-        } else {
-
-            Profile profile = profileOptional.get();
-
-            String iconToUse = (profile.getActiveProfilePictureId() != null) ? profile.getIcon() : keycloakIcon;
-
-            profile.update(
-                    firstName,
-                    lastName,
-                    gamerTag,
-                    email,
-                    iconToUse,
-                    keycloakIcon
-            );
-            profileRepository.save(profile);
-            return profile;
-        }
+        profileRepository.save(profile);
+        return profile;
     }
+
 
     public List<LibraryGameDto> getLibrary(ProfileId profileId) {
         var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
