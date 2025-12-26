@@ -2,7 +2,6 @@ package be.kdg.ip3.archportal.shops.application;
 
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
-import be.kdg.ip3.archportal.profiles.shared.GrantPlatformBenefitEvent;
 import be.kdg.ip3.archportal.profiles.shared.GrantPlatformPointsEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import be.kdg.ip3.archportal.shops.api.dto.BenefitDto;
@@ -158,16 +157,10 @@ public class ShopService {
                 .toList();
     }
 
-    public void buyBenefit(UUID profileId, BenefitId benefitId) {
+    public int buyBenefit(UUID profileId, BenefitId benefitId) {
+        Benefit benefit = benefitRepo.findById(benefitId).orElseThrow(benefitId::notFound);
 
-        Benefit benefit = benefitRepo.findById(benefitId)
-                .orElseThrow(benefitId::notFound);
-
-        publisher.publishEvent(new GrantPlatformBenefitEvent(
-                profileId,
-                benefit.getBenefitId().id(),
-                benefit.getPointCost()
-        ));
+        return profilesApi.addBenefitToProfile(profileId,benefit.getBenefitId().id(),benefit.getPointCost());
     }
 
     public BenefitDto getBenefit(BenefitId id) {

@@ -87,14 +87,14 @@ public class ShopController {
     }
 
     @PostMapping("/benefits/{benefitId}/buy")
-    public ResponseEntity<Void> buyBenefit(
+    public ResponseEntity<Integer> buyBenefit(
             @PathVariable UUID benefitId,
             @AuthenticationPrincipal Jwt token) {
 
         var profileId = UUID.fromString(token.getSubject());
-        shopService.buyBenefit(profileId, new BenefitId(benefitId));
+        var newPointTotal = shopService.buyBenefit(profileId, new BenefitId(benefitId));
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(newPointTotal);
     }
 
     @GetMapping("/benefits/{id}")

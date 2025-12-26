@@ -135,4 +135,13 @@ public class ProfileApiService implements ProfilesApi {
     public String getProfileGamerTag(UUID id) {
         return profileRepository.findById(new ProfileId(id)).orElseThrow(new ProfileId(id)::notFound).getGamerTag();
     }
+
+    @Override
+    public int addBenefitToProfile(UUID userId, UUID benefitId, int pointsCost) {
+        var profileId= new ProfileId(userId);
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        profile.acquirePlatformBenefit(benefitId,pointsCost);
+        profileRepository.save(profile);
+        return profile.getPlatformPoints();
+    }
 }

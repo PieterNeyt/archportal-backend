@@ -23,4 +23,7 @@ public interface ProfilesApi {
     List<ProfileDto> getAllFriends(UUID profileId);
 
     String getProfileGamerTag(UUID id);
+
+    int addBenefitToProfile(UUID profileId,UUID benefitId,int pointsCost);
 }
+
