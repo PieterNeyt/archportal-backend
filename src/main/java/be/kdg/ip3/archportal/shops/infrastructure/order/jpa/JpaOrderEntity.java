@@ -24,6 +24,9 @@ public class JpaOrderEntity {
     @Column()
     private boolean completed;
 
+    @Column
+    private UUID appliedBenefitId;
+
     @OneToMany(
             mappedBy = "order",
             cascade = CascadeType.ALL,
@@ -33,12 +36,13 @@ public class JpaOrderEntity {
 
     protected JpaOrderEntity() {}
 
-    public JpaOrderEntity(UUID id, UUID profileId, List<JpaOrderLineEntity> orderLines, String paymentId, boolean completed) {
+    public JpaOrderEntity(UUID id, UUID profileId, List<JpaOrderLineEntity> orderLines, String paymentId, boolean completed, UUID appliedBenefitId) {
         this.id = id;
         this.profileId = profileId;
         this.orderLines = orderLines;
         this.paymentId = paymentId;
         this.completed = completed;
+        this.appliedBenefitId = appliedBenefitId;
     }
 
     public static JpaOrderEntity fromDomain(Order order) {
@@ -47,7 +51,8 @@ public class JpaOrderEntity {
                 order.getProfileId(),
                 new ArrayList<>(),
                 order.getPaymentId(),
-                order.isCompleted()
+                order.isCompleted(),
+                order.getAppliedBenefitId()
         );
 
         order.getOrderLines().forEach(line ->
@@ -67,7 +72,8 @@ public class JpaOrderEntity {
                         .map(JpaOrderLineEntity::toDomain)
                         .toList(),
                 paymentId,
-                completed
+                completed,
+                appliedBenefitId
         );
     }
 }

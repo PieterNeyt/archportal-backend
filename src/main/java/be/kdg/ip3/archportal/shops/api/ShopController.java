@@ -66,8 +66,11 @@ public class ShopController {
 
     @PostMapping("/checkout")
     public ResponseEntity<PaymentCreationDto> checkout(
+            @RequestParam(required = false) UUID benefitId,
             @AuthenticationPrincipal Jwt token) {
-        PaymentCreationDto payment = shopService.checkout(UUID.fromString(token.getSubject()));
+
+        BenefitId id = (benefitId != null) ? new BenefitId(benefitId) : null;
+        PaymentCreationDto payment = shopService.checkout(UUID.fromString(token.getSubject()), id);
         return ResponseEntity.ok(payment);
     }
 

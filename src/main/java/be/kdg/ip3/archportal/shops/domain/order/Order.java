@@ -21,9 +21,12 @@ public class Order {
     private final List<OrderLine> orderLines;
     private boolean completed;
 
+    private UUID appliedBenefitId;
+
     public void markAsCompleted() {
         this.completed = true;
     }
+
     public Order(UUID profileId) {
         orderId = OrderId.create();
         this.profileId = profileId;
@@ -31,12 +34,13 @@ public class Order {
         this.completed = false;
     }
 
-    public Order(OrderId orderId, UUID profileId, List<OrderLine> orderLines, String paymentId,boolean completed) {
+    public Order(OrderId orderId, UUID profileId, List<OrderLine> orderLines, String paymentId, boolean completed, UUID appliedBenefitId) {
         this.orderId = orderId;
         this.profileId = profileId;
         this.orderLines = orderLines;
         this.paymentId = paymentId;
         this.completed = completed;
+        this.appliedBenefitId = appliedBenefitId;
     }
 
     public void addOrderLine(UUID gameId, BigDecimal price) {
@@ -49,7 +53,12 @@ public class Order {
                 .map(OrderLine::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
     public void attachPayment(String paymentId) {
         this.paymentId = paymentId;
+    }
+
+    public void addAppliedBenefitId(UUID appliedBenefitId) {
+        this.appliedBenefitId = appliedBenefitId;
     }
 }

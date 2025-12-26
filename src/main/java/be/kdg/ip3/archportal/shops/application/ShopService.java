@@ -10,6 +10,7 @@ import be.kdg.ip3.archportal.shops.domain.NotFoundException;
 import be.kdg.ip3.archportal.shops.domain.benefit.Benefit;
 import be.kdg.ip3.archportal.shops.domain.benefit.BenefitId;
 import be.kdg.ip3.archportal.shops.domain.benefit.BenefitRepository;
+import be.kdg.ip3.archportal.shops.domain.benefit.BenefitType;
 import be.kdg.ip3.archportal.shops.domain.cart.Cart;
 import be.kdg.ip3.archportal.shops.domain.cart.CartRepository;
 import be.kdg.ip3.archportal.shops.domain.mollie.IMollieService;
@@ -88,34 +89,90 @@ public class ShopService {
     }
 
 
-    public PaymentCreationDto checkout(UUID profileId) {
+    public PaymentCreationDto checkout(UUID profileId, BenefitId optionalBenefitId) {
+        var cart = getValidatedCart(profileId);
 
+        var order = createOrderFromCart(profileId, cart);
+        BigDecimal total = calculateTotalWithBenefit(order, profileId, optionalBenefitId);
+
+        orderRepo.save(order);
+
+        PaymentCreationDto payment = createPayment(order, total);
+
+        finalizeOrder(order, payment, cart);
+
+        return payment;
+    }
+
+    private Cart getValidatedCart(UUID profileId) {
         var cart = getOrCreateCart(profileId);
         if (cart.getCartItems().isEmpty()) {
             throw new IllegalStateException("Cart is empty");
         }
+        return cart;
+    }
 
+    private Order createOrderFromCart(UUID profileId, Cart cart) {
         var gamesInCart = gameApi.getGamesByIds(cart.getCartItems());
-
         var order = new Order(profileId);
 
-        gamesInCart.forEach(gameDto -> order.addOrderLine(gameDto.id(), gameDto.price()));
-        orderRepo.save(order);
+        gamesInCart.forEach(game ->
+                order.addOrderLine(game.id(), game.price())
+        );
 
-        var amount = order.totalPrice();
-        PaymentCreationDto payment = mollieService.createPayment(
-                amount,
+        return order;
+    }
+    private BigDecimal calculateTotalWithBenefit(
+            Order order,
+            UUID profileId,
+            BenefitId optionalBenefitId) {
+
+        BigDecimal total = order.totalPrice();
+
+        if (optionalBenefitId == null) {
+            return total;
+        }
+
+        Benefit benefit = benefitRepo.findById(optionalBenefitId)
+                .orElseThrow(optionalBenefitId::notFound);
+
+        var benefits = profilesApi.getProfileBenefitsByProfileId(profileId);
+
+        if (benefits.contains(optionalBenefitId.id()) &&
+                benefit.getType() == BenefitType.GAME_DISCOUNT) {
+
+            BigDecimal discountPercent = parseDiscountPercent(benefit.getConfiguration());
+            BigDecimal discountAmount = total.multiply(discountPercent);
+
+            total = total.subtract(discountAmount);
+            order.addAppliedBenefitId(optionalBenefitId.id());
+        }
+
+        return total;
+    }
+
+    private BigDecimal parseDiscountPercent(String config) {
+        return new BigDecimal(config.replace("%", ""))
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+    }
+
+    private PaymentCreationDto createPayment(Order order, BigDecimal total) {
+        return mollieService.createPayment(
+                total.setScale(2, RoundingMode.HALF_UP),
                 "Order #" + order.getOrderId().id(),
                 order.getOrderId().id()
         );
+    }
+
+    private void finalizeOrder(
+            Order order,
+            PaymentCreationDto payment,
+            Cart cart) {
 
         order.attachPayment(payment.paymentId());
         orderRepo.save(order);
-
         cartRepo.delete(cart);
-        return payment;
     }
-
 
     public boolean verifyPayment(UUID orderId) {
         var order = orderRepo.findById(orderId);
@@ -126,6 +183,10 @@ public class ShopService {
                     .stream()
                     .map(OrderLine::getGameId)
                     .toList();
+
+            if (order.getAppliedBenefitId() != null) {
+                profilesApi.removeBenefitFromProfile(order.getProfileId(), order.getAppliedBenefitId());
+            }
 
             profilesApi.addGamesToLibrary(order.getProfileId(), gameIds);
             order.markAsCompleted();

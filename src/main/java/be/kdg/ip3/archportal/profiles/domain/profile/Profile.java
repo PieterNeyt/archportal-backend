@@ -89,7 +89,11 @@ public class Profile {
 
         incomingFriendRequests.add(friendRequest);
     }
-
+    public void removePlatformBenefit(UUID benefitId) {
+        if (!platformBenefits.remove(benefitId)) {
+            throw new IllegalArgumentException("Profile does not own this benefit.");
+        }
+    }
     public void removeFriendRequest(FriendRequest friendRequest) {
         if (friendRequest == null)
             throw new IllegalArgumentException("The friend request provided is invalid.");

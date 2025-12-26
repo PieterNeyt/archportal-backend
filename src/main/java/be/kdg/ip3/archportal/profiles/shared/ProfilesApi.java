@@ -3,6 +3,7 @@ package be.kdg.ip3.archportal.profiles.shared;
 import org.springframework.modulith.NamedInterface;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @NamedInterface
@@ -21,9 +22,11 @@ public interface ProfilesApi {
     List<BasicProfileInfo> getBasicProfiles(List<UUID> profileIds);
     
     List<ProfileDto> getAllFriends(UUID profileId);
+    Set<UUID> getProfileBenefitsByProfileId(UUID profileId);
 
     String getProfileGamerTag(UUID id);
 
     int addBenefitToProfile(UUID profileId,UUID benefitId,int pointsCost);
+    void removeBenefitFromProfile(UUID profileId, UUID benefitId);
 }
 
