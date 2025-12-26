@@ -76,9 +76,9 @@ public class ProfileService {
 
         var profile = profileRepository.findById(profileId)
                 .orElseGet(() -> {
-                    Profile p = Profile.createProfile(profileId, firstName, lastName, gamerTag, email, keycloakIcon);
+                    Profile newProfile = Profile.createProfile(profileId, firstName, lastName, gamerTag, email, keycloakIcon);
                     eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
-                    return p;
+                    return newProfile;
                 });
 
         String iconToUse = (profile.getActiveProfilePictureId() != null) ? profile.getIcon() : keycloakIcon;
