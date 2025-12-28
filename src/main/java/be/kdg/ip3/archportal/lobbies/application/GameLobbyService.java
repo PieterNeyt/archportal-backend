@@ -192,8 +192,8 @@ public class GameLobbyService implements LobbiesApi {
         return this.gameLobbies.isPlayerInLobby(playerId);
     }
 
-    public UUID getLobbyIdFromPlayerId(PlayerId playerId) {
-        return this.gameLobbies.getLobbyIdFromPLayerID(playerId)
+    public GameLobby getLobbyIdFromPlayerId(PlayerId playerId) {
+        return this.gameLobbies.getLobbyFromPLayerID(playerId)
                 .orElseThrow(playerId::notFound);
     }
 
