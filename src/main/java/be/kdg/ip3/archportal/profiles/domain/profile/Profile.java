@@ -36,7 +36,7 @@ public class Profile {
         this.platformBenefits = platformBenefits;
         setPlatformPoints(platformPoints);
         setLastName(lastName);
-        this.icon = icon;
+        setIcon(icon);
         setGamerTag(gamerTag);
         setFirstName(firstName);
         this.games = games;

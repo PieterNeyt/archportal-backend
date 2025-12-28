@@ -12,4 +12,5 @@ public interface BenefitRepository {
     void save(Benefit benefit);
     Optional<Benefit> findById(BenefitId benefitId);
     List<Benefit> findAll();
+    List<Benefit> findAllByIdIn(List<BenefitId> ids);
 }

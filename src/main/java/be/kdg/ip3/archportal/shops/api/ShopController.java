@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/shop")
@@ -103,6 +104,12 @@ public class ShopController {
     @GetMapping("/benefits/{id}")
     public ResponseEntity<BenefitDto> getBenefit(@PathVariable UUID id) {
         return ResponseEntity.ok(shopService.getBenefit(new  BenefitId(id)));
+    }
+
+    @GetMapping("/benefits/list")
+    public ResponseEntity<List<BenefitDto>> getBenefitsByIds(@RequestParam List<UUID> ids) {
+        var benefitIds = ids.stream().map(BenefitId::new).toList();
+        return ResponseEntity.ok(shopService.getBenefitsByIds(benefitIds));
     }
 
 

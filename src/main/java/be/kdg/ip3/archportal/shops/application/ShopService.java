@@ -111,6 +111,12 @@ public class ShopService {
         }
         return cart;
     }
+    public List<BenefitDto> getBenefitsByIds(List<BenefitId> benefitIds) {
+        return benefitRepo.findAllByIdIn(benefitIds)
+                .stream()
+                .map(BenefitDto::fromDomain)
+                .toList();
+    }
 
     private Order createOrderFromCart(UUID profileId, Cart cart) {
         var gamesInCart = gameApi.getGamesByIds(cart.getCartItems());
