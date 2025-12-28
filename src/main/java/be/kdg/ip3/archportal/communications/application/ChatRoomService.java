@@ -113,8 +113,8 @@ public class ChatRoomService implements ChatRoomApi {
     }
 
     @Override
-    public UUID createChatRoom(UUID hostId) {
-        var chatRoom = new ChatRoom("Party chat");
+    public UUID createChatRoom(UUID hostId, String title) {
+        var chatRoom = new ChatRoom(title);
         chatRoom.addMember(hostId);
         chatRoomRepository.save(chatRoom);
         return chatRoom.getId().id();

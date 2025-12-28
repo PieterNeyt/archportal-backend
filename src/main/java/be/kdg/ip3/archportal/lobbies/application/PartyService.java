@@ -39,7 +39,7 @@ public class PartyService {
         if (partyRepository.existsByPlayerId(hostId))
             throw new IllegalArgumentException("Already in a party");
 
-        var id = chatRoomApi.createChatRoom(hostId.id());
+        var id = chatRoomApi.createChatRoom(hostId.id(), title);
         var party = new Party(hostId, new ChatRoomId(id), title, maxMembers);
         partyRepository.save(party);
         return party;
