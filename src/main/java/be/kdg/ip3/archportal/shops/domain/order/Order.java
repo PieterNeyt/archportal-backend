@@ -1,10 +1,15 @@
 package be.kdg.ip3.archportal.shops.domain.order;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
+import be.kdg.ip3.archportal.shops.domain.benefit.Benefit;
+import be.kdg.ip3.archportal.shops.domain.benefit.BenefitType;
+import be.kdg.ip3.archportal.shops.domain.cart.Cart;
 import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 import org.jmolecules.ddd.annotation.Identity;
@@ -18,6 +23,7 @@ public class Order {
 
     private final UUID profileId;
     private String paymentId;
+    private String appliedBenefitPercentage;
     private final List<OrderLine> orderLines;
     private boolean completed;
 
@@ -34,13 +40,14 @@ public class Order {
         this.completed = false;
     }
 
-    public Order(OrderId orderId, UUID profileId, List<OrderLine> orderLines, String paymentId, boolean completed, UUID appliedBenefitId) {
+    public Order(OrderId orderId, UUID profileId, List<OrderLine> orderLines, String paymentId, boolean completed, UUID appliedBenefitId, String appliedBenefitPercentage) {
         this.orderId = orderId;
         this.profileId = profileId;
         this.orderLines = orderLines;
         this.paymentId = paymentId;
         this.completed = completed;
         this.appliedBenefitId = appliedBenefitId;
+        this.appliedBenefitPercentage = appliedBenefitPercentage;
     }
 
     public void addOrderLine(UUID gameId, BigDecimal price) {
@@ -58,7 +65,29 @@ public class Order {
         this.paymentId = paymentId;
     }
 
-    public void addAppliedBenefitId(UUID appliedBenefitId) {
-        this.appliedBenefitId = appliedBenefitId;
+    public BigDecimal applyDiscount(Benefit benefit) {
+        if (benefit.getType() != BenefitType.GAME_DISCOUNT) {
+            return totalPrice();
+        }
+
+        var total = totalPrice();
+        var discountPercent = new BigDecimal(benefit.getConfiguration().replace("%", ""))
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        var discountAmount = total.multiply(discountPercent);
+
+        this.appliedBenefitId = benefit.getBenefitId().id();
+        this.appliedBenefitPercentage = benefit.getConfiguration();
+
+        return total.subtract(discountAmount);
     }
+
+    public static Order createFromCart(UUID profileId, Cart cart, List<GlobalGameDto> games) {
+        cart.validateForCheckout();
+
+        var order = new Order(profileId);
+        games.forEach(game -> order.addOrderLine(game.id(), game.price()));
+
+        return order;
+    }
+
 }

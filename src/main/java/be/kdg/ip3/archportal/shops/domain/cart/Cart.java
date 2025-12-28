@@ -35,4 +35,9 @@ public class Cart {
         this.cartItems.remove(gameId);
     }
 
+    public void validateForCheckout() {
+        if (cartItems.isEmpty()) {
+            throw new IllegalStateException("Cannot checkout with an empty cart");
+        }
+    }
 }

@@ -88,103 +88,69 @@ public class ShopService {
         return cartRepo.save(cart);
     }
 
-
-    public PaymentCreationDto checkout(UUID profileId, BenefitId optionalBenefitId) {
-        var cart = getValidatedCart(profileId);
-
-        var order = createOrderFromCart(profileId, cart);
-        BigDecimal total = calculateTotalWithBenefit(order, profileId, optionalBenefitId);
-
-        orderRepo.save(order);
-
-        PaymentCreationDto payment = createPayment(order, total);
-
-        finalizeOrder(order, payment, cart);
-
-        return payment;
-    }
-
-    private Cart getValidatedCart(UUID profileId) {
-        var cart = getOrCreateCart(profileId);
-        if (cart.getCartItems().isEmpty()) {
-            throw new IllegalStateException("Cart is empty");
-        }
-        return cart;
-    }
     public List<BenefitDto> getBenefitsByIds(List<BenefitId> benefitIds) {
         return benefitRepo.findAllByIdIn(benefitIds)
                 .stream()
                 .map(BenefitDto::fromDomain)
                 .toList();
     }
-
-    private Order createOrderFromCart(UUID profileId, Cart cart) {
+    public PaymentCreationDto checkout(UUID profileId, BenefitId optionalBenefitId) {
+        var cart = getValidatedCart(profileId);
         var gamesInCart = gameApi.getGamesByIds(cart.getCartItems());
-        var order = new Order(profileId);
+        var order = Order.createFromCart(profileId, cart, gamesInCart);
+        var total = calculateTotalWithBenefit(order, profileId, optionalBenefitId);
 
-        gamesInCart.forEach(game ->
-                order.addOrderLine(game.id(), game.price())
+        orderRepo.save(order);
+
+        var payment = mollieService.createPayment(
+                total.setScale(2, RoundingMode.HALF_UP),
+                "Order #" + order.getOrderId().id(),
+                order.getOrderId().id()
         );
 
-        return order;
+        order.attachPayment(payment.paymentId());
+        orderRepo.save(order);
+
+        return payment;
     }
+
+    private Cart getValidatedCart(UUID profileId) {
+        var cart = getOrCreateCart(profileId);
+        cart.validateForCheckout();
+        return cart;
+    }
+
+
+
     private BigDecimal calculateTotalWithBenefit(
             Order order,
             UUID profileId,
             BenefitId optionalBenefitId) {
 
-        BigDecimal total = order.totalPrice();
-
         if (optionalBenefitId == null) {
-            return total;
+            return order.totalPrice();
         }
 
-        Benefit benefit = benefitRepo.findById(optionalBenefitId)
+        var benefit = benefitRepo.findById(optionalBenefitId)
                 .orElseThrow(optionalBenefitId::notFound);
 
         var benefits = profilesApi.getProfileBenefitsByProfileId(profileId);
 
-        if (benefits.contains(optionalBenefitId.id()) &&
-                benefit.getType() == BenefitType.GAME_DISCOUNT) {
-
-            BigDecimal discountPercent = parseDiscountPercent(benefit.getConfiguration());
-            BigDecimal discountAmount = total.multiply(discountPercent);
-
-            total = total.subtract(discountAmount);
-            order.addAppliedBenefitId(optionalBenefitId.id());
+        if (benefits.contains(optionalBenefitId.id())) {
+            return order.applyDiscount(benefit);
         }
 
-        return total;
+        return order.totalPrice();
     }
 
-    private BigDecimal parseDiscountPercent(String config) {
-        return new BigDecimal(config.replace("%", ""))
-                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-    }
 
-    private PaymentCreationDto createPayment(Order order, BigDecimal total) {
-        return mollieService.createPayment(
-                total.setScale(2, RoundingMode.HALF_UP),
-                "Order #" + order.getOrderId().id(),
-                order.getOrderId().id()
-        );
-    }
-
-    private void finalizeOrder(
-            Order order,
-            PaymentCreationDto payment,
-            Cart cart) {
-
-        order.attachPayment(payment.paymentId());
-        orderRepo.save(order);
-        cartRepo.delete(cart);
-    }
 
     public boolean verifyPayment(UUID orderId) {
         var order = orderRepo.findById(orderId);
         boolean success = mollieService.verifyPayment(order.getPaymentId());
 
         if (success && !order.isCompleted()) {
+            var cart = getValidatedCart(order.getProfileId());
             var gameIds = order.getOrderLines()
                     .stream()
                     .map(OrderLine::getGameId)
@@ -197,6 +163,7 @@ public class ShopService {
             profilesApi.addGamesToLibrary(order.getProfileId(), gameIds);
             order.markAsCompleted();
             orderRepo.save(order);
+            cartRepo.delete(cart);
 
             publisher.publishEvent(new GrantPlatformPointsEvent(
                     order.getProfileId(),

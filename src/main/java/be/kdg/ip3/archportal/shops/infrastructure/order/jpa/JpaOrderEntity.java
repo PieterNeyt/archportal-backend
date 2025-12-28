@@ -26,6 +26,8 @@ public class JpaOrderEntity {
 
     @Column
     private UUID appliedBenefitId;
+    @Column
+    private String appliedBenefitPercentage;
 
     @OneToMany(
             mappedBy = "order",
@@ -36,13 +38,14 @@ public class JpaOrderEntity {
 
     protected JpaOrderEntity() {}
 
-    public JpaOrderEntity(UUID id, UUID profileId, List<JpaOrderLineEntity> orderLines, String paymentId, boolean completed, UUID appliedBenefitId) {
+    public JpaOrderEntity(UUID id, UUID profileId, List<JpaOrderLineEntity> orderLines, String paymentId, boolean completed, UUID appliedBenefitId, String appliedBenefitPercentage) {
         this.id = id;
         this.profileId = profileId;
         this.orderLines = orderLines;
         this.paymentId = paymentId;
         this.completed = completed;
         this.appliedBenefitId = appliedBenefitId;
+        this.appliedBenefitPercentage = appliedBenefitPercentage;
     }
 
     public static JpaOrderEntity fromDomain(Order order) {
@@ -52,7 +55,8 @@ public class JpaOrderEntity {
                 new ArrayList<>(),
                 order.getPaymentId(),
                 order.isCompleted(),
-                order.getAppliedBenefitId()
+                order.getAppliedBenefitId(),
+                order.getAppliedBenefitPercentage()
         );
 
         order.getOrderLines().forEach(line ->
@@ -73,7 +77,8 @@ public class JpaOrderEntity {
                         .toList(),
                 paymentId,
                 completed,
-                appliedBenefitId
+                appliedBenefitId,
+                appliedBenefitPercentage
         );
     }
 }
