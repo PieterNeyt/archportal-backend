@@ -1,8 +1,6 @@
 package be.kdg.ip3.archportal.lobbies.application;
 
-import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
-import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
-import be.kdg.ip3.archportal.communications.shared.NotificationType;
+import be.kdg.ip3.archportal.communications.shared.*;
 import be.kdg.ip3.archportal.lobbies.api.dto.MemberDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.PartyInviteDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.PlayerDto;
@@ -13,8 +11,6 @@ import be.kdg.ip3.archportal.lobbies.domain.party.Party;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyId;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyRepository;
 import be.kdg.ip3.archportal.lobbies.domain.partyInvite.PartyInvite;
-import be.kdg.ip3.archportal.lobbies.shared.JoinedPartyEvent;
-import be.kdg.ip3.archportal.lobbies.shared.LeftPartyEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -109,7 +105,7 @@ public class PartyService {
         var party = partyRepository.findById(id).orElseThrow(id::notFound);
         party.acceptPartyInvite(playerId);
         partyRepository.save(party);
-        publisher.publishEvent(new JoinedPartyEvent(playerId.id(), party.getChatRoomId().id()));
+        publisher.publishEvent(new ChatRoomJoinedEvent(playerId.id(), party.getChatRoomId().id()));
     }
 
     public void declinePartyInvite(PlayerId playerId, PartyId id) {
@@ -127,7 +123,7 @@ public class PartyService {
         party.leaveParty(playerId);
         if (party.getHostId() == null) partyRepository.deleteById(party.getId());
         else partyRepository.save(party);
-        publisher.publishEvent(new LeftPartyEvent(party.getChatRoomId().id(), playerId.id()));
+        publisher.publishEvent(new ChatRoomLeftEvent(party.getChatRoomId().id(), playerId.id()));
     }
 
     public void kickFromParty(PlayerId playerId, String gamertag) {
@@ -138,6 +134,6 @@ public class PartyService {
         party.checkHost(playerId);
         party.leaveParty(memberId);
         partyRepository.save(party);
-        publisher.publishEvent(new LeftPartyEvent(party.getChatRoomId().id(), memberId.id()));
+        publisher.publishEvent(new ChatRoomLeftEvent(party.getChatRoomId().id(), memberId.id()));
     }
 }
