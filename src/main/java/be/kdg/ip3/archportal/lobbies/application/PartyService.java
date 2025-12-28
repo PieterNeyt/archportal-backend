@@ -125,7 +125,8 @@ public class PartyService {
             throw playerId.notFound();
         var party = partyRepository.findByMemberId(playerId).orElseThrow(() -> new NotFoundException("Party not found"));
         party.leaveParty(playerId);
-        if (party.getHostId() == null) partyRepository.deleteById(party.getId());
+        if (party.getHostId() == null)
+            partyRepository.deleteById(party.getId());
         else partyRepository.save(party);
         publisher.publishEvent(new LeftPartyEvent(party.getChatRoomId().id(), playerId.id()));
     }
