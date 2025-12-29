@@ -193,7 +193,28 @@ public class ShopService {
                 .map(BenefitDto::fromDomain)
                 .orElseThrow(id::notFound);
     }
+    public String getActiveUsernameColor(UUID profileId) {
+        UUID colorId = profilesApi.getActiveUsernameColorId(profileId);
+        if (colorId == null) {
+            return null;
+        }
+        var benefitId= new BenefitId(colorId);
+        return benefitRepo.findById(benefitId)
+                .map(Benefit::getConfiguration)
+                .orElseThrow(benefitId::notFound);
+    }
 
+    public List<BenefitDto> getProfileDiscounts(UUID profileId) {
+        var profileBenefitIds = profilesApi.getProfileBenefitsByProfileId(profileId);
+        var benefitIds = profileBenefitIds.stream()
+                .map(BenefitId::new)
+                .toList();
 
+        return benefitRepo.findAllByIdIn(benefitIds)
+                .stream()
+                .filter(b -> b.getType() == BenefitType.GAME_DISCOUNT)
+                .map(BenefitDto::fromDomain)
+                .toList();
+    }
 
 }

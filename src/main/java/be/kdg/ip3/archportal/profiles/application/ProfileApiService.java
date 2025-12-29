@@ -46,6 +46,14 @@ public class ProfileApiService implements ProfilesApi {
     }
 
     @Override
+    public UUID getActiveUsernameColorId(UUID Id) {
+        var profileId= new ProfileId(Id);
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        return profile.getActiveUsernameColorId();
+    }
+
+
+    @Override
     public UUID getProfileFromGamerTag(String gamerTag) {
         return profileRepository.findByGamerTag(gamerTag).map(p -> p.getId().id()).orElseThrow(() -> new NotFoundException("Profile with gamertag " + gamerTag + " is not found."));
     }

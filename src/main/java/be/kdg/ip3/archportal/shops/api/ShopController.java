@@ -112,5 +112,14 @@ public class ShopController {
         return ResponseEntity.ok(shopService.getBenefitsByIds(benefitIds));
     }
 
-
+    @GetMapping("/benefits/discounts")
+    public ResponseEntity<List<BenefitDto>> getProfileDiscounts(@AuthenticationPrincipal Jwt token) {
+        var profileId = UUID.fromString(token.getSubject());
+        return ResponseEntity.ok(shopService.getProfileDiscounts(profileId));
+    }
+    @GetMapping("/benefits/active-color")
+    public ResponseEntity<String> getActiveUsernameColor(@AuthenticationPrincipal Jwt token) {
+        var profileId = UUID.fromString(token.getSubject());
+        return ResponseEntity.ok(shopService.getActiveUsernameColor(profileId));
+    }
 }
