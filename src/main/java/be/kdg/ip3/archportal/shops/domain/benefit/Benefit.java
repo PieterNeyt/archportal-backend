@@ -30,4 +30,5 @@ public class Benefit {
         this.pointCost = pointCost;
         this.configuration = configuration;
     }
+
 }

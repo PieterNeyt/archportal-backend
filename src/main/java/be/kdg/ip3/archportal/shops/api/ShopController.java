@@ -7,7 +7,6 @@ import be.kdg.ip3.archportal.shops.api.dto.PaymentCreationDto;
 import be.kdg.ip3.archportal.shops.application.ShopService;
 import be.kdg.ip3.archportal.shops.domain.benefit.BenefitId;
 import be.kdg.ip3.archportal.shops.domain.cart.Cart;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -66,8 +65,11 @@ public class ShopController {
 
     @PostMapping("/checkout")
     public ResponseEntity<PaymentCreationDto> checkout(
+            @RequestParam(required = false) UUID benefitId,
             @AuthenticationPrincipal Jwt token) {
-        PaymentCreationDto payment = shopService.checkout(UUID.fromString(token.getSubject()));
+
+        BenefitId id = (benefitId != null) ? new BenefitId(benefitId) : null;
+        PaymentCreationDto payment = shopService.checkout(UUID.fromString(token.getSubject()), id);
         return ResponseEntity.ok(payment);
     }
 
@@ -78,7 +80,6 @@ public class ShopController {
     }
 
 
-
     // benefits
 
     @GetMapping("/benefits")
@@ -87,20 +88,37 @@ public class ShopController {
     }
 
     @PostMapping("/benefits/{benefitId}/buy")
-    public ResponseEntity<Void> buyBenefit(
+    public ResponseEntity<Integer> buyBenefit(
             @PathVariable UUID benefitId,
             @AuthenticationPrincipal Jwt token) {
 
         var profileId = UUID.fromString(token.getSubject());
-        shopService.buyBenefit(profileId, new BenefitId(benefitId));
+        var newPointTotal = shopService.buyBenefit(profileId, new BenefitId(benefitId));
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(newPointTotal);
     }
 
     @GetMapping("/benefits/{id}")
     public ResponseEntity<BenefitDto> getBenefit(@PathVariable UUID id) {
-        return ResponseEntity.ok(shopService.getBenefit(new  BenefitId(id)));
+        return ResponseEntity.ok(shopService.getBenefit(new BenefitId(id)));
+    }
+
+    @GetMapping("/benefits/discounts")
+    public ResponseEntity<List<BenefitDto>> getProfileDiscounts(@AuthenticationPrincipal Jwt token) {
+        var profileId = UUID.fromString(token.getSubject());
+        return ResponseEntity.ok(shopService.getProfileDiscounts(profileId));
+    }
+
+    @GetMapping("/benefits/active-color")
+    public ResponseEntity<String> getActiveUsernameColor(@AuthenticationPrincipal Jwt token) {
+        var profileId = UUID.fromString(token.getSubject());
+        return ResponseEntity.ok(shopService.getActiveUsernameColor(profileId));
     }
 
 
+    @GetMapping("/benefits/profile")
+    public ResponseEntity<List<BenefitDto>> getAllBenefitsOfProfile(@AuthenticationPrincipal Jwt token) {
+        var profileId = UUID.fromString(token.getSubject());
+        return ResponseEntity.ok(shopService.getBenefitsOfProfile(profileId).stream().map(BenefitDto::fromDomain).toList());
+    }
 }

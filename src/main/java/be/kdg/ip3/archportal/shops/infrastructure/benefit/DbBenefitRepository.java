@@ -39,4 +39,16 @@ public class DbBenefitRepository implements BenefitRepository {
                 .map(JpaBenefitEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<Benefit> findAllByIdIn(List<BenefitId> ids) {
+        var uuids = ids.stream()
+                .map(BenefitId::id)
+                .toList();
+
+        return jpaRepo.findAllByIdIn(uuids)
+                .stream()
+                .map(JpaBenefitEntity::toDomain)
+                .toList();
+    }
 }

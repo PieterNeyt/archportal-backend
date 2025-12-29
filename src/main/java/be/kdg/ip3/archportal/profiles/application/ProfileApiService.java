@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -43,6 +44,14 @@ public class ProfileApiService implements ProfilesApi {
     public List<ProfileDto> getProfilesFromGamerTags(List<String> gamerTags) {
         return profileRepository.findFromGamerTags(gamerTags).stream().map(ProfileDto::from).toList();
     }
+
+    @Override
+    public UUID getActiveUsernameColorId(UUID Id) {
+        var profileId= new ProfileId(Id);
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        return profile.getActiveUsernameColorId();
+    }
+
 
     @Override
     public UUID getProfileFromGamerTag(String gamerTag) {
@@ -132,7 +141,33 @@ public class ProfileApiService implements ProfilesApi {
     }
 
     @Override
+    public Set<UUID> getProfileBenefitsByProfileId(UUID userId) {
+        var profileId = new ProfileId(userId);
+        return profileRepository
+                .findById(profileId)
+                .map(ProfileDto::from)
+                .orElseThrow(profileId::notFound).profileBenefits();
+    }
+
+    @Override
     public String getProfileGamerTag(UUID id) {
         return profileRepository.findById(new ProfileId(id)).orElseThrow(new ProfileId(id)::notFound).getGamerTag();
+    }
+
+    @Override
+    public int addBenefitToProfile(UUID userId, UUID benefitId, int pointsCost) {
+        var profileId= new ProfileId(userId);
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        profile.acquirePlatformBenefit(benefitId,pointsCost);
+        profileRepository.save(profile);
+        return profile.getPlatformPoints();
+    }
+
+    @Override
+    public void removeBenefitFromProfile(UUID userId, UUID benefitId) {
+        var profileId= new ProfileId(userId);
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        profile.removePlatformBenefit(benefitId);
+        profileRepository.save(profile);
     }
 }

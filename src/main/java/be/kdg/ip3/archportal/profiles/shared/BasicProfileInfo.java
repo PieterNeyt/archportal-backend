@@ -7,13 +7,15 @@ import java.util.UUID;
 public record BasicProfileInfo(
         UUID id,
         String gamertag,
-        String avatarUrl
+        String avatarUrl,
+        UUID activeUsernameColorId
 ) {
     public static BasicProfileInfo from(Profile profile) {
         return new BasicProfileInfo(
                 profile.getId().id(),
                 profile.getGamerTag(),
-                profile.getIcon()
+                profile.getIcon(),
+                profile.getActiveUsernameColorId()
         );
     }
 }

@@ -29,4 +29,5 @@ public class DbOrderRepository implements OrderRepository {
                 .map(JpaOrderEntity::toDomain)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found: " + orderId));
     }
+
 }

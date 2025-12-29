@@ -320,7 +320,8 @@ create table shopservice.cart
 (
     id         uuid not null
         primary key,
-    profile_id uuid not null
+    profile_id uuid not null,
+    appliedBenefitId uuid not null
 );
 
 alter table shopservice.cart
@@ -343,6 +344,7 @@ create table shopservice.orders
     id         uuid not null
         primary key,
     profile_id uuid not null,
+    applied_benefit_percentage  decimal(5,4),
     payment_id varchar(255)
 );
 

@@ -25,7 +25,7 @@ VALUES ('f7b56a1e-1c63-4d0c-aa75-3b40e8253e19', '3f071d5d-5d2e-4b5f-9c12-7cf7e90
         'https://framerusercontent.com/images/csQYwDfKsYvDh4jwg3mTQVEJ8.png?width=1920&height=1080',
         'https://hub.example.com/games/gridmaster', 'ABSTRACT', 2),
        ('7aefc340-96ed-4bb9-8262-34b50aa55420', '3f071d5d-5d2e-4b5f-9c12-7cf7e902b113', 'Triad Tactics',
-        'A quick-play strategy game where players rotate tri-shaped tiles to outmaneuver opponents.', 19.99,
+        'A quick-play strategy game where players rotate tri-shaped tiles to outmaneuver opponents.', 1999.99,
         'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3032540/capsule_616x353.jpg?t=1760843504',
         'https://hub.example.com/games/triad-tactics', 'STRATEGY', 6),
        ('9a5f6920-29e8-4d34-82ee-9df5249e8e72', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', 'Forestbound',
