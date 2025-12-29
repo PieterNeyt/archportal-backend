@@ -31,9 +31,9 @@ public class ProfileController {
         return ResponseEntity.ok(ProfileSyncDto.from(profile));
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<ProfileDto> getAllFromProfile(@AuthenticationPrincipal Jwt token) {
-        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+    @GetMapping("/{profileId}")
+    public ResponseEntity<ProfileDto> getAllFromProfile(@PathVariable("profileId") UUID profileUUId) {
+        var profileId = new ProfileId(profileUUId);
         var profile = profileService.getAllFromProfile(profileId);
         return ResponseEntity.ok(ProfileDto.from(profile));
     }
@@ -41,6 +41,13 @@ public class ProfileController {
     @GetMapping("/library")
     public ResponseEntity<List<LibraryGameDto>> getLibrary(@AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var library = profileService.getLibrary(profileId);
+        return ResponseEntity.ok(library);
+    }
+
+    @GetMapping("/{profileId}/library")
+    public ResponseEntity<List<LibraryGameDto>> getProfileLibrary(@PathVariable("profileId") UUID profileUUId) {
+        var profileId = new ProfileId(profileUUId);
         var library = profileService.getLibrary(profileId);
         return ResponseEntity.ok(library);
     }
@@ -73,6 +80,12 @@ public class ProfileController {
     @GetMapping("/friends")
     public ResponseEntity<List<ProfileSyncDto>> getFriends(@AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var friends = profileService.getAllFriends(profileId).stream().map(ProfileSyncDto::from).toList();
+        return ResponseEntity.ok(friends);
+    }
+    @GetMapping("/{profileId}/friends")
+    public ResponseEntity<List<ProfileSyncDto>> getFriends(@PathVariable("profileId") UUID profileUUId) {
+        var profileId = new ProfileId(profileUUId);
         var friends = profileService.getAllFriends(profileId).stream().map(ProfileSyncDto::from).toList();
         return ResponseEntity.ok(friends);
     }

@@ -56,5 +56,4 @@ public class DbGameRepository implements GameRepository {
                 .map(JpaGameEntity::toDomain)
                 .toList();
     }
-
 }

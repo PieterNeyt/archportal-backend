@@ -1,7 +1,9 @@
 package be.kdg.ip3.archportal.analytics.api;
 
 import be.kdg.ip3.archportal.analytics.api.dto.GameStatisticsDto;
+import be.kdg.ip3.archportal.analytics.api.dto.PlayerStatisticsDto;
 import be.kdg.ip3.archportal.analytics.application.AnalyticsService;
+import be.kdg.ip3.archportal.analytics.domain.Achievement;
 import be.kdg.ip3.archportal.analytics.domain.GameStatistics;
 import be.kdg.ip3.archportal.analytics.domain.records.GameId;
 import be.kdg.ip3.archportal.analytics.domain.records.GameStatisticsId;
@@ -34,6 +36,21 @@ public class AnalyticsController {
 
         GameStatistics gameStatistics = analyticsService.getGameStatistics(playerId, gameId);
         return ResponseEntity.ok(GameStatisticsDto.fromDomain(gameStatistics));
+    }
+    @GetMapping("/{profileId}")
+    public ResponseEntity<PlayerStatisticsDto> getAchievementsFromProfile(@PathVariable("profileId") UUID profileUUId) {
+        var playerId = new PlayerId(profileUUId);
+
+        var playerStats = analyticsService.getPlayerStats(playerId);
+        return ResponseEntity.ok(PlayerStatisticsDto.fromDomain(playerStats.getTotalTimePlayed().toMinutes(),playerStats.getLastPlayed()));
+    }
+
+    @GetMapping("/{profileId}/achievements")
+    public ResponseEntity<List<AchievementDto>> getPlayerStats(@PathVariable("profileId") UUID profileUUId) {
+        var playerId = new PlayerId(profileUUId);
+
+        var achievements = analyticsService.getAchievementsFromProfile(playerId);
+        return ResponseEntity.ok(achievements);
     }
 
 

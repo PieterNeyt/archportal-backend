@@ -67,4 +67,20 @@ public class PlayerStatistics {
         var gameStats = findGameStatisticsById(gameStatisticsId);
         gameStats.update(minutesPlayed);
     }
+
+    public Map<UUID, LocalDateTime> getAllAchievementIds() {
+        var achievements = new HashMap<UUID, LocalDateTime>();
+        for (var gameStat : gameStatistics) {
+            achievements.putAll(gameStat.getAchievementIds());
+        }
+        return achievements;
+    }
+
+    public List<UUID> getAllGameIds() {
+        var gameIds = new ArrayList<UUID>();
+        for (var gameStat : gameStatistics) {
+            gameIds.add(gameStat.getGameStatisticsId().gameId().id());
+        }
+        return gameIds;
+    }
 }
