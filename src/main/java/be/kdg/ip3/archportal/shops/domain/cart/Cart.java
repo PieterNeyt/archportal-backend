@@ -15,16 +15,18 @@ public class Cart {
     private final CartId cartId;
 
     private final UUID profileId;
+    private UUID appliedBenefitId;
     private final List<UUID> cartItems;
 
     public Cart(UUID profileId) {
-        this(CartId.create(), profileId, new ArrayList<>());
+        this(CartId.create(), profileId, new ArrayList<>(),null);
     }
 
-    public Cart(CartId cartId, UUID profileId, List<UUID> cartItems) {
+    public Cart(CartId cartId, UUID profileId, List<UUID> cartItems,UUID appliedBenefitId) {
         this.cartId = cartId;
         this.profileId = profileId;
         this.cartItems = cartItems;
+        this.appliedBenefitId = appliedBenefitId;
     }
 
     public void addToCart(UUID gameId) {
@@ -35,4 +37,12 @@ public class Cart {
         this.cartItems.remove(gameId);
     }
 
+    public void validateForCheckout() {
+        if (cartItems.isEmpty()) {
+            throw new IllegalStateException("Cannot checkout with an empty cart");
+        }
+    }
+    public void addAppliedBenefit(UUID appliedBenefitId){
+        this.appliedBenefitId=appliedBenefitId;
+    }
 }

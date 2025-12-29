@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -66,7 +67,7 @@ class ChatRoomSociableTest {
 
             when(profilesApi.existsById(creatorId)).thenReturn(true);
             when(profilesApi.getProfilesFromGamerTags(gamerTags)).thenReturn(List.of(
-                    new ProfileDto(UUID.randomUUID(), "f", "l", "icon", "a")
+                    new ProfileDto(UUID.randomUUID(), "f", "l", "icon", "a",new HashSet<>())
             ));
 
             assertThatThrownBy(() -> service.createChatRoom(gamerTags, creatorId))
@@ -85,8 +86,8 @@ class ChatRoomSociableTest {
 
             when(profilesApi.existsById(creatorId)).thenReturn(true);
             when(profilesApi.getProfilesFromGamerTags(gamerTags)).thenReturn(List.of(
-                    new ProfileDto(profileAId, "f", "l", "icon", "a"),
-                    new ProfileDto(profileBId, "f2", "l2", "icon2", "b")
+                    new ProfileDto(profileAId, "f", "l", "icon", "a", new  HashSet<>()),
+                    new ProfileDto(profileBId, "f2", "l2", "icon2", "b",new  HashSet<>())
             ));
             when(profilesApi.getFriendIdsWithCreator(creatorId, List.of(profileAId, profileBId))).thenReturn(List.of(profileAId));
 

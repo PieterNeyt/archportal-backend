@@ -21,6 +21,9 @@ public class JpaCartEntity {
     @Column(nullable = false)
     private UUID profileId;
 
+    @Column()
+    private UUID appliedBenefitId;
+
     @ElementCollection
     @CollectionTable(
             name = "cart_items",
@@ -32,17 +35,19 @@ public class JpaCartEntity {
 
     protected JpaCartEntity() {}
 
-    public JpaCartEntity(UUID id, UUID profileId, List<UUID> cartItems) {
+    public JpaCartEntity(UUID id, UUID profileId, List<UUID> cartItems,UUID appliedBenefitId) {
         this.id = id;
         this.profileId = profileId;
         this.cartItems = cartItems;
+        this.appliedBenefitId = appliedBenefitId;
     }
 
     public static JpaCartEntity fromDomain(Cart cart) {
         return new JpaCartEntity(
                 cart.getCartId().id(),
                 cart.getProfileId(),
-                new ArrayList<>(cart.getCartItems())
+                new ArrayList<>(cart.getCartItems()),
+                cart.getAppliedBenefitId()
         );
     }
 
@@ -50,7 +55,8 @@ public class JpaCartEntity {
         return new Cart(
                 new CartId(id),
                 profileId,
-                new ArrayList<>(cartItems)
+                new ArrayList<>(cartItems),
+                appliedBenefitId
         );
     }
 }

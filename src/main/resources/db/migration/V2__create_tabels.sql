@@ -320,7 +320,8 @@ create table shopservice.cart
 (
     id         uuid not null
         primary key,
-    profile_id uuid not null
+    profile_id uuid not null,
+    appliedBenefitId uuid not null
 );
 
 alter table shopservice.cart
@@ -343,6 +344,7 @@ create table shopservice.orders
     id         uuid not null
         primary key,
     profile_id uuid not null,
+    applied_benefit_percentage  decimal(5,4),
     payment_id varchar(255)
 );
 
@@ -363,3 +365,20 @@ create table shopservice.order_line
 alter table shopservice.order_line
     owner to "user";
 
+
+create table shopservice.benefits
+(
+    point_cost    integer      not null,
+    id            uuid         not null
+        primary key,
+    configuration varchar(255),
+    description   varchar(255),
+    name          varchar(255) not null,
+    type          varchar(255) not null
+        constraint benefits_type_check
+            check ((type)::text = ANY
+                   ((ARRAY ['USERNAME_COLOR'::character varying, 'GAME_DISCOUNT'::character varying, 'UNIQUE_PROFILE_PICTURE'::character varying])::text[]))
+);
+
+alter table shopservice.benefits
+    owner to "user";
