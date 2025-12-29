@@ -364,7 +364,7 @@ alter table shopservice.order_line
     owner to "user";
 
 
-create table benefits
+create table shopservice.benefits
 (
     point_cost    integer      not null,
     id            uuid         not null
@@ -378,5 +378,5 @@ create table benefits
                    ((ARRAY ['USERNAME_COLOR'::character varying, 'GAME_DISCOUNT'::character varying, 'UNIQUE_PROFILE_PICTURE'::character varying])::text[]))
 );
 
-alter table benefits
+alter table shopservice.benefits
     owner to "user";
