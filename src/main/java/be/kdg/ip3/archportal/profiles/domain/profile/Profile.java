@@ -109,9 +109,11 @@ public class Profile {
         incomingFriendRequests.remove(friendRequest);
     }
 
-    public void activateProfilePictureBenefit(UUID benefitId,  String configuration) {
+    public void activateProfilePictureBenefit(UUID benefitId, String configuration) {
+        if (this.activeProfilePictureId == null) {
+            this.originalIcon = this.icon;
+        }
         this.activeProfilePictureId = benefitId;
-        this.originalIcon = this.icon;
         this.icon = configuration;
     }
     public void deactivateProfilePictureBenefit() {
