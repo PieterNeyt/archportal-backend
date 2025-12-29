@@ -2,7 +2,6 @@ package be.kdg.ip3.archportal.profiles.domain.profile;
 
 import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
-import be.kdg.ip3.archportal.profiles.domain.benefit.ProfileBenefitType;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAlreadyExistsException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.InvalidFriendRequestException;
@@ -109,30 +108,24 @@ public class Profile {
             throw new IllegalArgumentException("Friend request does not exists.");
         incomingFriendRequests.remove(friendRequest);
     }
-    public void activateBenefit(UUID benefitId, ProfileBenefitType type, String configuration) {
-        if (!platformBenefits.contains(benefitId)) {
-            throw new IllegalArgumentException("User does not own this benefit");
-        }
 
-        switch (type) {
-            case UNIQUE_PROFILE_PICTURE -> {
-                this.activeProfilePictureId = benefitId;
-                this.originalIcon = this.icon;
-                this.icon = configuration;
-            }
-            case USERNAME_COLOR -> this.activeUsernameColorId = benefitId;
-        }
+    public void activateProfilePictureBenefit(UUID benefitId,  String configuration) {
+        this.activeProfilePictureId = benefitId;
+        this.originalIcon = this.icon;
+        this.icon = configuration;
+    }
+    public void deactivateProfilePictureBenefit() {
+        this.activeProfilePictureId = null;
+        this.icon = originalIcon;
+    }
+    public void activateNameColourBenefit(UUID benefitId) {
+        this.activeUsernameColorId = benefitId;
+    }
+    public void deactivateNameColourBenefit() {
+
+        this.activeUsernameColorId = null;
     }
 
-    public void deactivateBenefit(ProfileBenefitType type) {
-        switch (type) {
-            case UNIQUE_PROFILE_PICTURE -> {
-                this.activeProfilePictureId = null;
-                this.icon = originalIcon;
-            }
-            case USERNAME_COLOR -> this.activeUsernameColorId = null;
-        }
-    }
 
     public void addPoints(int points) {
         if (points < 0) {

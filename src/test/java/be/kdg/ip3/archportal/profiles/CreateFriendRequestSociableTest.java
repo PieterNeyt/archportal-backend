@@ -40,7 +40,7 @@ class CreateFriendRequestSociableTest {
 
     @BeforeEach
     void setUp() {
-        service = new ProfileService(profileRepository, null, applicationEventPublisher, friendshipRepository);
+        service = new ProfileService(profileRepository, null,null, applicationEventPublisher, friendshipRepository);
     }
 
     @Nested

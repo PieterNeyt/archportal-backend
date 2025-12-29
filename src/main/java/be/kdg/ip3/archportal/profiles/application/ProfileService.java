@@ -8,7 +8,6 @@ import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
 import be.kdg.ip3.archportal.profiles.application.command.AcquirePlatformPointsCommand;
 import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
-import be.kdg.ip3.archportal.profiles.domain.benefit.ProfileBenefitType;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAction;
@@ -18,6 +17,7 @@ import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
+import be.kdg.ip3.archportal.shops.shared.ShopsApi;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -33,23 +33,41 @@ import java.util.stream.Collectors;
 public class ProfileService {
     private final ProfileRepository profileRepository;
     private final GamesApi gamesApi;
+    private final ShopsApi shopsApi;
     private final ApplicationEventPublisher eventPublisher;
     private final FriendshipRepository friendshipRepository;
 
-    public ProfileService(ProfileRepository profileRepository, GamesApi gamesApi, ApplicationEventPublisher eventPublisher, FriendshipRepository friendshipRepository) {
+    public ProfileService(ProfileRepository profileRepository, GamesApi gamesApi, ShopsApi shopsApi, ApplicationEventPublisher eventPublisher, FriendshipRepository friendshipRepository) {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
+        this.shopsApi = shopsApi;
         this.eventPublisher = eventPublisher;
         this.friendshipRepository = friendshipRepository;
     }
 
-    public Profile toggleBenefit(ProfileId profileId, UUID benefitId, ProfileBenefitType type, String config, boolean active) {
+    public Profile toggleBenefit(ProfileId profileId, UUID benefitId) {
         var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
-        if (active) {
-            profile.activateBenefit(benefitId, type, config);
-        } else {
-            profile.deactivateBenefit(type);
+        var benefit = shopsApi.getBenefitById(benefitId);
+
+        switch (benefit.type()) {
+            case UNIQUE_PROFILE_PICTURE -> {
+                if (benefitId.equals(profile.getActiveProfilePictureId())) {
+                    profile.deactivateProfilePictureBenefit();
+                } else {
+                    profile.activateProfilePictureBenefit(benefitId, benefit.configuration());
+                }
+            }
+            case USERNAME_COLOR -> {
+                if (benefitId.equals(profile.getActiveUsernameColorId())) {
+                    profile.deactivateNameColourBenefit();
+                } else {
+                    profile.activateNameColourBenefit(benefitId);
+                }
+            }
+            case GAME_DISCOUNT ->
+                    throw new IllegalArgumentException("Game discounts cannot be toggled");
         }
+
         profileRepository.save(profile);
         return profile;
     }
