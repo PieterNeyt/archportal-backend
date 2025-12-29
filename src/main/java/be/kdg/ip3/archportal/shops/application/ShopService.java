@@ -88,16 +88,10 @@ public class ShopService {
         return cartRepo.save(cart);
     }
 
-    public List<BenefitDto> getBenefitsByIds(List<BenefitId> benefitIds) {
-        return benefitRepo.findAllByIdIn(benefitIds)
-                .stream()
-                .map(BenefitDto::fromDomain)
-                .toList();
-    }
     public PaymentCreationDto checkout(UUID profileId, BenefitId optionalBenefitId) {
         var cart = getValidatedCart(profileId);
         var gamesInCart = gameApi.getGamesByIds(cart.getCartItems());
-        var order = Order.createFromCart(profileId,gamesInCart);
+        var order = Order.createFromCart(profileId, gamesInCart);
 
         BigDecimal total;
 
@@ -126,6 +120,7 @@ public class ShopService {
 
         order.attachPayment(payment.paymentId());
         orderRepo.save(order);
+        cartRepo.save(cart);
 
         return payment;
     }
@@ -185,7 +180,7 @@ public class ShopService {
     public int buyBenefit(UUID profileId, BenefitId benefitId) {
         Benefit benefit = benefitRepo.findById(benefitId).orElseThrow(benefitId::notFound);
 
-        return profilesApi.addBenefitToProfile(profileId,benefit.getBenefitId().id(),benefit.getPointCost());
+        return profilesApi.addBenefitToProfile(profileId, benefit.getBenefitId().id(), benefit.getPointCost());
     }
 
     public BenefitDto getBenefit(BenefitId id) {
@@ -193,12 +188,13 @@ public class ShopService {
                 .map(BenefitDto::fromDomain)
                 .orElseThrow(id::notFound);
     }
+
     public String getActiveUsernameColor(UUID profileId) {
         UUID colorId = profilesApi.getActiveUsernameColorId(profileId);
         if (colorId == null) {
             return null;
         }
-        var benefitId= new BenefitId(colorId);
+        var benefitId = new BenefitId(colorId);
         return benefitRepo.findById(benefitId)
                 .map(Benefit::getConfiguration)
                 .orElseThrow(benefitId::notFound);
@@ -217,4 +213,9 @@ public class ShopService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<Benefit> getBenefitsOfProfile(UUID profileId) {
+        var profileBenefitIds = profilesApi.getProfileBenefitsByProfileId(profileId).stream().map(BenefitId::new).toList();
+        return benefitRepo.findAllByIdIn(profileBenefitIds);
+    }
 }

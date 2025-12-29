@@ -7,7 +7,6 @@ import be.kdg.ip3.archportal.shops.api.dto.PaymentCreationDto;
 import be.kdg.ip3.archportal.shops.application.ShopService;
 import be.kdg.ip3.archportal.shops.domain.benefit.BenefitId;
 import be.kdg.ip3.archportal.shops.domain.cart.Cart;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/shop")
@@ -82,7 +80,6 @@ public class ShopController {
     }
 
 
-
     // benefits
 
     @GetMapping("/benefits")
@@ -103,13 +100,7 @@ public class ShopController {
 
     @GetMapping("/benefits/{id}")
     public ResponseEntity<BenefitDto> getBenefit(@PathVariable UUID id) {
-        return ResponseEntity.ok(shopService.getBenefit(new  BenefitId(id)));
-    }
-
-    @GetMapping("/benefits/list")
-    public ResponseEntity<List<BenefitDto>> getBenefitsByIds(@RequestParam List<UUID> ids) {
-        var benefitIds = ids.stream().map(BenefitId::new).toList();
-        return ResponseEntity.ok(shopService.getBenefitsByIds(benefitIds));
+        return ResponseEntity.ok(shopService.getBenefit(new BenefitId(id)));
     }
 
     @GetMapping("/benefits/discounts")
@@ -117,9 +108,17 @@ public class ShopController {
         var profileId = UUID.fromString(token.getSubject());
         return ResponseEntity.ok(shopService.getProfileDiscounts(profileId));
     }
+
     @GetMapping("/benefits/active-color")
     public ResponseEntity<String> getActiveUsernameColor(@AuthenticationPrincipal Jwt token) {
         var profileId = UUID.fromString(token.getSubject());
         return ResponseEntity.ok(shopService.getActiveUsernameColor(profileId));
+    }
+
+
+    @GetMapping("/benefits/profile")
+    public ResponseEntity<List<BenefitDto>> getAllBenefitsOfProfile(@AuthenticationPrincipal Jwt token) {
+        var profileId = UUID.fromString(token.getSubject());
+        return ResponseEntity.ok(shopService.getBenefitsOfProfile(profileId).stream().map(BenefitDto::fromDomain).toList());
     }
 }

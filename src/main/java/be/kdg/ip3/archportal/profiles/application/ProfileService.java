@@ -265,4 +265,9 @@ public class ProfileService {
         profile.unfavorite(gameId);
         profileRepository.save(profile);
     }
+
+    @Transactional(readOnly = true)
+    public Profile getProfile(ProfileId profileId) {
+        return profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+    }
 }
