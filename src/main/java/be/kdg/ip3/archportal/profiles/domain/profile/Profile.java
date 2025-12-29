@@ -197,7 +197,7 @@ public class Profile {
         setLastName(lastName);
         setGamerTag(gamerTag);
         setEmail(email);
-        this.icon = currentIcon;
+        setIcon(currentIcon);
         this.originalIcon = keycloakIcon;
     }
 

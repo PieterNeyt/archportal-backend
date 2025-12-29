@@ -23,11 +23,9 @@ public class Order {
 
     private final UUID profileId;
     private String paymentId;
-    private String appliedBenefitPercentage;
+    private BigDecimal appliedBenefitPercentage;
     private final List<OrderLine> orderLines;
     private boolean completed;
-
-    private UUID appliedBenefitId;
 
     public void markAsCompleted() {
         this.completed = true;
@@ -38,15 +36,15 @@ public class Order {
         this.profileId = profileId;
         this.orderLines = new ArrayList<>();
         this.completed = false;
+        this.appliedBenefitPercentage = BigDecimal.ZERO;
     }
 
-    public Order(OrderId orderId, UUID profileId, List<OrderLine> orderLines, String paymentId, boolean completed, UUID appliedBenefitId, String appliedBenefitPercentage) {
+    public Order(OrderId orderId, UUID profileId, List<OrderLine> orderLines, String paymentId, boolean completed, BigDecimal appliedBenefitPercentage) {
         this.orderId = orderId;
         this.profileId = profileId;
         this.orderLines = orderLines;
         this.paymentId = paymentId;
         this.completed = completed;
-        this.appliedBenefitId = appliedBenefitId;
         this.appliedBenefitPercentage = appliedBenefitPercentage;
     }
 
@@ -75,15 +73,12 @@ public class Order {
                 .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
         var discountAmount = total.multiply(discountPercent);
 
-        this.appliedBenefitId = benefit.getBenefitId().id();
-        this.appliedBenefitPercentage = benefit.getConfiguration();
+        this.appliedBenefitPercentage = discountPercent;
 
         return total.subtract(discountAmount);
     }
 
-    public static Order createFromCart(UUID profileId, Cart cart, List<GlobalGameDto> games) {
-        cart.validateForCheckout();
-
+    public static Order createFromCart(UUID profileId, List<GlobalGameDto> games) {
         var order = new Order(profileId);
         games.forEach(game -> order.addOrderLine(game.id(), game.price()));
 

@@ -97,10 +97,26 @@ public class ShopService {
     public PaymentCreationDto checkout(UUID profileId, BenefitId optionalBenefitId) {
         var cart = getValidatedCart(profileId);
         var gamesInCart = gameApi.getGamesByIds(cart.getCartItems());
-        var order = Order.createFromCart(profileId, cart, gamesInCart);
-        var total = calculateTotalWithBenefit(order, profileId, optionalBenefitId);
+        var order = Order.createFromCart(profileId,gamesInCart);
 
-        orderRepo.save(order);
+        BigDecimal total;
+
+        if (optionalBenefitId != null) {
+            var benefit = benefitRepo.findById(optionalBenefitId)
+                    .orElseThrow(optionalBenefitId::notFound);
+
+            var benefits = profilesApi.getProfileBenefitsByProfileId(profileId);
+            var profileHasBenefit = benefits.contains(optionalBenefitId.id());
+
+            if (profileHasBenefit) {
+                total = order.applyDiscount(benefit);
+                cart.addAppliedBenefit(benefit.getBenefitId().id());
+            } else {
+                total = order.totalPrice();
+            }
+        } else {
+            total = order.totalPrice();
+        }
 
         var payment = mollieService.createPayment(
                 total.setScale(2, RoundingMode.HALF_UP),
@@ -120,31 +136,6 @@ public class ShopService {
         return cart;
     }
 
-
-
-    private BigDecimal calculateTotalWithBenefit(
-            Order order,
-            UUID profileId,
-            BenefitId optionalBenefitId) {
-
-        if (optionalBenefitId == null) {
-            return order.totalPrice();
-        }
-
-        var benefit = benefitRepo.findById(optionalBenefitId)
-                .orElseThrow(optionalBenefitId::notFound);
-
-        var benefits = profilesApi.getProfileBenefitsByProfileId(profileId);
-
-        if (benefits.contains(optionalBenefitId.id())) {
-            return order.applyDiscount(benefit);
-        }
-
-        return order.totalPrice();
-    }
-
-
-
     public boolean verifyPayment(UUID orderId) {
         var order = orderRepo.findById(orderId);
         boolean success = mollieService.verifyPayment(order.getPaymentId());
@@ -156,8 +147,8 @@ public class ShopService {
                     .map(OrderLine::getGameId)
                     .toList();
 
-            if (order.getAppliedBenefitId() != null) {
-                profilesApi.removeBenefitFromProfile(order.getProfileId(), order.getAppliedBenefitId());
+            if (cart.getAppliedBenefitId() != null) {
+                profilesApi.removeBenefitFromProfile(order.getProfileId(), cart.getAppliedBenefitId());
             }
 
             profilesApi.addGamesToLibrary(order.getProfileId(), gameIds);
