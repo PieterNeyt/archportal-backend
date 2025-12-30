@@ -25,9 +25,10 @@ public class Party {
     private int maxMembers;
     private final ChatRoomId chatRoomId;
     private final Set<PartyInvite> invites;
+    private UUID selectedGameId;
     private final static int TOTAL_MAX_MEMBERS = 10;
 
-    public Party(PartyId id, String title, PlayerId hostId, Set<PlayerId> members, int maxMembers, ChatRoomId chatRoomId, Set<PartyInvite> invites) {
+    public Party(PartyId id, String title, PlayerId hostId, Set<PlayerId> members, int maxMembers, ChatRoomId chatRoomId, Set<PartyInvite> invites,UUID selectedGameId) {
         this.id = id;
         this.title = title;
         this.hostId = hostId;
@@ -35,10 +36,11 @@ public class Party {
         setMaxMembers(maxMembers);
         this.chatRoomId = chatRoomId;
         this.invites = invites;
+        this.selectedGameId = selectedGameId;
     }
 
     public Party(PlayerId hostId, ChatRoomId chatRoomId, String title, int maxMembers) {
-        this(new PartyId(UUID.randomUUID()), title, hostId, new HashSet<>(), maxMembers, chatRoomId, new HashSet<>());
+        this(new PartyId(UUID.randomUUID()), title, hostId, new HashSet<>(), maxMembers, chatRoomId, new HashSet<>(),null);
     }
 
     private void checkMember(PlayerId memberId) {
@@ -116,5 +118,8 @@ public class Party {
 
     public void checkHost(PlayerId playerId) {
         if (!hostId.equals(playerId)) throw new AccessDeniedException("You are not the party leader");
+    }
+    public void selectGame(UUID gameId) {
+        this.selectedGameId=gameId;
     }
 }

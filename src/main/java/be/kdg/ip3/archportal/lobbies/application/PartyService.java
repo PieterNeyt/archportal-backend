@@ -3,6 +3,8 @@ package be.kdg.ip3.archportal.lobbies.application;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
+import be.kdg.ip3.archportal.games.shared.GamesApi;
+import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.MemberDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.PartyInviteDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.PlayerDto;
@@ -20,7 +22,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -28,12 +32,14 @@ public class PartyService {
     private final PartyRepository partyRepository;
     private final ProfilesApi profilesApi;
     private final ChatRoomApi chatRoomApi;
+    private final GamesApi gamesApi;
     private final ApplicationEventPublisher publisher;
 
-    public PartyService(PartyRepository partyRepository, ProfilesApi profilesApi, ChatRoomApi chatRoomApi, ApplicationEventPublisher publisher) {
+    public PartyService(PartyRepository partyRepository, ProfilesApi profilesApi, ChatRoomApi chatRoomApi, GamesApi gamesApi, ApplicationEventPublisher publisher) {
         this.partyRepository = partyRepository;
         this.profilesApi = profilesApi;
         this.chatRoomApi = chatRoomApi;
+        this.gamesApi = gamesApi;
         this.publisher = publisher;
     }
 
@@ -140,5 +146,48 @@ public class PartyService {
         party.leaveParty(memberId);
         partyRepository.save(party);
         publisher.publishEvent(new LeftPartyEvent(party.getChatRoomId().id(), memberId.id()));
+    }
+
+    public List<GlobalGameDto> getEligibleGames(PlayerId playerId) {
+        var party = partyRepository.findByMemberId(playerId)
+                .orElseThrow(() -> new NotFoundException("Party not found"));
+
+        List<PlayerId> memberIds = party.getAllMembers();
+        var partySize = memberIds.size();
+
+        List<UUID> commonGameIds = null;
+
+        for (PlayerId mId : memberIds) {
+
+            List<UUID> memberGames = profilesApi.getLibraryFromPlayer(mId.id());
+
+            if (commonGameIds == null) {
+                commonGameIds = new ArrayList<>(memberGames);
+            } else {
+                commonGameIds.retainAll(memberGames);
+            }
+        }
+
+        if (commonGameIds == null || commonGameIds.isEmpty()) return List.of();
+
+        return gamesApi.getGamesByIds(commonGameIds).stream()
+                .filter(game -> game.maxlobbysize() >= partySize)
+                .toList();
+    }
+
+    public void selectGame(PlayerId playerId, UUID gameId) {
+        var party = partyRepository.findByMemberId(playerId).orElseThrow();
+        party.checkHost(playerId);
+        party.selectGame(gameId);
+        partyRepository.save(party);
+    }
+    public GlobalGameDto getSelectedGame(PlayerId playerId) {
+        var party = partyRepository.findByMemberId(playerId)
+                .orElseThrow(() -> new NotFoundException("Party not found"));
+
+        if (party.getSelectedGameId() == null)
+            return null;
+
+        return gamesApi.getGameById(party.getSelectedGameId());
     }
 }

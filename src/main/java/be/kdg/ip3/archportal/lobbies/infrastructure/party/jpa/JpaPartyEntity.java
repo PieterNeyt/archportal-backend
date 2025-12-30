@@ -20,6 +20,8 @@ public class JpaPartyEntity {
     private String title;
     @Column(nullable = false)
     private UUID hostId;
+    @Column()
+    private UUID selectedGameId;
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "party_member", schema = "lobbyservice",
             joinColumns = @JoinColumn(name = "party_id"))
@@ -34,7 +36,7 @@ public class JpaPartyEntity {
     protected JpaPartyEntity() {
     }
 
-    public JpaPartyEntity(UUID id, String title, UUID hostId, Set<UUID> members, int maxMembers, UUID chatRoomId, Set<JpaPartyInviteEntity> invites) {
+    public JpaPartyEntity(UUID id, String title, UUID hostId, Set<UUID> members, int maxMembers, UUID chatRoomId, Set<JpaPartyInviteEntity> invites,UUID selectedGameId) {
         this.id = id;
         this.title = title;
         this.hostId = hostId;
@@ -42,6 +44,7 @@ public class JpaPartyEntity {
         this.maxMembers = maxMembers;
         this.chatRoomId = chatRoomId;
         setInvites(invites);
+        this.selectedGameId = selectedGameId;
     }
 
     public static JpaPartyEntity fromDomain(Party party) {
@@ -52,7 +55,8 @@ public class JpaPartyEntity {
                 party.getMembers().stream().map(PlayerId::id).collect(Collectors.toSet()),
                 party.getMaxMembers(),
                 party.getChatRoomId().id(),
-                party.getInvites().stream().map(JpaPartyInviteEntity::fromDomain).collect(Collectors.toSet())
+                party.getInvites().stream().map(JpaPartyInviteEntity::fromDomain).collect(Collectors.toSet()),
+                party.getSelectedGameId()
         );
     }
 
@@ -64,7 +68,8 @@ public class JpaPartyEntity {
                 members.stream().map(PlayerId::new).collect(Collectors.toSet()),
                 maxMembers,
                 new ChatRoomId(chatRoomId),
-                invites.stream().map(JpaPartyInviteEntity::toDomain).collect(Collectors.toSet())
+                invites.stream().map(JpaPartyInviteEntity::toDomain).collect(Collectors.toSet()),
+                selectedGameId
         );
     }
 

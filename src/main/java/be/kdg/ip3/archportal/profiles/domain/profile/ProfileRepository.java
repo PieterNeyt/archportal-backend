@@ -4,6 +4,7 @@ import org.jmolecules.ddd.annotation.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface ProfileRepository {
@@ -22,4 +23,6 @@ public interface ProfileRepository {
     List<Profile> findFromIds(List<ProfileId> profileIds);
 
     List<Profile> findByIncomingRequestHasId(ProfileId senderId);
+    List<UUID> findLibraryByPlayerId(ProfileId profileId);
+
 }

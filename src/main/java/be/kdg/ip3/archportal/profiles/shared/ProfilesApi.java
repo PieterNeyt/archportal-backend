@@ -18,6 +18,7 @@ public interface ProfilesApi {
     boolean areFriends(UUID profileAId, UUID profileBId);
 
     List<UUID> getFriendIdsWithCreator(UUID creatorId, List<UUID> candidateIds);
+    List<UUID> getLibraryFromPlayer(UUID playerId);
 
     String getProfileEmail(UUID id);
     List<BasicProfileInfo> getBasicProfiles(List<UUID> profileIds);

@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.lobbies.api;
 
+import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.*;
 import be.kdg.ip3.archportal.lobbies.application.PartyService;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
@@ -93,5 +94,25 @@ public class PartyController {
         var playerId = new PlayerId(UUID.fromString(token.getSubject()));
         partyService.kickFromParty(playerId, gamertag);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/eligible-games")
+    public ResponseEntity<List<GlobalGameDto>> getEligibleGames(@AuthenticationPrincipal Jwt token) {
+        var playerId = new PlayerId(UUID.fromString(token.getSubject()));
+        var games = partyService.getEligibleGames(playerId);
+        return ResponseEntity.ok(games);
+    }
+
+    @PatchMapping("/select-game/{gameId}")
+    public ResponseEntity<Void> selectGame(@PathVariable UUID gameId, @AuthenticationPrincipal Jwt token) {
+        var playerId = new PlayerId(UUID.fromString(token.getSubject()));
+        partyService.selectGame(playerId, gameId);
+        return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/selected-game")
+    public ResponseEntity<GlobalGameDto> getSelectedGame(@AuthenticationPrincipal Jwt token) {
+        var playerId = new PlayerId(UUID.fromString(token.getSubject()));
+        var game = partyService.getSelectedGame(playerId);
+        return game != null ? ResponseEntity.ok(game) : ResponseEntity.noContent().build();
     }
 }
