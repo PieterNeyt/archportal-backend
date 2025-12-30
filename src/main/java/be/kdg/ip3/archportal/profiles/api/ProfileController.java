@@ -1,6 +1,5 @@
 package be.kdg.ip3.archportal.profiles.api;
 
-import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.FriendRequestDto;
 import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.ProfileDto;
@@ -26,10 +25,27 @@ public class ProfileController {
     }
 
     @GetMapping({"", "/"})
+    public ResponseEntity<ProfileDto> getUser(@AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var profile = profileService.getProfile(profileId);
+        return ResponseEntity.ok(ProfileDto.from(profile));
+    }
+
+    @PutMapping("/sync")
     public ResponseEntity<ProfileDto> syncUser(@AuthenticationPrincipal Jwt token) {
         var profile = profileService.syncUser(token);
         return ResponseEntity.ok(ProfileDto.from(profile));
     }
+
+    @PutMapping("/benefits/{benefitId}/toggle")
+    public ResponseEntity<ProfileDto> toggleBenefit(
+            @PathVariable UUID benefitId,
+            @AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var profile = profileService.toggleBenefit(profileId, benefitId);
+        return ResponseEntity.ok(ProfileDto.from(profile));
+    }
+
     @GetMapping("/points")
     public ResponseEntity<Integer> getMyProfilePoints(@AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
@@ -45,18 +61,18 @@ public class ProfileController {
     }
 
     @PutMapping("/library/{gameId}/add-favorite")
-    public ResponseEntity<Void> addFavoriteToGame(@PathVariable("gameId") UUID gameId,
-                                                                  @AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<Void> addFavoriteToGame(@PathVariable UUID gameId,
+                                                  @AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
-        profileService.addFavoriteToGame(profileId,gameId);
+        profileService.addFavoriteToGame(profileId, gameId);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/library/{gameId}/remove-favorite")
-    public ResponseEntity<Void> removeFavoriteFromGame(@PathVariable("gameId") UUID gameId,
-                                                                       @AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<Void> removeFavoriteFromGame(@PathVariable UUID gameId,
+                                                       @AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
-        profileService.removeFavoriteFromGame(profileId,gameId);
+        profileService.removeFavoriteFromGame(profileId, gameId);
         return ResponseEntity.ok().build();
     }
 
@@ -104,16 +120,16 @@ public class ProfileController {
         profileService.declineFriendRequest(profileId, dto.gamerTag());
         return ResponseEntity.noContent().build();
     }
-    
+
     @DeleteMapping("/friend-request/cancel")
     public ResponseEntity<Void> cancelFriendRequest(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
         profileService.cancelFriendRequest(profileId, dto.gamerTag());
         return ResponseEntity.noContent().build();
     }
-    
+
     @DeleteMapping("/friends")
-    public ResponseEntity<Void> deleteFriend(@Valid @RequestBody FriendRequestDto dto,  @AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<Void> deleteFriend(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
         profileService.removeFriend(profileId, dto.gamerTag());
         return ResponseEntity.noContent().build();

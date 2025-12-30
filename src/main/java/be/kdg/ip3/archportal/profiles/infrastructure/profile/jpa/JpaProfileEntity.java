@@ -28,13 +28,22 @@ public class JpaProfileEntity {
     @Column(nullable = false)
     private String email;
 
+    @Column
     private String icon;
+    @Column
+    private String originalIcon;
 
     @Column(nullable = false, unique = true)
     private String gamerTag;
 
     @Column(nullable = false)
     private int platformPoints;
+
+    @Column
+    private UUID activeProfilePictureId;
+
+    @Column
+    private UUID activeUsernameColorId;
 
     @ElementCollection
     @CollectionTable(name = "profile_platform_benefits",
@@ -61,7 +70,7 @@ public class JpaProfileEntity {
 
     public JpaProfileEntity(UUID id, String firstName, String lastName, String email, String icon, String gamerTag,
                             int platformPoints, Set<UUID> platformBenefits, List<JpaGameEntity> library,
-                            Set<JpaFriendRequest> incomingRequests) {
+                            Set<JpaFriendRequest> incomingRequests, String originalIcon, UUID activeProfilePictureId, UUID activeUsernameColorId) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -72,6 +81,9 @@ public class JpaProfileEntity {
         this.platformBenefits = platformBenefits;
         this.games = library;
         this.incomingRequests = incomingRequests;
+        this.originalIcon = originalIcon;
+        this.activeProfilePictureId = activeProfilePictureId;
+        this.activeUsernameColorId = activeUsernameColorId;
     }
 
     public static JpaProfileEntity fromDomain(Profile profile) {
@@ -93,7 +105,10 @@ public class JpaProfileEntity {
                 profile.getPlatformPoints(),
                 profile.getPlatformBenefits(),
                 jpaLibrary,
-                incoming
+                incoming,
+                profile.getOriginalIcon(),
+                profile.getActiveProfilePictureId(),
+                profile.getActiveUsernameColorId()
         );
     }
 
@@ -116,7 +131,10 @@ public class JpaProfileEntity {
                 gamerTag,
                 firstName,
                 domainGames,
-                incoming
+                incoming,
+                originalIcon,
+                activeProfilePictureId,
+                activeUsernameColorId
         );
     }
 }
