@@ -3,22 +3,17 @@ package be.kdg.ip3.archportal.lobbies.application;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
-import be.kdg.ip3.archportal.games.shared.GamesApi;
-import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
+import be.kdg.ip3.archportal.communications.shared.*;
 import be.kdg.ip3.archportal.lobbies.api.dto.MemberDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.PartyInviteDto;
-import be.kdg.ip3.archportal.lobbies.api.dto.PartyMembersDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.PlayerDto;
 import be.kdg.ip3.archportal.lobbies.domain.ChatRoomId;
-import be.kdg.ip3.archportal.lobbies.domain.GameId;
 import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import be.kdg.ip3.archportal.lobbies.domain.party.Party;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyId;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyRepository;
 import be.kdg.ip3.archportal.lobbies.domain.partyInvite.PartyInvite;
-import be.kdg.ip3.archportal.lobbies.shared.JoinedPartyEvent;
-import be.kdg.ip3.archportal.lobbies.shared.LeftPartyEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -53,7 +48,7 @@ public class PartyService {
         if (partyRepository.existsByPlayerId(hostId))
             throw new IllegalArgumentException("Already in a party");
 
-        var id = chatRoomApi.createChatRoom(hostId.id());
+        var id = chatRoomApi.createChatRoom(hostId.id(), title);
         var party = new Party(hostId, new ChatRoomId(id), title, maxMembers);
         partyRepository.save(party);
         return party;
@@ -126,7 +121,7 @@ public class PartyService {
         var party = partyRepository.findById(id).orElseThrow(id::notFound);
         party.acceptPartyInvite(playerId);
         partyRepository.save(party);
-        publisher.publishEvent(new JoinedPartyEvent(playerId.id(), party.getChatRoomId().id()));
+        publisher.publishEvent(new ChatRoomJoinedEvent(playerId.id(), party.getChatRoomId().id()));
     }
 
     public void declinePartyInvite(PlayerId playerId, PartyId id) {
@@ -145,7 +140,7 @@ public class PartyService {
         if (party.getHostId() == null)
             partyRepository.deleteById(party.getId());
         else partyRepository.save(party);
-        publisher.publishEvent(new LeftPartyEvent(party.getChatRoomId().id(), playerId.id()));
+        publisher.publishEvent(new ChatRoomLeftEvent(party.getChatRoomId().id(), playerId.id()));
     }
 
     public void kickFromParty(PlayerId playerId, String gamertag) {
@@ -156,7 +151,7 @@ public class PartyService {
         party.checkHost(playerId);
         party.leaveParty(memberId);
         partyRepository.save(party);
-        publisher.publishEvent(new LeftPartyEvent(party.getChatRoomId().id(), memberId.id()));
+        publisher.publishEvent(new ChatRoomLeftEvent(party.getChatRoomId().id(), memberId.id()));
     }
 
     public List<GlobalGameDto> getEligibleGames(PlayerId playerId) {
