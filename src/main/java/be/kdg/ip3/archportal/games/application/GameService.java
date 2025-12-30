@@ -33,12 +33,15 @@ public class GameService {
 
     // TODO dit beter maken en misschien gewoon een andere methode maken voor wanneer je de game registreert via een endpoint
     public Game createGame(GameCommand gameCommand, OwnerId ownerId) {
+        if (gameRepository.existsByGameUrl(gameCommand.gameUrl()))
+            throw new IllegalArgumentException("There is already a game on this url: "+gameCommand.gameUrl());
+        
         GameStudio studio = null;
         if (ownerId != null) {
             studio = gameStudioService.findByOwnerId(ownerId);
             studio.checkOwner(ownerId);
         }
-
+        
         var game = gameCommand.toDomain(studio == null ? null : studio.getId());
 
         gameRepository.save(game);

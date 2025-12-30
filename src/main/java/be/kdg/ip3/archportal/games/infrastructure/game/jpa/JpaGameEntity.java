@@ -28,7 +28,7 @@ public class JpaGameEntity {
     private BigDecimal price;
     @Column
     private String imageUrl;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String gameUrl;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
