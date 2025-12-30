@@ -57,4 +57,8 @@ public class DbGameRepository implements GameRepository {
                 .toList();
     }
 
+    @Override
+    public boolean existsByGameUrl(String gameUrl) {
+        return jpaGameRepository.existsByGameUrl(gameUrl);
+    }
 }
