@@ -208,11 +208,10 @@ public class GameLobbyService implements LobbiesApi {
                         session.getEndTime()
                 ))
         );
-        if (lobby.getPlayers().isEmpty()) {
+        if (lobby.getPlayers().isEmpty())
             gameLobbies.delete(lobby);
-            return;
-        }
-        gameLobbies.save(lobby);
+        else
+            gameLobbies.save(lobby);
         publisher.publishEvent(new ChatRoomLeftEvent(playerId.id(), lobby.getChatRoomId().id()));
     }
 
