@@ -6,5 +6,5 @@ import java.util.UUID;
 
 @NamedInterface
 public interface ChatRoomApi {
-    UUID createChatRoom(UUID hostId);
+    UUID createChatRoom(UUID hostId, String title);
 }

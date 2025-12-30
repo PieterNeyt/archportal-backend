@@ -23,8 +23,6 @@ public interface GameLobbyRepository {
 
     boolean isPlayerInLobby(PlayerId playerId);
 
-    Optional<UUID> getLobbyIdFromPLayerID(PlayerId playerId);
-
     Optional<GameLobby> getLobbyFromPLayerID(PlayerId profileId);
     
     void delete(GameLobby lobby);
