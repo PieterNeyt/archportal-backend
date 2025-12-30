@@ -1,4 +1,4 @@
-package be.kdg.ip3.archportal.analytics.infrastructure.messaging.config;
+package be.kdg.ip3.archportal.config;
 
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;

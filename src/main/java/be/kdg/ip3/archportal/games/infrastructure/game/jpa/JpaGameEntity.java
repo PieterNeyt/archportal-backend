@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class JpaGameEntity {
     @Id
     private UUID id;
-    @Column(nullable = false)
+    @Column
     private UUID studioId;
     @Column(nullable = false, length = 100)
     private String title;

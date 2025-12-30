@@ -10,6 +10,7 @@ import be.kdg.ip3.archportal.games.domain.achievement.ExternalAchId;
 import be.kdg.ip3.archportal.games.domain.game.Game;
 import be.kdg.ip3.archportal.games.domain.game.GameId;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
+import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudio;
 import be.kdg.ip3.archportal.games.domain.owner.OwnerId;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -30,25 +31,31 @@ public class GameService {
         this.eventPublisher = eventPublisher;
     }
 
+    // TODO dit beter maken en misschien gewoon een andere methode maken voor wanneer je de game registreert via een endpoint
     public Game createGame(GameCommand gameCommand, OwnerId ownerId) {
-        var studio = gameStudioService.findByOwnerId(ownerId);
-        studio.checkOwner(ownerId);
+        GameStudio studio = null;
+        if (ownerId != null) {
+            studio = gameStudioService.findByOwnerId(ownerId);
+            studio.checkOwner(ownerId);
+        }
 
-        var game = gameCommand.toDomain(studio.getId());
+        var game = gameCommand.toDomain(studio == null ? null : studio.getId());
 
         gameRepository.save(game);
 
-        eventPublisher.publishEvent(new AddNotificationEvent(ownerId.id(),
-                String.format("Congrats! You have successfully created your own game %s", game.getTitle()),
-                "Now that your project is live, you can head over to the Game Studio page to continue building your experience.\n" +
-                        "From there, you can add new features, update existing content, customize your game world, or even create your own achievements and updates to share with your players.\n" +
-                        "\n" +
-                        "Feel free to explore, experiment, and shape your game exactly the way you imagine it.\n" +
-                        "\n" +
-                        "Kind regards,\n" +
-                        "The Arch Portal Team",
-                NotificationType.SYSTEM
-        ));
+        if (ownerId != null) {
+            eventPublisher.publishEvent(new AddNotificationEvent(ownerId.id(),
+                    String.format("Congrats! You have successfully created your own game %s", game.getTitle()),
+                    "Now that your project is live, you can head over to the Game Studio page to continue building your experience.\n" +
+                            "From there, you can add new features, update existing content, customize your game world, or even create your own achievements and updates to share with your players.\n" +
+                            "\n" +
+                            "Feel free to explore, experiment, and shape your game exactly the way you imagine it.\n" +
+                            "\n" +
+                            "Kind regards,\n" +
+                            "The Arch Portal Team",
+                    NotificationType.SYSTEM
+            ));
+        }
         return game;
     }
 
@@ -77,7 +84,7 @@ public class GameService {
 
         var achievement = game.addAchievement(
                 achievementCommand.title(), achievementCommand.description(),
-                achievementCommand.imageUrl(),gameStudio.getId(),new ExternalAchId(achievementCommand.externalAchId()));
+                achievementCommand.imageUrl(), gameStudio.getId(), new ExternalAchId(achievementCommand.externalAchId()));
 
         this.gameRepository.save(game);
         return achievement;
