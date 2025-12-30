@@ -12,7 +12,6 @@ import java.util.UUID;
 @Slf4j
 public record GlobalGameDto(
         UUID id,
-        UUID studioId,
         String title,
         String description,
         String imageUrl,
@@ -25,7 +24,6 @@ public record GlobalGameDto(
     public static GlobalGameDto fromDomain(Game game) {
         return new GlobalGameDto(
                 game.getId().id(),
-                game.getStudioId().id(),
                 game.getTitle(),
                 game.getDescription(),
                 game.getImageUrl(),

@@ -21,6 +21,6 @@ public class RegisterMessageHandler {
     @RabbitListener(queues = RabbitMQTopology.REGISTER_GAME_QUEUE, containerFactory = "simpleRabbitListenerContainerFactory")
     void onRegisterGameMessage(@Valid RegisterGameMessage message) {
         log.info("Received message: {}", message);
-        gameService.createGame(GameCommand.fromMessage(message), null);
+        gameService.createGameFromMessage(GameCommand.fromMessage(message));
     }
 }
