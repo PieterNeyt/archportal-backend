@@ -195,7 +195,7 @@ public class PartyService {
     }
 
     public void selectGame(PlayerId playerId, UUID gameId) {
-        var party = partyRepository.findByMemberId(playerId).orElseThrow();
+        var party = partyRepository.findByMemberId(playerId).orElseThrow(() -> new NotFoundException("Party not found"));
         party.checkHost(playerId);
         party.selectGame(gameId);
         partyRepository.save(party);
@@ -204,20 +204,17 @@ public class PartyService {
         var party = partyRepository.findByMemberId(playerId)
                 .orElseThrow(() -> new NotFoundException("Party not found"));
 
-        if (party.getSelectedGameId() == null)
-            return null;
-
         return gamesApi.getGameById(party.getSelectedGameId());
     }
 
     public void toggleReady(PlayerId playerId) {
-        var party = partyRepository.findByMemberId(playerId).orElseThrow();
+        var party = partyRepository.findByMemberId(playerId).orElseThrow(() -> new NotFoundException("Party not found"));
         party.toggleReady(playerId);
         partyRepository.save(party);
     }
 
     public UUID startPartyGame(PlayerId hostId) {
-        var party = partyRepository.findByMemberId(hostId).orElseThrow();
+        var party = partyRepository.findByMemberId(hostId).orElseThrow(()  -> new NotFoundException("Party not found"));
         party.checkHost(hostId);
 
         if (!party.areAllReady()) {
