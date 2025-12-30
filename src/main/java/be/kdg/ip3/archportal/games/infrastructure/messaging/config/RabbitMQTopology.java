@@ -4,7 +4,7 @@ import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration("RegisterGameRabbitMQTopology")
 public class RabbitMQTopology {
     public static final String REGISTER_GAME_EXCHANGE = "register-exchange";
     public static final String REGISTER_GAME_QUEUE = "register-queue";
