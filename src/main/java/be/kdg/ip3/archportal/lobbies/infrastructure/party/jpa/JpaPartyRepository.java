@@ -28,4 +28,5 @@ public interface JpaPartyRepository extends JpaRepository<JpaPartyEntity, UUID> 
     boolean existsByPlayerId(@Param("playerId") UUID playerId);
 
     List<JpaPartyEntity> findByInvites_ReceiverId(UUID receiverId);
+    Optional<JpaPartyEntity> findByStartedLobbyId(UUID startedLobbyId);
 }

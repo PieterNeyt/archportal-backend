@@ -40,10 +40,10 @@ public class PartyController {
     }
 
     @GetMapping({"/members"})
-    public ResponseEntity<List<MemberDto>> getMembers(@AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<PartyMembersDto> getMembers(@AuthenticationPrincipal Jwt token) {
         var memberId = new PlayerId(UUID.fromString(token.getSubject()));
-        var members = partyService.findMembers(memberId);
-        return ResponseEntity.ok(members);
+        var partyStatus = partyService.findMembers(memberId);
+        return ResponseEntity.ok(partyStatus);
     }
 
     @PostMapping("/invite")
@@ -114,5 +114,17 @@ public class PartyController {
         var playerId = new PlayerId(UUID.fromString(token.getSubject()));
         var game = partyService.getSelectedGame(playerId);
         return game != null ? ResponseEntity.ok(game) : ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/ready")
+    public ResponseEntity<Void> toggleReady(@AuthenticationPrincipal Jwt token) {
+        partyService.toggleReady(new PlayerId(UUID.fromString(token.getSubject())));
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/start-game")
+    public ResponseEntity<UUID> startGame(@AuthenticationPrincipal Jwt token) {
+        var lobbyId = partyService.startPartyGame(new PlayerId(UUID.fromString(token.getSubject())));
+        return ResponseEntity.ok(lobbyId);
     }
 }

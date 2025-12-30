@@ -7,8 +7,10 @@ import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.MemberDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.PartyInviteDto;
+import be.kdg.ip3.archportal.lobbies.api.dto.PartyMembersDto;
 import be.kdg.ip3.archportal.lobbies.api.dto.PlayerDto;
 import be.kdg.ip3.archportal.lobbies.domain.ChatRoomId;
+import be.kdg.ip3.archportal.lobbies.domain.GameId;
 import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
 import be.kdg.ip3.archportal.lobbies.domain.party.Party;
@@ -33,13 +35,15 @@ public class PartyService {
     private final ProfilesApi profilesApi;
     private final ChatRoomApi chatRoomApi;
     private final GamesApi gamesApi;
+    private final GameLobbyService gameLobbyService;
     private final ApplicationEventPublisher publisher;
 
-    public PartyService(PartyRepository partyRepository, ProfilesApi profilesApi, ChatRoomApi chatRoomApi, GamesApi gamesApi, ApplicationEventPublisher publisher) {
+    public PartyService(PartyRepository partyRepository, ProfilesApi profilesApi, ChatRoomApi chatRoomApi, GamesApi gamesApi, GameLobbyService gameLobbyService, ApplicationEventPublisher publisher) {
         this.partyRepository = partyRepository;
         this.profilesApi = profilesApi;
         this.chatRoomApi = chatRoomApi;
         this.gamesApi = gamesApi;
+        this.gameLobbyService = gameLobbyService;
         this.publisher = publisher;
     }
 
@@ -63,13 +67,20 @@ public class PartyService {
     }
 
     @Transactional(readOnly = true)
-    public List<MemberDto> findMembers(PlayerId memberId) {
+    public PartyMembersDto findMembers(PlayerId memberId) {
         if (!profilesApi.existsById(memberId.id()))
             throw memberId.notFound();
 
-        var party = partyRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundException("Party not found"));
+        var party = partyRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new NotFoundException("Party not found"));
+
         var memberIds = party.getAllMembers().stream().map(PlayerId::id).toList();
-        return profilesApi.getBasicProfiles(memberIds).stream().map(p -> MemberDto.from(p, party.getHostId())).toList();
+
+        List<MemberDto> members = profilesApi.getBasicProfiles(memberIds).stream()
+                .map(p -> MemberDto.from(p, party.getHostId(), party))
+                .toList();
+
+        return new PartyMembersDto(members, party.getStartedLobbyId());
     }
 
     public PartyInvite sendInvite(PlayerId memberId, String gamerTag) {
@@ -170,9 +181,18 @@ public class PartyService {
 
         if (commonGameIds == null || commonGameIds.isEmpty()) return List.of();
 
-        return gamesApi.getGamesByIds(commonGameIds).stream()
+        List<GlobalGameDto> eligibleGames = gamesApi.getGamesByIds(commonGameIds).stream()
                 .filter(game -> game.maxlobbysize() >= partySize)
                 .toList();
+
+        if (party.getSelectedGameId() != null) {
+            var stillEligible = eligibleGames.stream().anyMatch(g -> g.id().equals(party.getSelectedGameId()));
+            if (!stillEligible) {
+                party.selectGame(null);
+            }
+        }
+        partyRepository.save(party);
+        return eligibleGames;
     }
 
     public void selectGame(PlayerId playerId, UUID gameId) {
@@ -189,5 +209,36 @@ public class PartyService {
             return null;
 
         return gamesApi.getGameById(party.getSelectedGameId());
+    }
+
+    public void toggleReady(PlayerId playerId) {
+        var party = partyRepository.findByMemberId(playerId).orElseThrow();
+        party.toggleReady(playerId);
+        partyRepository.save(party);
+    }
+
+    public UUID startPartyGame(PlayerId hostId) {
+        var party = partyRepository.findByMemberId(hostId).orElseThrow();
+        party.checkHost(hostId);
+
+        if (!party.areAllReady()) {
+            throw new IllegalStateException("Not everyone is ready yet!");
+        }
+
+        if (party.getSelectedGameId() == null) {
+            throw new IllegalStateException("No game selected");
+        }
+
+        var gameId = new GameId(party.getSelectedGameId());
+        var lobby = gameLobbyService.createMultiplayerLobby(hostId, gameId);
+
+        for (PlayerId member : party.getMembers()) {
+            gameLobbyService.joinMultiplayerLobby(member, lobby.getGameLobbyId());
+        }
+
+        party.startedLobbyId(lobby.getGameLobbyId().id());
+        partyRepository.save(party);
+
+        return lobby.getGameLobbyId().id();
     }
 }

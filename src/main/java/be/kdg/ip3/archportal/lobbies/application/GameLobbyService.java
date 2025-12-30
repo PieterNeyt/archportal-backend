@@ -12,6 +12,7 @@ import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
 import be.kdg.ip3.archportal.lobbies.domain.session.GameSessionId;
 import be.kdg.ip3.archportal.lobbies.domain.session.SessionNotFoundException;
 import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
+import be.kdg.ip3.archportal.lobbies.shared.LobbyEndedEvent;
 import be.kdg.ip3.archportal.lobbies.shared.SessionEndedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.context.ApplicationEventPublisher;
@@ -193,7 +194,8 @@ public class GameLobbyService implements LobbiesApi {
     }
 
     public void leaveLobby(PlayerId playerId) {
-        var lobby = gameLobbies.getLobbyFromPLayerID(playerId).orElseThrow(playerId::notFound);
+        var lobby = gameLobbies.getLobbyFromPLayerID(playerId)
+                .orElseThrow(playerId::notFound);
 
         var endedSession = lobby.removePlayer(playerId);
 
@@ -207,11 +209,14 @@ public class GameLobbyService implements LobbiesApi {
         );
 
         if (lobby.getPlayers().isEmpty()) {
+            publisher.publishEvent(new LobbyEndedEvent(lobby.getGameLobbyId()));
             gameLobbies.delete(lobby);
             return;
         }
+
         gameLobbies.save(lobby);
     }
+
 
     public void endPlayerSession(PlayerId playerId, GameLobbyId lobbyId) {
         var lobby = gameLobbies.findById(lobbyId)

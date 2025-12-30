@@ -7,6 +7,8 @@ import be.kdg.ip3.archportal.lobbies.domain.party.PartyId;
 import be.kdg.ip3.archportal.lobbies.infrastructure.partyInvite.JpaPartyInviteEntity;
 import jakarta.persistence.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,6 +24,9 @@ public class JpaPartyEntity {
     private UUID hostId;
     @Column()
     private UUID selectedGameId;
+    @Column()
+    private UUID startedLobbyId;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "party_member", schema = "lobbyservice",
             joinColumns = @JoinColumn(name = "party_id"))
@@ -33,10 +38,21 @@ public class JpaPartyEntity {
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<JpaPartyInviteEntity> invites;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "party_member_ready",
+            schema = "lobbyservice",
+            joinColumns = @JoinColumn(name = "party_id")
+    )
+    @MapKeyColumn(name = "player_id")
+    @Column(name = "is_ready", nullable = false)
+    private Map<UUID, Boolean> memberReadyStatus = new HashMap<>();
+
+
     protected JpaPartyEntity() {
     }
 
-    public JpaPartyEntity(UUID id, String title, UUID hostId, Set<UUID> members, int maxMembers, UUID chatRoomId, Set<JpaPartyInviteEntity> invites,UUID selectedGameId) {
+    public JpaPartyEntity(UUID id, String title, UUID hostId, Set<UUID> members, int maxMembers, UUID chatRoomId, Set<JpaPartyInviteEntity> invites, UUID selectedGameId, UUID startedLobbyId, Map<UUID, Boolean> memberReadyStatus) {
         this.id = id;
         this.title = title;
         this.hostId = hostId;
@@ -45,9 +61,18 @@ public class JpaPartyEntity {
         this.chatRoomId = chatRoomId;
         setInvites(invites);
         this.selectedGameId = selectedGameId;
+        this.startedLobbyId = startedLobbyId;
+        this.memberReadyStatus = memberReadyStatus;
+
     }
 
     public static JpaPartyEntity fromDomain(Party party) {
+        var memberReadyStatus = party.getMemberReadyStatus().entrySet().stream()
+                .collect(Collectors.toMap(
+                        e -> e.getKey().id(),
+                        Map.Entry::getValue
+                ));
+
         return new JpaPartyEntity(
                 party.getId().id(),
                 party.getTitle(),
@@ -56,11 +81,19 @@ public class JpaPartyEntity {
                 party.getMaxMembers(),
                 party.getChatRoomId().id(),
                 party.getInvites().stream().map(JpaPartyInviteEntity::fromDomain).collect(Collectors.toSet()),
-                party.getSelectedGameId()
+                party.getSelectedGameId(),
+                party.getStartedLobbyId(),
+                memberReadyStatus
         );
     }
 
     public Party toDomain() {
+        var membersReadyStatus = memberReadyStatus.entrySet().stream()
+                .collect(Collectors.toMap(
+                        e -> new PlayerId(e.getKey()),
+                        Map.Entry::getValue
+                ));
+
         return new Party(
                 new PartyId(id),
                 title,
@@ -69,8 +102,10 @@ public class JpaPartyEntity {
                 maxMembers,
                 new ChatRoomId(chatRoomId),
                 invites.stream().map(JpaPartyInviteEntity::toDomain).collect(Collectors.toSet()),
-                selectedGameId
-        );
+                selectedGameId,
+                membersReadyStatus,
+                startedLobbyId
+                );
     }
 
     private void setInvites(Set<JpaPartyInviteEntity> invites) {

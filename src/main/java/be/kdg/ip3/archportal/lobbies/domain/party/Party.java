@@ -8,10 +8,7 @@ import org.jmolecules.ddd.annotation.AggregateRoot;
 import org.jmolecules.ddd.annotation.Identity;
 import org.springframework.security.access.AccessDeniedException;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Getter
@@ -27,8 +24,10 @@ public class Party {
     private final Set<PartyInvite> invites;
     private UUID selectedGameId;
     private final static int TOTAL_MAX_MEMBERS = 10;
+    private final Map<PlayerId, Boolean> memberReadyStatus = new HashMap<>();
+    private UUID startedLobbyId;
 
-    public Party(PartyId id, String title, PlayerId hostId, Set<PlayerId> members, int maxMembers, ChatRoomId chatRoomId, Set<PartyInvite> invites,UUID selectedGameId) {
+    public Party(PartyId id, String title, PlayerId hostId, Set<PlayerId> members, int maxMembers, ChatRoomId chatRoomId, Set<PartyInvite> invites,UUID selectedGameId,Map<PlayerId, Boolean> memberReadyStatus , UUID startedLobbyId) {
         this.id = id;
         this.title = title;
         this.hostId = hostId;
@@ -37,10 +36,12 @@ public class Party {
         this.chatRoomId = chatRoomId;
         this.invites = invites;
         this.selectedGameId = selectedGameId;
+        this.memberReadyStatus.putAll(memberReadyStatus);
+        this.startedLobbyId = startedLobbyId;
     }
 
     public Party(PlayerId hostId, ChatRoomId chatRoomId, String title, int maxMembers) {
-        this(new PartyId(UUID.randomUUID()), title, hostId, new HashSet<>(), maxMembers, chatRoomId, new HashSet<>(),null);
+        this(new PartyId(UUID.randomUUID()), title, hostId, new HashSet<>(), maxMembers, chatRoomId, new HashSet<>(),null,new HashMap<>(),null);
     }
 
     private void checkMember(PlayerId memberId) {
@@ -121,5 +122,23 @@ public class Party {
     }
     public void selectGame(UUID gameId) {
         this.selectedGameId=gameId;
+    }
+    public void toggleReady(PlayerId playerId) {
+        if (!isMemberOrHost(playerId)) {
+            throw new AccessDeniedException("Player is not in this party");
+        }
+        boolean currentStatus = memberReadyStatus.getOrDefault(playerId, false);
+        memberReadyStatus.put(playerId, !currentStatus);
+    }
+
+    public boolean areAllReady() {
+        return getAllMembers().stream().allMatch(id -> memberReadyStatus.getOrDefault(id, false));
+    }
+
+    public void startedLobbyId(UUID lobbyId) {
+        this.startedLobbyId = lobbyId;
+    }
+    public Map<PlayerId, Boolean> getMemberReadyStatus() {
+        return new HashMap<>(memberReadyStatus);
     }
 }
