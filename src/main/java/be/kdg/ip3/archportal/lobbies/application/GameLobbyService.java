@@ -1,7 +1,11 @@
 package be.kdg.ip3.archportal.lobbies.application;
 
+import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
+import be.kdg.ip3.archportal.communications.shared.ChatRoomJoinedEvent;
+import be.kdg.ip3.archportal.communications.shared.ChatRoomLeftEvent;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.lobbies.api.dto.PlayerLobbyInfo;
+import be.kdg.ip3.archportal.lobbies.domain.ChatRoomId;
 import be.kdg.ip3.archportal.lobbies.domain.GameId;
 import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
@@ -28,12 +32,14 @@ public class GameLobbyService implements LobbiesApi {
     private final GameLobbyRepository gameLobbies;
     private final GamesApi gamesApi;
     private final ProfilesApi profileApi;
+    private final ChatRoomApi chatRoomApi;
     private final ApplicationEventPublisher publisher;
 
-    public GameLobbyService(GameLobbyRepository gameLobbies, GamesApi gamesApi, ProfilesApi profileApi, ApplicationEventPublisher publisher) {
+    public GameLobbyService(GameLobbyRepository gameLobbies, GamesApi gamesApi, ProfilesApi profileApi, ChatRoomApi chatRoomApi, ApplicationEventPublisher publisher) {
         this.gameLobbies = gameLobbies;
         this.gamesApi = gamesApi;
         this.profileApi = profileApi;
+        this.chatRoomApi = chatRoomApi;
         this.publisher = publisher;
     }
 
@@ -65,23 +71,22 @@ public class GameLobbyService implements LobbiesApi {
 
     public GameLobby createMultiplayerLobby(PlayerId playerId, GameId gameId) {
         var maxPlayers = gamesApi.getMaxPlayersForGame(gameId.id());
-        var lobby = GameLobby.createMultiplayerLobby(gameId, maxPlayers);
+        var chatRoomUuid = chatRoomApi.createChatRoom(playerId.id(), "Lobby chat");
+        var lobby = GameLobby.createMultiplayerLobby(gameId, maxPlayers, new ChatRoomId(chatRoomUuid));
 
         lobby.addPlayer(playerId);
         gameLobbies.save(lobby);
+        publisher.publishEvent(new ChatRoomJoinedEvent(playerId.id(), lobby.getChatRoomId().id()));
         return lobby;
 
     }
 
     public GameLobby joinMultiplayerLobby(PlayerId playerId, GameLobbyId lobbyId) {
-
         var lobby = gameLobbies.findById(lobbyId)
                 .orElseThrow(lobbyId::notFound);
-
         lobby.addPlayer(playerId);
-
         gameLobbies.save(lobby);
-
+        publisher.publishEvent(new ChatRoomJoinedEvent(playerId.id(), lobby.getChatRoomId().id()));
         return lobby;
     }
 
@@ -187,16 +192,14 @@ public class GameLobbyService implements LobbiesApi {
         return this.gameLobbies.isPlayerInLobby(playerId);
     }
 
-    public UUID getLobbyIdFromPlayerId(PlayerId playerId) {
-        return this.gameLobbies.getLobbyIdFromPLayerID(playerId)
+    public GameLobby getLobbyIdFromPlayerId(PlayerId playerId) {
+        return this.gameLobbies.getLobbyFromPLayerID(playerId)
                 .orElseThrow(playerId::notFound);
     }
 
     public void leaveLobby(PlayerId playerId) {
         var lobby = gameLobbies.getLobbyFromPLayerID(playerId).orElseThrow(playerId::notFound);
-
         var endedSession = lobby.removePlayer(playerId);
-
         endedSession.ifPresent(session ->
                 publisher.publishEvent(new SessionEndedEvent(
                         lobby.getGameId().id(),
@@ -205,12 +208,11 @@ public class GameLobbyService implements LobbiesApi {
                         session.getEndTime()
                 ))
         );
-
-        if (lobby.getPlayers().isEmpty()) {
+        if (lobby.getPlayers().isEmpty())
             gameLobbies.delete(lobby);
-            return;
-        }
-        gameLobbies.save(lobby);
+        else
+            gameLobbies.save(lobby);
+        publisher.publishEvent(new ChatRoomLeftEvent(playerId.id(), lobby.getChatRoomId().id()));
     }
 
     public void endPlayerSession(PlayerId playerId, GameLobbyId lobbyId) {
