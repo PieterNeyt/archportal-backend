@@ -56,4 +56,11 @@ public class ChatRoomController {
         var location = URI.create("/api/chat-room/" + chatRoomId + "/" + message.getId().id());
         return ResponseEntity.created(location).build();
     }
+
+    @PostMapping("/bot")
+    public ResponseEntity<String> sendMessage(@Valid @RequestBody CreateMessageDto dto, @AuthenticationPrincipal Jwt token) {
+        var profileId = UUID.fromString(token.getSubject());
+        var message = chatRoomService.createChatBotMessage(profileId, dto.text());
+        return ResponseEntity.ok(message);
+    }
 }

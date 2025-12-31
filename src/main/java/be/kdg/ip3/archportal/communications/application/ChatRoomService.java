@@ -5,6 +5,7 @@ import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomId;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomRepository;
 import be.kdg.ip3.archportal.communications.domain.chatroom.Message;
+import be.kdg.ip3.archportal.communications.infrastructure.chatbot.ChatbotClient;
 import be.kdg.ip3.archportal.communications.shared.*;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
@@ -24,11 +25,13 @@ public class ChatRoomService implements ChatRoomApi {
     private final ChatRoomRepository chatRoomRepository;
     private final ProfilesApi profilesApi;
     private final ApplicationEventPublisher eventPublisher;
+    private final ChatbotClient chatbotClient;
 
-    public ChatRoomService(ChatRoomRepository chatRoomRepository, ProfilesApi profilesApi, ApplicationEventPublisher eventPublisher) {
+    public ChatRoomService(ChatRoomRepository chatRoomRepository, ProfilesApi profilesApi, ApplicationEventPublisher eventPublisher, ChatbotClient chatbotClient) {
         this.chatRoomRepository = chatRoomRepository;
         this.profilesApi = profilesApi;
         this.eventPublisher = eventPublisher;
+        this.chatbotClient = chatbotClient;
     }
 
     @ApplicationModuleListener
@@ -38,7 +41,7 @@ public class ChatRoomService implements ChatRoomApi {
         chatRoom.addMember(event.profileBId());
         chatRoomRepository.save(chatRoom);
     }
-    
+
     @ApplicationModuleListener
     public void onJoinedChatRoom(ChatRoomJoinedEvent event) {
         var chatRoomId = new ChatRoomId(event.chatRoomId());
@@ -46,7 +49,7 @@ public class ChatRoomService implements ChatRoomApi {
         chatRoom.addMember(event.profileId());
         chatRoomRepository.save(chatRoom);
     }
-    
+
     @ApplicationModuleListener
     public void onLeftChatRoom(ChatRoomLeftEvent event) {
         var chatRoomId = new ChatRoomId(event.chatRoomId());
@@ -118,5 +121,9 @@ public class ChatRoomService implements ChatRoomApi {
         chatRoom.addMember(hostId);
         chatRoomRepository.save(chatRoom);
         return chatRoom.getId().id();
+    }
+
+    public String createChatBotMessage(UUID profileId, String text) {
+        return chatbotClient.sendMessage(text, "tic tac toe", profileId);
     }
 }
