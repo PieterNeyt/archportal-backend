@@ -7,6 +7,7 @@ import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomRepository;
 import be.kdg.ip3.archportal.communications.domain.chatroom.Message;
 import be.kdg.ip3.archportal.communications.infrastructure.chatbot.ChatbotClient;
 import be.kdg.ip3.archportal.communications.shared.*;
+import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
@@ -21,17 +22,19 @@ import java.util.UUID;
 
 @Service
 @Transactional
-public class ChatRoomService implements ChatRoomApi {
+public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ProfilesApi profilesApi;
     private final ApplicationEventPublisher eventPublisher;
     private final ChatbotClient chatbotClient;
+    private final LobbiesApi lobbiesApi;
 
-    public ChatRoomService(ChatRoomRepository chatRoomRepository, ProfilesApi profilesApi, ApplicationEventPublisher eventPublisher, ChatbotClient chatbotClient) {
+    public ChatRoomService(ChatRoomRepository chatRoomRepository, ProfilesApi profilesApi, ApplicationEventPublisher eventPublisher, ChatbotClient chatbotClient, LobbiesApi lobbiesApi) {
         this.chatRoomRepository = chatRoomRepository;
         this.profilesApi = profilesApi;
         this.eventPublisher = eventPublisher;
         this.chatbotClient = chatbotClient;
+        this.lobbiesApi = lobbiesApi;
     }
 
     @ApplicationModuleListener
@@ -115,15 +118,8 @@ public class ChatRoomService implements ChatRoomApi {
         return message;
     }
 
-    @Override
-    public UUID createChatRoom(UUID hostId, String title) {
-        var chatRoom = new ChatRoom(title);
-        chatRoom.addMember(hostId);
-        chatRoomRepository.save(chatRoom);
-        return chatRoom.getId().id();
-    }
-
     public String createChatBotMessage(UUID profileId, String text) {
-        return chatbotClient.sendMessage(text, "tic tac toe", profileId);
+        var game = lobbiesApi.getGameTitleOfCurrentGameByProfileId(profileId);
+        return chatbotClient.sendMessage(text, game, profileId);
     }
 }

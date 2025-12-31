@@ -53,6 +53,16 @@ public class GameLobbyService implements LobbiesApi {
     }
 
     @Override
+    public String getGameTitleOfCurrentGameByProfileId(UUID profileId) {
+        var lobby = gameLobbies.getLobbyFromPLayerID(new PlayerId(profileId)).orElse(null);
+        var gameTitle = "";
+        if (lobby != null) {
+            gameTitle = gamesApi.getGameById(lobby.getGameId().id()).title();
+        }
+        return gameTitle;
+    }
+
+    @Override
     public UUID getGameIdBySessionId(UUID sessionId) {
         var sessionIdObj = new GameSessionId(sessionId);
 
