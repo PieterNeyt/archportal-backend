@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -231,7 +232,12 @@ public class PartyService {
         var gameId = new GameId(party.getSelectedGameId());
         var lobby = gameLobbyService.createMultiplayerLobby(hostId, gameId);
 
-        gameLobbyService.joinMultiplayerLobbyBatch(party.getAllMemberIds(), lobby.getGameLobbyId());
+        var membersExcludingHost = party.getAllMemberIds().stream()
+                .filter(id -> !id.equals(hostId))
+                .collect(Collectors.toSet());
+
+        gameLobbyService.joinMultiplayerLobbyBatch(membersExcludingHost, lobby.getGameLobbyId());
+
 
         party.startedLobbyId(lobby.getGameLobbyId().id());
         partyRepository.save(party);
