@@ -112,8 +112,7 @@ public class PartyController {
     @GetMapping("/selected-game")
     public ResponseEntity<GlobalGameDto> getSelectedGame(@AuthenticationPrincipal Jwt token) {
         var playerId = new PlayerId(UUID.fromString(token.getSubject()));
-        var game = partyService.getSelectedGame(playerId);
-        return game != null ? ResponseEntity.ok(game) : ResponseEntity.noContent().build();
+        return ResponseEntity.ok(partyService.getSelectedGame(playerId));
     }
 
     @PatchMapping("/ready")

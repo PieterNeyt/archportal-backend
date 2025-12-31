@@ -17,7 +17,6 @@ import be.kdg.ip3.archportal.lobbies.domain.session.GameSessionId;
 import be.kdg.ip3.archportal.lobbies.domain.session.SessionNotFoundException;
 import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
 import be.kdg.ip3.archportal.lobbies.shared.LobbyEndedEvent;
-import be.kdg.ip3.archportal.lobbies.shared.LobbyEndedEvent;
 import be.kdg.ip3.archportal.lobbies.shared.SessionEndedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -62,7 +62,6 @@ public class GameLobbyService implements LobbiesApi {
         return lobby.getGameId().id();
     }
 
-
     public GameLobby createSinglePlayerLobby(PlayerId playerId, GameId gameId) {
         var lobby = GameLobby.newSinglePlayerLobby(gameId);
 
@@ -82,6 +81,14 @@ public class GameLobbyService implements LobbiesApi {
         return lobby;
 
     }
+
+    public void joinMultiplayerLobbyBatch(Set<PlayerId> members, GameLobbyId lobbyId) {
+        var lobby = gameLobbies.findById(lobbyId).orElseThrow(lobbyId::notFound);
+        members.forEach(lobby::addPlayer);
+        gameLobbies.save(lobby);
+        members.forEach(member -> publisher.publishEvent(new ChatRoomJoinedEvent(member.id(), lobby.getChatRoomId().id())));
+    }
+
 
     public GameLobby joinMultiplayerLobby(PlayerId playerId, GameLobbyId lobbyId) {
 

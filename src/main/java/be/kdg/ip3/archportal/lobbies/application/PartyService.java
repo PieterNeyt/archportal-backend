@@ -200,12 +200,19 @@ public class PartyService {
         party.selectGame(gameId);
         partyRepository.save(party);
     }
+
     public GlobalGameDto getSelectedGame(PlayerId playerId) {
         var party = partyRepository.findByMemberId(playerId)
                 .orElseThrow(() -> new NotFoundException("Party not found"));
 
+        if (party.getSelectedGameId() == null) {
+            return null;
+        }
+
         return gamesApi.getGameById(party.getSelectedGameId());
     }
+
+
 
     public void toggleReady(PlayerId playerId) {
         var party = partyRepository.findByMemberId(playerId).orElseThrow(() -> new NotFoundException("Party not found"));
@@ -215,26 +222,18 @@ public class PartyService {
 
     public UUID startPartyGame(PlayerId hostId) {
         var party = partyRepository.findByMemberId(hostId).orElseThrow(()  -> new NotFoundException("Party not found"));
-        party.checkHost(hostId);
 
-        if (!party.areAllReady()) {
-            throw new IllegalStateException("Not everyone is ready yet!");
-        }
-
-        if (party.getSelectedGameId() == null) {
-            throw new IllegalStateException("No game selected");
-        }
+        party.startGameValidation(hostId);
 
         var gameId = new GameId(party.getSelectedGameId());
         var lobby = gameLobbyService.createMultiplayerLobby(hostId, gameId);
 
-        for (PlayerId member : party.getMembers()) {
-            gameLobbyService.joinMultiplayerLobby(member, lobby.getGameLobbyId());
-        }
+        gameLobbyService.joinMultiplayerLobbyBatch(party.getMembers(), lobby.getGameLobbyId());
 
         party.startedLobbyId(lobby.getGameLobbyId().id());
         partyRepository.save(party);
 
         return lobby.getGameLobbyId().id();
     }
+
 }

@@ -101,7 +101,7 @@ public class Party {
             members.remove(playerId);
         }
     }
-    
+
     private void assignNewHostOrDisband() {
         if (members.isEmpty()) {
             hostId = null;
@@ -141,4 +141,20 @@ public class Party {
     public Map<PlayerId, Boolean> getMemberReadyStatus() {
         return new HashMap<>(memberReadyStatus);
     }
+    public void startGameValidation(PlayerId hostId) {
+        checkHost(hostId);
+
+        if (!areAllReady()) {
+            throw new IllegalStateException("Not everyone is ready yet");
+        }
+
+        if (selectedGameId == null) {
+            throw new IllegalStateException("No game selected");
+        }
+
+        if (startedLobbyId != null) {
+            throw new IllegalStateException("Party game already started");
+        }
+    }
+
 }
