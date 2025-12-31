@@ -217,8 +217,10 @@ public class PartyService {
         return gamesApi.getGameById(party.getSelectedGameId());
     }
 
-
     public void toggleReady(PlayerId playerId) {
+        if (gameLobbyService.isPlayerInLobby(playerId)) {
+            throw new IllegalStateException("You are already in a party. Leave that one first in order to ready up!");
+        }
         var party = partyRepository.findByMemberId(playerId).orElseThrow(() -> new NotFoundException("Party not found"));
         party.toggleReady(playerId);
         partyRepository.save(party);

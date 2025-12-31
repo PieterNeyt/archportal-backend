@@ -174,8 +174,6 @@ public class GameLobbyService implements LobbiesApi {
 
         sessions.forEach(lobby::addSession);
 
-        lobby.closeLobby();
-
         gameLobbies.save(lobby);
         return sessions.stream()
                 .filter(s -> s.getPlayerId().equals(ownerId))
