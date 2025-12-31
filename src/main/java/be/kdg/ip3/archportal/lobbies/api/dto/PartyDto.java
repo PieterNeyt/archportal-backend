@@ -7,6 +7,6 @@ import java.util.UUID;
 
 public record PartyDto(String title, boolean hostIsYou, int maxMembers, UUID chatRoomId,UUID selectedGameId,UUID startedLobbyId) {
     public static PartyDto fromDomain(Party party, PlayerId memberId) {
-        return new PartyDto(party.getTitle(), party.getHostId().equals(memberId), party.getMaxMembers(), party.getChatRoomId().id(), party.getSelectedGameId(),party.getStartedLobbyId());
+        return new PartyDto(party.getTitle(), party.getHost().getPlayerId().equals(memberId), party.getMaxMembers(), party.getChatRoomId().id(), party.getSelectedGameId(),party.getStartedLobbyId());
     }
 }

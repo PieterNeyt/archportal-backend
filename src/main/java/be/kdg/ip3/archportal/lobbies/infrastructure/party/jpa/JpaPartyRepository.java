@@ -13,19 +13,19 @@ public interface JpaPartyRepository extends JpaRepository<JpaPartyEntity, UUID> 
                 SELECT DISTINCT p
                 FROM JpaPartyEntity p
                 LEFT JOIN p.members m
-                WHERE p.hostId = :playerId
-                   OR m = :playerId
+                WHERE m.playerId = :playerId
             """)
-    Optional<JpaPartyEntity> findByMemberId(UUID playerId);
+    Optional<JpaPartyEntity> findByMemberId(@Param("playerId") UUID playerId);
+
 
     @Query("""
                 SELECT COUNT(p) > 0
                 FROM JpaPartyEntity p
                 LEFT JOIN p.members m
-                WHERE p.hostId = :playerId
-                   OR m = :playerId
+                WHERE m.playerId = :playerId
             """)
     boolean existsByPlayerId(@Param("playerId") UUID playerId);
+
 
     List<JpaPartyEntity> findByInvites_ReceiverId(UUID receiverId);
     Optional<JpaPartyEntity> findByStartedLobbyId(UUID startedLobbyId);

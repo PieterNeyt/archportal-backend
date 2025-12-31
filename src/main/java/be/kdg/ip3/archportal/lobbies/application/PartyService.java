@@ -1,8 +1,5 @@
 package be.kdg.ip3.archportal.lobbies.application;
 
-import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
-import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
-import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.communications.shared.*;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
@@ -67,20 +64,25 @@ public class PartyService {
 
     @Transactional(readOnly = true)
     public PartyMembersDto findMembers(PlayerId memberId) {
-        if (!profilesApi.existsById(memberId.id()))
+        if (!profilesApi.existsById(memberId.id())) {
             throw memberId.notFound();
+        }
 
         var party = partyRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new NotFoundException("Party not found"));
 
-        var memberIds = party.getAllMembers().stream().map(PlayerId::id).toList();
+        var memberIds = party.getAllMemberIds().stream()
+                .map(PlayerId::id)
+                .toList();
+        PlayerId hostId = party.getHost().getPlayerId();
 
         List<MemberDto> members = profilesApi.getBasicProfiles(memberIds).stream()
-                .map(p -> MemberDto.from(p, party.getHostId(), party))
+                .map(p -> MemberDto.from(p, hostId, party))
                 .toList();
 
         return new PartyMembersDto(members, party.getStartedLobbyId());
     }
+
 
     public PartyInvite sendInvite(PlayerId memberId, String gamerTag) {
         if (!profilesApi.existsById(memberId.id()))
@@ -141,9 +143,11 @@ public class PartyService {
             throw playerId.notFound();
         var party = partyRepository.findByMemberId(playerId).orElseThrow(() -> new NotFoundException("Party not found"));
         party.leaveParty(playerId);
-        if (party.getHostId() == null)
+        if (party.getHost() == null)
             partyRepository.deleteById(party.getId());
-        else partyRepository.save(party);
+        else
+            partyRepository.save(party);
+
         publisher.publishEvent(new ChatRoomLeftEvent(party.getChatRoomId().id(), playerId.id()));
     }
 
@@ -213,7 +217,6 @@ public class PartyService {
     }
 
 
-
     public void toggleReady(PlayerId playerId) {
         var party = partyRepository.findByMemberId(playerId).orElseThrow(() -> new NotFoundException("Party not found"));
         party.toggleReady(playerId);
@@ -221,14 +224,14 @@ public class PartyService {
     }
 
     public UUID startPartyGame(PlayerId hostId) {
-        var party = partyRepository.findByMemberId(hostId).orElseThrow(()  -> new NotFoundException("Party not found"));
+        var party = partyRepository.findByMemberId(hostId).orElseThrow(() -> new NotFoundException("Party not found"));
 
         party.startGameValidation(hostId);
 
         var gameId = new GameId(party.getSelectedGameId());
         var lobby = gameLobbyService.createMultiplayerLobby(hostId, gameId);
 
-        gameLobbyService.joinMultiplayerLobbyBatch(party.getMembers(), lobby.getGameLobbyId());
+        gameLobbyService.joinMultiplayerLobbyBatch(party.getAllMemberIds(), lobby.getGameLobbyId());
 
         party.startedLobbyId(lobby.getGameLobbyId().id());
         partyRepository.save(party);
