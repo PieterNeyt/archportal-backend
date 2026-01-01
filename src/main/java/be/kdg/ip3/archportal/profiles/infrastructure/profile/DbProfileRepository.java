@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class DbProfileRepository implements ProfileRepository {
@@ -60,4 +61,10 @@ public class DbProfileRepository implements ProfileRepository {
     public List<Profile> findByIncomingRequestHasId(ProfileId senderId) {
         return jpaProfileRepository.findByIncomingRequests_SenderId(senderId.id()).stream().map(JpaProfileEntity::toDomain).toList();
     }
+
+    @Override
+    public List<UUID> findLibraryByPlayerId(ProfileId profileId) {
+        return jpaProfileRepository.findGameIdsByProfileId(profileId.id());
+    }
+
 }

@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.lobbies.domain.party;
 
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyId;
 import org.jmolecules.ddd.annotation.Repository;
 
 import java.util.List;
@@ -19,4 +20,5 @@ public interface PartyRepository {
     Optional<Party> findById(PartyId id);
 
     void deleteById(PartyId partyId);
+    Optional<Party> findByStartedLobbyId(GameLobbyId startedLobbyId);
 }

@@ -73,6 +73,14 @@ public class ProfileApiService implements ProfilesApi {
     }
 
     @Override
+    public List<UUID> getLibraryFromPlayer(UUID playerId) {
+        var profileId = new ProfileId(playerId);
+        return profileRepository.findLibraryByPlayerId(profileId);
+
+    }
+
+
+    @Override
     public String getProfileEmail(UUID id) {
         var profileId = new ProfileId(id);
         var profile = profileRepository.findById(profileId)
