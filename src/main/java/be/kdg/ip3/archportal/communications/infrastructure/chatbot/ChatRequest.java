@@ -12,6 +12,8 @@ public record ChatRequest(
         @JsonProperty("user_id")
         UUID userId,
         @JsonProperty("team_number")
-        int teamNumber
+        int teamNumber,
+        @JsonProperty("model_provider")
+        String modelProvider
 ) {
 }

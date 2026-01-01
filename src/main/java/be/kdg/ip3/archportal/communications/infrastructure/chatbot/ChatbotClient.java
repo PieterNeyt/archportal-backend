@@ -15,13 +15,15 @@ public class ChatbotClient {
     private final RestClient restClient;
     @Value("${team.number}")
     private int teamNumber;
+    @Value("${model.provider}")
+    private String modelProvider;
 
     public ChatbotClient(@Qualifier("chatbotApi") RestClient restClient) {
         this.restClient = restClient;
     }
 
     public String sendMessage(String question, String gameName, UUID userID) {
-        var message = new ChatRequest(question, gameName, userID, teamNumber);
+        var message = new ChatRequest(question, gameName, userID, teamNumber, modelProvider);
         log.info("Sending message to AI chatbot: {}", message);
         return restClient.post()
                 .uri("")
