@@ -5,11 +5,7 @@ import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomId;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomRepository;
 import be.kdg.ip3.archportal.communications.domain.chatroom.Message;
-import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
-import be.kdg.ip3.archportal.communications.shared.ChatRoomApi;
-import be.kdg.ip3.archportal.communications.shared.NotificationType;
-import be.kdg.ip3.archportal.lobbies.shared.JoinedPartyEvent;
-import be.kdg.ip3.archportal.lobbies.shared.LeftPartyEvent;
+import be.kdg.ip3.archportal.communications.shared.*;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
@@ -42,17 +38,17 @@ public class ChatRoomService implements ChatRoomApi {
         chatRoom.addMember(event.profileBId());
         chatRoomRepository.save(chatRoom);
     }
-
+    
     @ApplicationModuleListener
-    public void onJoinedParty(JoinedPartyEvent event) {
+    public void onJoinedChatRoom(ChatRoomJoinedEvent event) {
         var chatRoomId = new ChatRoomId(event.chatRoomId());
         var chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(chatRoomId::notFound);
         chatRoom.addMember(event.profileId());
         chatRoomRepository.save(chatRoom);
     }
-
+    
     @ApplicationModuleListener
-    public void onLeftParty(LeftPartyEvent event) {
+    public void onLeftChatRoom(ChatRoomLeftEvent event) {
         var chatRoomId = new ChatRoomId(event.chatRoomId());
         var chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(chatRoomId::notFound);
         chatRoom.leave(event.profileId());
@@ -117,8 +113,8 @@ public class ChatRoomService implements ChatRoomApi {
     }
 
     @Override
-    public UUID createChatRoom(UUID hostId) {
-        var chatRoom = new ChatRoom("Party chat");
+    public UUID createChatRoom(UUID hostId, String title) {
+        var chatRoom = new ChatRoom(title);
         chatRoom.addMember(hostId);
         chatRoomRepository.save(chatRoom);
         return chatRoom.getId().id();

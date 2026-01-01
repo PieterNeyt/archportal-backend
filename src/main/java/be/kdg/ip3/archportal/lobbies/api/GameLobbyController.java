@@ -119,13 +119,7 @@ public class GameLobbyController {
         var lobby = gameLobbyService.getLobbyInfo(new GameLobbyId(lobbyid));
         var playerInfo = gameLobbyService.getBasicPlayerInfo(new GameLobbyId(lobbyid));
 
-        var response = new MultiplayerLobbyInfo(
-                lobby.getGameLobbyId().id(),
-                playerInfo,
-                lobby.getGameLobbyStatus().toString(),
-                lobby.getMaxPlayers()
-        );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(MultiplayerLobbyInfo.from(lobby, playerInfo));
     }
 
     @GetMapping("/player/in-lobby")
@@ -134,11 +128,11 @@ public class GameLobbyController {
 
         var playerInLobby = gameLobbyService.isPlayerInLobby(playerId);
         if (playerInLobby) {
-            var lobbyId = gameLobbyService.getLobbyIdFromPlayerId(playerId);
-            var inLobbyDto = new InLobbyDto(lobbyId, playerInLobby);
+            var lobby = gameLobbyService.getLobbyIdFromPlayerId(playerId);
+            var inLobbyDto = new InLobbyDto(lobby.getGameLobbyId().id(), playerInLobby, lobby.getGameId().id());
             return ResponseEntity.ok(inLobbyDto);
         }
-        var inLobbyDto = new InLobbyDto(null, playerInLobby);
+        var inLobbyDto = new InLobbyDto(null, playerInLobby, null);
         return ResponseEntity.ok(inLobbyDto);
     }
 
@@ -191,7 +185,7 @@ public class GameLobbyController {
         var playerId = new PlayerId(playerUUId);
         var lobbyId = new GameLobbyId(lobbyUUId);
 
-        gameLobbyService.endPlayerSession(playerId,lobbyId);
+        gameLobbyService.endPlayerSession(playerId, lobbyId);
 
         return ResponseEntity.ok().build();
     }

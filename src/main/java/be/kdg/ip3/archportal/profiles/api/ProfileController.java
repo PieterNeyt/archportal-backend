@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.profiles.api;
 
+import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.FriendRequestDto;
 import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.ProfileDto;
@@ -31,18 +32,20 @@ public class ProfileController {
         return ResponseEntity.ok(ProfileSyncDto.from(profile));
     }
 
-    @GetMapping("/{profileId}")
-    public ResponseEntity<ProfileDto> getAllFromProfileFromId(@PathVariable("profileId") UUID profileUUId) {
-        var profileId = new ProfileId(profileUUId);
-        var profile = profileService.getAllFromProfile(profileId);
+    @PutMapping("/benefits/{benefitId}/toggle")
+    public ResponseEntity<ProfileDto> toggleBenefit(
+            @PathVariable UUID benefitId,
+            @AuthenticationPrincipal Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var profile = profileService.toggleBenefit(profileId, benefitId);
         return ResponseEntity.ok(ProfileDto.from(profile));
     }
 
-    @GetMapping()
-    public ResponseEntity<ProfileDto> getAllFromProfile(@AuthenticationPrincipal() Jwt token) {
+    @GetMapping("/points")
+    public ResponseEntity<Integer> getMyProfilePoints(@AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
-        var profile = profileService.getAllFromProfile(profileId);
-        return ResponseEntity.ok(ProfileDto.from(profile));
+        var points = profileService.getPlatformPoints(profileId);
+        return ResponseEntity.ok(points);
     }
 
     @GetMapping("/library")
@@ -56,7 +59,9 @@ public class ProfileController {
     public ResponseEntity<List<ProfileDto.SectionDto>> updateSectionVisibility(@AuthenticationPrincipal Jwt token,
                                                                                @RequestBody List<ProfileDto.SectionDto> sectionDto) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
-        var sections = profileService.updateSectionVisibility(profileId, sectionDto.stream().map(ProfileDto.SectionDto::toDomain).toList());
+        var sections = profileService.updateSectionVisibility(
+                profileId,
+                sectionDto.stream().map(ProfileDto.SectionDto::toDomain).toList());
         return ResponseEntity.ok(sections);
     }
 
@@ -68,7 +73,7 @@ public class ProfileController {
     }
 
     @PutMapping("/library/{gameId}/add-favorite")
-    public ResponseEntity<Void> addFavoriteToGame(@PathVariable("gameId") UUID gameId,
+    public ResponseEntity<Void> addFavoriteToGame(@PathVariable UUID gameId,
                                                   @AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
         profileService.addFavoriteToGame(profileId, gameId);
@@ -76,7 +81,7 @@ public class ProfileController {
     }
 
     @PutMapping("/library/{gameId}/remove-favorite")
-    public ResponseEntity<Void> removeFavoriteFromGame(@PathVariable("gameId") UUID gameId,
+    public ResponseEntity<Void> removeFavoriteFromGame(@PathVariable UUID gameId,
                                                        @AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
         profileService.removeFavoriteFromGame(profileId, gameId);
@@ -119,6 +124,7 @@ public class ProfileController {
         var profiles = profileService.findAllProfilesOutgoingRequests(profileId).stream().map(ProfileSyncDto::from).toList();
         return ResponseEntity.ok(profiles);
     }
+
 
     @PutMapping("/friend-request/accept")
     public ResponseEntity<Void> acceptFriendRequest(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {

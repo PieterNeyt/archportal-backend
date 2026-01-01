@@ -17,4 +17,5 @@ public interface GameRepository {
 
     List<Game> findByStudioId(GameStudioId id);
 
+    boolean existsByGameUrl(String gameUrl);
 }

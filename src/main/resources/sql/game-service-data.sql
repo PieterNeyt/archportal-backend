@@ -25,7 +25,7 @@ VALUES ('f7b56a1e-1c63-4d0c-aa75-3b40e8253e19', '3f071d5d-5d2e-4b5f-9c12-7cf7e90
         'https://framerusercontent.com/images/csQYwDfKsYvDh4jwg3mTQVEJ8.png?width=1920&height=1080',
         'https://hub.example.com/games/gridmaster', 'ABSTRACT', 2),
        ('7aefc340-96ed-4bb9-8262-34b50aa55420', '3f071d5d-5d2e-4b5f-9c12-7cf7e902b113', 'Triad Tactics',
-        'A quick-play strategy game where players rotate tri-shaped tiles to outmaneuver opponents.', 19.99,
+        'A quick-play strategy game where players rotate tri-shaped tiles to outmaneuver opponents.', 1999.99,
         'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3032540/capsule_616x353.jpg?t=1760843504',
         'https://hub.example.com/games/triad-tactics', 'STRATEGY', 6),
        ('9a5f6920-29e8-4d34-82ee-9df5249e8e72', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', 'Forestbound',
@@ -51,10 +51,10 @@ VALUES ('f7b56a1e-1c63-4d0c-aa75-3b40e8253e19', '3f071d5d-5d2e-4b5f-9c12-7cf7e90
         'http://localhost/checkers/', 'STRATEGY', 2);
 
 INSERT INTO profileservice.profile (id, first_name, last_name, gamer_tag, icon, platform_points, email)
-VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Cian', 'Van Acker', 'cian', null, 0, 'cian.vanacker@student.kdg.be'),
-       ('5a129b2c-3016-4616-bca0-99ec7b067b32', 'Axel', 'Peeters', 'axel', null, 0, 'axel.peeters.1@student.kdg.be'),
-       ('58e1a434-0797-4d3d-9140-e846b20b7887', 'Pieter', 'Neyt', 'pieter', null, 0, 'pieter.neyt@student.kdg.be'),
-       ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'Hugo', 'Dor', 'hugo', null, 0, 'hugo.dor@student.kdg.be');
+VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 'Cian', 'Van Acker', 'cian', null, 100000, 'cian.vanacker@student.kdg.be'),
+       ('5a129b2c-3016-4616-bca0-99ec7b067b32', 'Axel', 'Peeters', 'axel', null, 10000, 'axel.peeters.1@student.kdg.be'),
+       ('58e1a434-0797-4d3d-9140-e846b20b7887', 'Pieter', 'Neyt', 'pieter', null, 100000, 'pieter.neyt@student.kdg.be'),
+       ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 'Hugo', 'Dor', 'hugo', null, 100000, 'hugo.dor@student.kdg.be');
 
 INSERT INTO profileservice.profile_library (profile_id, id, favorite)
 VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', '1b2d89fa-bd59-4873-b568-8df26c3a047d', false),
@@ -226,7 +226,9 @@ VALUES ('44444444-4444-4444-4444-444444444441', '56c1596a-ec26-4c5d-aa01-31f7a34
 
 
 -- ===== Analytics SERVICE DATA =====
+
 -- ===== Player Statistics =====
+-- Player statistics voor elk profiel
 INSERT INTO analyticsservice.player_statistics (player_id, total_time_played, last_played)
 VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 450000, NOW() - INTERVAL '2 hours'),
        ('5a129b2c-3016-4616-bca0-99ec7b067b32', 680000, NOW() - INTERVAL '1 day'),
@@ -234,21 +236,26 @@ VALUES ('ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 450000, NOW() - INTERVAL '2 hour
        ('56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 890596, NOW() - INTERVAL '5 hours');
 
 -- ===== Game Statistics =====
+-- Game statistics voor Cian (ed7b6a30-a12f-4ae5-9d25-b1ea51c89840)
+-- Games in library: Tic-Tac-Toe Deluxe compose (favorite), Tic-Tac-Toe Deluxe
 INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_time_played, last_played_at)
 VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 180, NOW() - INTERVAL '2 hours'),
        ('1b2d89fa-bd59-4873-b568-8df26c3a047c', 'ed7b6a30-a12f-4ae5-9d25-b1ea51c89840', 270, NOW() - INTERVAL '1 day');
 
 -- Game statistics voor Axel (5a129b2c-3016-4616-bca0-99ec7b067b32)
+-- Games in library: Tic-Tac-Toe Deluxe compose, Tic-Tac-Toe Deluxe
 INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_time_played, last_played_at)
 VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '5a129b2c-3016-4616-bca0-99ec7b067b32', 320, NOW() - INTERVAL '1 day'),
        ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '5a129b2c-3016-4616-bca0-99ec7b067b32', 360, NOW() - INTERVAL '2 days');
 
 -- Game statistics voor Pieter (58e1a434-0797-4d3d-9140-e846b20b7887)
+-- Games in library: Tic-Tac-Toe Deluxe compose (favorite), Tic-Tac-Toe Deluxe
 INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_time_played, last_played_at)
 VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '58e1a434-0797-4d3d-9140-e846b20b7887', 150, NOW() - INTERVAL '3 days'),
        ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '58e1a434-0797-4d3d-9140-e846b20b7887', 170, NOW() - INTERVAL '4 days');
 
 -- Game statistics voor Hugo (56c1596a-ec26-4c5d-aa01-31f7a34b76ad)
+-- Games in library: Tic-Tac-Toe Deluxe compose, Tic-Tac-Toe Deluxe (favorite)
 INSERT INTO analyticsservice.game_statistics (game_id, player_statistics_id, total_time_played, last_played_at)
 VALUES ('1b2d89fa-bd59-4873-b568-8df26c3a047d', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 420, NOW() - INTERVAL '5 hours'),
        ('1b2d89fa-bd59-4873-b568-8df26c3a047c', '56c1596a-ec26-4c5d-aa01-31f7a34b76ad', 470, NOW() - INTERVAL '1 day');
@@ -370,3 +377,19 @@ FROM profileservice.profile p
         ('FRIENDS'),
         ('ACHIEVEMENTS')
 ) AS s(type);
+
+
+-- benefits
+INSERT INTO shopservice.benefits (id, type, name, description, point_cost, configuration)
+VALUES ('11111111-1111-1111-1111-111111111111', 'USERNAME_COLOR', 'Orange username',
+        'Give your username a orange colour', 5000, '#EC7D3C'),
+       ('22222222-2222-2222-2222-222222222222', 'USERNAME_COLOR', 'Green username',
+        'Give your username a green colour', 5000, '#00FF00'),
+       ('33333333-3333-3333-3333-333333333333', 'GAME_DISCOUNT', '10% discount',
+        'Get 10% dicount on your next purchase', 2500, '10%'),
+       ('44444444-4444-4444-4444-444444444444', 'GAME_DISCOUNT', '25% discount',
+        'Get 25% dicount on your next purchase', 5000, '25%'),
+       ('55555555-5555-5555-5555-555555555555', 'UNIQUE_PROFILE_PICTURE', 'Archportal avatar',
+        'Get a custom archportal avatar', 3000, 'https://hd2.tudocdn.net/1255807?w=1200&h=900'),
+       ('66666666-6666-6666-6666-666666666666', 'UNIQUE_PROFILE_PICTURE', 'King avatar',
+        'Get a custom king profile picture', 6000, 'https://prod-img.standaard.be/public/nieuws/2dfsyh-koning-filip.jpg/alternates/THREE_TWO_1620/koning-filip.jpg');

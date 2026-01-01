@@ -1,5 +1,6 @@
 package be.kdg.ip3.archportal.lobbies.domain.lobby;
 
+import be.kdg.ip3.archportal.lobbies.domain.ChatRoomId;
 import be.kdg.ip3.archportal.lobbies.domain.GameId;
 import be.kdg.ip3.archportal.lobbies.domain.NotFoundException;
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
@@ -22,41 +23,39 @@ public class GameLobby {
     private GameLobbyStatus gameLobbyStatus;
     private final List<PlayerId> players;
     private final List<GameSession> sessions;
+    private final ChatRoomId chatRoomId;
 
-    public GameLobby(GameLobbyId id, GameId gameId, int maxPlayers) {
-        this.gameLobbyId = id;
-        this.gameId = gameId;
-        this.maxPlayers = maxPlayers;
-        this.gameLobbyStatus = GameLobbyStatus.OPEN;
-        this.players = new ArrayList<>();
-        this.sessions = new ArrayList<>();
-
+    public GameLobby(GameLobbyId id, GameId gameId, int maxPlayers, ChatRoomId chatRoomId) {
+        this(id, gameId, maxPlayers, GameLobbyStatus.OPEN, new ArrayList<>(), new ArrayList<>(), chatRoomId);
     }
 
-    public GameLobby(GameLobbyId gameLobbyId, GameId gameId, int maxPlayers, GameLobbyStatus gameLobbyStatus, List<PlayerId> players, List<GameSession> sessions) {
+    public GameLobby(GameLobbyId gameLobbyId, GameId gameId, int maxPlayers, GameLobbyStatus gameLobbyStatus, List<PlayerId> players, List<GameSession> sessions, ChatRoomId chatRoomId) {
         this.gameLobbyId = gameLobbyId;
         this.gameId = gameId;
         this.maxPlayers = maxPlayers;
         this.gameLobbyStatus = gameLobbyStatus;
         this.players = new ArrayList<>(players);
         this.sessions = new ArrayList<>(sessions);
+        this.chatRoomId = chatRoomId;
     }
 
     public static GameLobby newSinglePlayerLobby(GameId gameId) {
         var lobby = new GameLobby(
                 GameLobbyId.create(),
                 gameId,
-                1
+                1,
+                new ChatRoomId(null)
         );
         lobby.closeLobby();
         return lobby;
     }
 
-    public static GameLobby createMultiplayerLobby(GameId gameId, int maxPlayers) {
+    public static GameLobby createMultiplayerLobby(GameId gameId, int maxPlayers, ChatRoomId chatRoomId) {
         return new GameLobby(
                 GameLobbyId.create(),
                 gameId,
-                maxPlayers
+                maxPlayers,
+                chatRoomId
         );
     }
 

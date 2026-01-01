@@ -5,6 +5,7 @@ import be.kdg.ip3.archportal.shops.domain.order.OrderId;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +25,9 @@ public class JpaOrderEntity {
     @Column()
     private boolean completed;
 
+    @Column
+    private BigDecimal appliedBenefitPercentage;
+
     @OneToMany(
             mappedBy = "order",
             cascade = CascadeType.ALL,
@@ -33,12 +37,13 @@ public class JpaOrderEntity {
 
     protected JpaOrderEntity() {}
 
-    public JpaOrderEntity(UUID id, UUID profileId, List<JpaOrderLineEntity> orderLines, String paymentId, boolean completed) {
+    public JpaOrderEntity(UUID id, UUID profileId, List<JpaOrderLineEntity> orderLines, String paymentId, boolean completed, BigDecimal appliedBenefitPercentage) {
         this.id = id;
         this.profileId = profileId;
         this.orderLines = orderLines;
         this.paymentId = paymentId;
         this.completed = completed;
+        this.appliedBenefitPercentage = appliedBenefitPercentage;
     }
 
     public static JpaOrderEntity fromDomain(Order order) {
@@ -47,7 +52,8 @@ public class JpaOrderEntity {
                 order.getProfileId(),
                 new ArrayList<>(),
                 order.getPaymentId(),
-                order.isCompleted()
+                order.isCompleted(),
+                order.getAppliedBenefitPercentage()
         );
 
         order.getOrderLines().forEach(line ->
@@ -67,7 +73,8 @@ public class JpaOrderEntity {
                         .map(JpaOrderLineEntity::toDomain)
                         .toList(),
                 paymentId,
-                completed
+                completed,
+                appliedBenefitPercentage
         );
     }
 }

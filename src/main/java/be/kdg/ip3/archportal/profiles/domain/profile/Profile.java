@@ -19,32 +19,37 @@ public class Profile {
     private String lastName;
     private String email;
     private String icon;
+    private String originalIcon;
     private String gamerTag;
     private final List<Game> games;
     private int platformPoints;
-    private final List<UUID> platformBenefits;
+    private final Set<UUID> platformBenefits;
     private final Set<FriendRequest> incomingFriendRequests;
     private List<Section> sections;
+    private UUID activeProfilePictureId;
+    private UUID activeUsernameColorId;
 
-    public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String email, String icon,
-                   String gamerTag, String firstName, List<Game> games, Set<FriendRequest> incomingFriendRequests,List<Section> sections) {
+    public Profile(ProfileId profileId, Set<UUID> platformBenefits, int platformPoints, String lastName, String email, String icon,
+                   String gamerTag, String firstName, List<Game> games, Set<FriendRequest> incomingFriendRequests,List<Section> sections,String originalIcon, UUID activeProfilePictureId, UUID activeUsernameColorId) {
         this.id = profileId;
         setEmail(email);
         this.platformBenefits = platformBenefits;
         setPlatformPoints(platformPoints);
         setLastName(lastName);
-        this.icon = icon;
+        setIcon(icon);
         setGamerTag(gamerTag);
         setFirstName(firstName);
         this.games = games;
         this.incomingFriendRequests = incomingFriendRequests;
+        this.activeProfilePictureId = activeProfilePictureId;
+        this.activeUsernameColorId = activeUsernameColorId;
+        this.originalIcon = originalIcon;
         this.sections = Objects.requireNonNullElseGet(sections, Profile::createDefaultSections);
     }
 
     public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag, String email, String icon) {
-        return new Profile(profileId, new ArrayList<>(), 0, lastName, email, icon, gamerTag, firstName, new ArrayList<>(), new HashSet<>(), null);
+        return new Profile(profileId, new HashSet<>(), 0, lastName, email, icon, gamerTag, firstName, new ArrayList<>(), new HashSet<>(), null, "",null, null);
     }
-
     private static List<Section> createDefaultSections() {
         return Arrays.stream(SectionType.values())
                 .map(Section::createDefault)
@@ -97,7 +102,11 @@ public class Profile {
 
         incomingFriendRequests.add(friendRequest);
     }
-
+    public void removePlatformBenefit(UUID benefitId) {
+        if (!platformBenefits.remove(benefitId)) {
+            throw new IllegalArgumentException("Profile does not own this benefit.");
+        }
+    }
     public void removeFriendRequest(FriendRequest friendRequest) {
         if (friendRequest == null)
             throw new IllegalArgumentException("The friend request provided is invalid.");
@@ -106,12 +115,52 @@ public class Profile {
         incomingFriendRequests.remove(friendRequest);
     }
 
-    public void AddPoints(int points) {
+    public void activateProfilePictureBenefit(UUID benefitId, String configuration) {
+        if (this.activeProfilePictureId == null) {
+            this.originalIcon = this.icon;
+        }
+        this.activeProfilePictureId = benefitId;
+        this.icon = configuration;
+    }
+    public void deactivateProfilePictureBenefit() {
+        this.activeProfilePictureId = null;
+        this.icon = originalIcon;
+    }
+    public void activateNameColourBenefit(UUID benefitId) {
+        this.activeUsernameColorId = benefitId;
+    }
+    public void deactivateNameColourBenefit() {
+
+        this.activeUsernameColorId = null;
+    }
+
+
+    public void addPoints(int points) {
         if (points < 0) {
             throw new IllegalArgumentException("Points cannot be lower than 0");
         }
         this.platformPoints += points;
     }
+    public void acquirePlatformBenefit(UUID platformBenefit, int cost) {
+        if (platformBenefit == null) {
+            throw new IllegalArgumentException("Platform benefit cannot be null.");
+        }
+        if (cost < 0) {
+            throw new IllegalArgumentException("Cost cannot be negative.");
+        }
+        if (platformPoints < cost) {
+            throw new IllegalArgumentException("Not enough platform points.");
+        }
+        if (!platformBenefits.add(platformBenefit)) {
+            throw new IllegalArgumentException(
+                    "Profile %s already acquired platform benefit: %s"
+                            .formatted(id, platformBenefit)
+            );
+        }
+
+        this.platformPoints -= cost;
+    }
+
 
     public void validateNotSameProfile(Profile receiver) {
         if (this.id.equals(receiver.getId()))
@@ -151,12 +200,13 @@ public class Profile {
         this.games.add(Game.create(gameId));
     }
 
-    public void update(String firstName, String lastName, String gamerTag, String email, String icon) {
+    public void update(String firstName, String lastName, String gamerTag, String email, String currentIcon, String keycloakIcon) {
         setFirstName(firstName);
         setLastName(lastName);
         setGamerTag(gamerTag);
         setEmail(email);
-        setIcon(icon);
+        setIcon(currentIcon);
+        this.originalIcon = keycloakIcon;
     }
 
     public Game findGameInlibrary(UUID gameId) {

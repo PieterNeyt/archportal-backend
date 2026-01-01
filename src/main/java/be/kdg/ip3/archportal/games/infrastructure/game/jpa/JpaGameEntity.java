@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 public class JpaGameEntity {
     @Id
     private UUID id;
-    @Column(nullable = false)
+    @Column
     private UUID studioId;
     @Column(nullable = false, length = 100)
     private String title;
@@ -25,8 +26,9 @@ public class JpaGameEntity {
     private String description;
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
+    @Column
     private String imageUrl;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String gameUrl;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -55,7 +57,7 @@ public class JpaGameEntity {
     public static JpaGameEntity fromDomain(Game game) {
         JpaGameEntity entity = new JpaGameEntity(
                 game.getId().id(),
-                game.getStudioId().id(),
+                Optional.ofNullable(game.getStudioId()).map(GameStudioId::id).orElse(null),
                 game.getTitle(),
                 game.getDescription(),
                 game.getPrice().money(),
@@ -77,7 +79,7 @@ public class JpaGameEntity {
     public Game toDomain() {
         Game game = new Game(
                 new GameId(id),
-                new GameStudioId(studioId),
+                studioId == null ? null : new GameStudioId(studioId),
                 title,
                 description,
                 price,

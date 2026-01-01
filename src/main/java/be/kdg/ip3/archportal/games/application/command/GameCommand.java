@@ -5,6 +5,7 @@ import be.kdg.ip3.archportal.games.domain.game.Game;
 import be.kdg.ip3.archportal.games.domain.game.GameGenre;
 import be.kdg.ip3.archportal.games.domain.game.GameId;
 import be.kdg.ip3.archportal.games.domain.gamestudio.GameStudioId;
+import be.kdg.ip3.archportal.games.infrastructure.messaging.config.RegisterGameMessage;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -29,6 +30,19 @@ public record GameCommand(
                 gameDto.price(),
                 gameDto.genre(),
                 gameDto.maxlobbysize()
+        );
+    }
+    
+    public static GameCommand fromMessage(RegisterGameMessage message) {
+        return new GameCommand(
+                null,
+                message.title(),
+                message.description(),
+                message.imageUrl(),
+                message.gameUrl(),
+                message.price(),
+                message.genre(),
+                message.maxlobbysize()
         );
     }
 

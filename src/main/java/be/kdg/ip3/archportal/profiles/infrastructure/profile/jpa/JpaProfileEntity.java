@@ -29,7 +29,10 @@ public class JpaProfileEntity {
     @Column(nullable = false)
     private String email;
 
+    @Column
     private String icon;
+    @Column
+    private String originalIcon;
 
     @Column(nullable = false, unique = true)
     private String gamerTag;
@@ -37,14 +40,19 @@ public class JpaProfileEntity {
     @Column(nullable = false)
     private int platformPoints;
 
+    @Column
+    private UUID activeProfilePictureId;
+
+    @Column
+    private UUID activeUsernameColorId;
+
     @ElementCollection
-    @CollectionTable(
-            name = "profile_platform_benefits",
-            schema = "profileservice",
-            joinColumns = @JoinColumn(name = "profile_id")
-    )
+    @CollectionTable(name = "profile_platform_benefits",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            schema = "profileservice")
     @Column(name = "benefit_id", nullable = false)
-    private List<UUID> platformBenefits = new ArrayList<>();
+    private Set<UUID> platformBenefits = new HashSet<>();
+
 
     @ElementCollection
     @CollectionTable(name = "profile_library", schema = "profileservice", joinColumns = @JoinColumn(name = "profile_id"))
@@ -73,10 +81,11 @@ public class JpaProfileEntity {
             String icon,
             String gamerTag,
             int platformPoints,
-            List<UUID> platformBenefits,
+            Set<UUID> platformBenefits,
             List<JpaGameEntity> games,
             Set<JpaFriendRequest> incomingRequests,
-            List<JpaSectionEntity> sections
+            List<JpaSectionEntity> sections,
+            String originalIcon, UUID activeProfilePictureId, UUID activeUsernameColorId
     ) {
         this.id = id;
         this.firstName = firstName;
@@ -88,6 +97,9 @@ public class JpaProfileEntity {
         this.platformBenefits = platformBenefits;
         this.games = games;
         this.incomingRequests = incomingRequests;
+        this.originalIcon = originalIcon;
+        this.activeProfilePictureId = activeProfilePictureId;
+        this.activeUsernameColorId = activeUsernameColorId;
         this.sections = sections;
     }
 
@@ -116,7 +128,10 @@ public class JpaProfileEntity {
                 profile.getPlatformBenefits(),
                 jpaGames,
                 incoming,
-                jpaSections
+                jpaSections,
+                profile.getOriginalIcon(),
+                profile.getActiveProfilePictureId(),
+                profile.getActiveUsernameColorId()
         );
     }
 
@@ -145,7 +160,10 @@ public class JpaProfileEntity {
                 firstName,
                 domainGames,
                 incoming,
-                domainSections
+                domainSections,
+                originalIcon,
+                activeProfilePictureId,
+                activeUsernameColorId
         );
     }
 }

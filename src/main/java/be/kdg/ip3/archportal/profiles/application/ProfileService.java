@@ -1,15 +1,16 @@
 package be.kdg.ip3.archportal.profiles.application;
 
+import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEvent;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
+import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.ProfileDto;
+import be.kdg.ip3.archportal.profiles.application.command.AcquirePlatformPointsCommand;
 import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
-import be.kdg.ip3.archportal.profiles.domain.profile.Section;
-import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequestAction;
@@ -18,9 +19,10 @@ import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
-import be.kdg.ip3.archportal.profiles.shared.GrantPlatformPointsEvent;
+import be.kdg.ip3.archportal.profiles.domain.profile.Section;
+import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
+import be.kdg.ip3.archportal.shops.shared.ShopsApi;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,44 +37,80 @@ import java.util.stream.Collectors;
 public class ProfileService {
     private final ProfileRepository profileRepository;
     private final GamesApi gamesApi;
+    private final ShopsApi shopsApi;
     private final ApplicationEventPublisher eventPublisher;
     private final FriendshipRepository friendshipRepository;
 
-    public ProfileService(ProfileRepository profileRepository, GamesApi gamesApi, ApplicationEventPublisher eventPublisher, FriendshipRepository friendshipRepository) {
+    public ProfileService(ProfileRepository profileRepository, GamesApi gamesApi, ShopsApi shopsApi, ApplicationEventPublisher eventPublisher, FriendshipRepository friendshipRepository) {
         this.profileRepository = profileRepository;
         this.gamesApi = gamesApi;
+        this.shopsApi = shopsApi;
         this.eventPublisher = eventPublisher;
         this.friendshipRepository = friendshipRepository;
     }
 
-    @ApplicationModuleListener
-    public void onGrantPlatformPoints(GrantPlatformPointsEvent event) {
-        var profileId= new ProfileId(event.profileId());
+    public Profile toggleBenefit(ProfileId profileId, UUID benefitId) {
         var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
-        profile.AddPoints(event.points());
-        profileRepository.save(profile);
-    }
+        var benefit = shopsApi.getBenefitById(benefitId);
 
-    public Profile syncUser(Jwt token) {
-        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
-        String firstName = token.getClaim("given_name");
-        String lastName = token.getClaim("family_name");
-        String gamerTag = token.getClaim("preferred_username");
-        String icon = token.getClaim("icon");
-        String email = token.getClaim("email");
-
-        var profile = profileRepository.findById(profileId).orElseGet(() -> {
-            Profile newProfile = Profile.createProfile(profileId, firstName, lastName, gamerTag, email,icon);
-            eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
-            return newProfile;
-        });
-
-
-        profile.update(firstName,lastName,gamerTag,email,icon);
+        switch (benefit.type()) {
+            case UNIQUE_PROFILE_PICTURE -> {
+                if (benefitId.equals(profile.getActiveProfilePictureId())) {
+                    profile.deactivateProfilePictureBenefit();
+                } else {
+                    profile.activateProfilePictureBenefit(benefitId, benefit.configuration());
+                }
+            }
+            case USERNAME_COLOR -> {
+                if (benefitId.equals(profile.getActiveUsernameColorId())) {
+                    profile.deactivateNameColourBenefit();
+                } else {
+                    profile.activateNameColourBenefit(benefitId);
+                }
+            }
+            case GAME_DISCOUNT ->
+                    throw new IllegalArgumentException("Game discounts cannot be toggled");
+        }
 
         profileRepository.save(profile);
         return profile;
     }
+    public void aquirePlatformPoints(AcquirePlatformPointsCommand command) {
+        var profile = profileRepository.findById(command.profileId()).orElseThrow(command.profileId()::notFound);
+        profile.addPoints(command.platformPoints());
+        profileRepository.save(profile);
+    }
+
+    public int getPlatformPoints(ProfileId profileId) {
+        var profile = profileRepository.findById(profileId)
+                .orElseThrow(profileId::notFound);
+        return profile.getPlatformPoints();
+    }
+
+    public Profile syncUser(Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+
+        String firstName = token.getClaim("given_name");
+        String lastName = token.getClaim("family_name");
+        String gamerTag = token.getClaim("preferred_username");
+        String keycloakIcon = token.getClaim("icon");
+        String email = token.getClaim("email");
+
+        var profile = profileRepository.findById(profileId)
+                .orElseGet(() -> {
+                    Profile newProfile = Profile.createProfile(profileId, firstName, lastName, gamerTag, email, keycloakIcon);
+                    eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
+                    return newProfile;
+                });
+
+        String iconToUse = (profile.getActiveProfilePictureId() != null) ? profile.getIcon() : keycloakIcon;
+
+        profile.update(firstName, lastName, gamerTag, email, iconToUse, keycloakIcon);
+
+        profileRepository.save(profile);
+        return profile;
+    }
+
 
     public List<LibraryGameDto> getLibrary(ProfileId profileId) {
         var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
@@ -178,7 +216,7 @@ public class ProfileService {
                         
                         Kind regards,
                         The Arch Portal Team""";
-                eventPublisher.publishEvent(new FriendShipCreatedEvent(receiver.getId().id(),receiver.getGamerTag(), sender.getId().id(), sender.getGamerTag()));
+                eventPublisher.publishEvent(new FriendShipCreatedEvent(receiver.getId().id(), receiver.getGamerTag(), sender.getId().id(), sender.getGamerTag()));
             }
             case DECLINE -> {
                 receiver.removeFriendRequest(request);
@@ -230,6 +268,11 @@ public class ProfileService {
         var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
         profile.unfavorite(gameId);
         profileRepository.save(profile);
+    }
+
+    @Transactional(readOnly = true)
+    public Profile getProfile(ProfileId profileId) {
+        return profileRepository.findById(profileId).orElseThrow(profileId::notFound);
     }
 
     public Profile getAllFromProfile(ProfileId id) {

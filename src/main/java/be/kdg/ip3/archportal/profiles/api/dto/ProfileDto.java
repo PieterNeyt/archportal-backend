@@ -17,7 +17,9 @@ public record ProfileDto(
         String gamerTag,
         int platformPoints,
         List<GameDto> games,
-        List<SectionDto> sections
+        List<SectionDto> sections,
+        UUID activeProfilePictureId,
+        UUID activeUsernameColorId
 ) {
     public static ProfileDto from(Profile profile) {
         return new ProfileDto(
@@ -33,7 +35,9 @@ public record ProfileDto(
                         .toList(),
                 profile.getSections().stream()
                         .map(SectionDto::from)
-                        .toList()
+                        .toList(),
+                profile.getActiveProfilePictureId(),
+                profile.getActiveUsernameColorId()
         );
     }
 
