@@ -193,6 +193,7 @@ public class PartyService {
             var stillEligible = eligibleGames.stream().anyMatch(g -> g.id().equals(party.getSelectedGameId()));
             if (!stillEligible) {
                 party.selectGame(null);
+                party.startedLobbyId(null);
             }
         }
         partyRepository.save(party);
