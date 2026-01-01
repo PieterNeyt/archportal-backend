@@ -115,6 +115,11 @@ public class ShopController {
         return ResponseEntity.ok(shopService.getActiveUsernameColor(profileId));
     }
 
+    @GetMapping("/benefits/active-color/profile/{profileId}")
+    public ResponseEntity<String> getActiveUsernameColorFromProfileId(@PathVariable UUID profileId) {;
+        return ResponseEntity.ok(shopService.getActiveUsernameColor(profileId));
+    }
+
 
     @GetMapping("/benefits/profile")
     public ResponseEntity<List<BenefitDto>> getAllBenefitsOfProfile(@AuthenticationPrincipal Jwt token) {
