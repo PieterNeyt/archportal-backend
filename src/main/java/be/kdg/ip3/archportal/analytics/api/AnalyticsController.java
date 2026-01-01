@@ -42,7 +42,9 @@ public class AnalyticsController {
         var playerId = new PlayerId(profileUUId);
 
         var playerStats = analyticsService.getPlayerStats(playerId);
-        return ResponseEntity.ok(PlayerStatisticsDto.fromDomain(playerStats.getTotalTimePlayed().toMinutes(),playerStats.getLastPlayed()));
+        return ResponseEntity.ok(PlayerStatisticsDto.fromDomain(
+                playerStats.getTotalTimePlayed().toMinutes()
+                ,playerStats.getLastPlayed()));
     }
 
     @GetMapping("/{profileId}/achievements")
