@@ -9,6 +9,7 @@ import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @AggregateRoot
@@ -23,7 +24,7 @@ public class Profile {
     private int platformPoints;
     private final List<UUID> platformBenefits;
     private final Set<FriendRequest> incomingFriendRequests;
-    private final List<Section> sections;
+    private List<Section> sections;
 
     public Profile(ProfileId profileId, List<UUID> platformBenefits, int platformPoints, String lastName, String email, String icon,
                    String gamerTag, String firstName, List<Game> games, Set<FriendRequest> incomingFriendRequests,List<Section> sections) {
@@ -188,12 +189,28 @@ public class Profile {
         game.unfavorite();
     }
 
-    public Section findSection(SectionType type) {
-        return sections.stream()
-                .filter(s -> s.getType() == type)
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Section %s not found in profile %s"
-                        .formatted(type, id)));
-    }
+    public void updateSectionVisibility(List<Section> newSections) {
+        if (newSections == null) {
+            throw new IllegalArgumentException("Sections list cannot be null.");
+        }
 
+        Set<SectionType> providedTypes = newSections.stream()
+                .map(Section::getType)
+                .collect(Collectors.toSet());
+
+        Set<SectionType> requiredTypes = EnumSet.allOf(SectionType.class);
+
+        if (!providedTypes.containsAll(requiredTypes)) {
+            List<SectionType> missing = requiredTypes.stream()
+                    .filter(type -> !providedTypes.contains(type))
+                    .toList();
+            throw new IllegalArgumentException("Missing sections in update: " + missing);
+        }
+
+        if (newSections.size() != requiredTypes.size()) {
+            throw new IllegalArgumentException("Duplicate or extra sections provided.");
+        }
+
+        this.sections = newSections;
+    }
 }

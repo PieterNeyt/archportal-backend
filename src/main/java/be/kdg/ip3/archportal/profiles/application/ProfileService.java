@@ -5,8 +5,10 @@ import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEve
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
 import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
+import be.kdg.ip3.archportal.profiles.api.dto.ProfileDto;
 import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
+import be.kdg.ip3.archportal.profiles.domain.profile.Section;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.AlreadyFriendException;
 import be.kdg.ip3.archportal.profiles.domain.friendRequest.FriendRequest;
@@ -233,5 +235,12 @@ public class ProfileService {
     public Profile getAllFromProfile(ProfileId id) {
         return profileRepository.findById(id)
                 .orElseThrow(id::notFound);
+    }
+
+    public List<ProfileDto.SectionDto> updateSectionVisibility(ProfileId profileId, List<Section> list) {
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        profile.updateSectionVisibility(list);
+        profileRepository.save(profile);
+        return profile.getSections().stream().map(ProfileDto.SectionDto::from).toList();
     }
 }

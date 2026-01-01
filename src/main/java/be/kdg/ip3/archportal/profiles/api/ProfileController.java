@@ -25,15 +25,22 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
-    @GetMapping({"", "/"})
+    @GetMapping({"/sync"})
     public ResponseEntity<ProfileSyncDto> syncUser(@AuthenticationPrincipal Jwt token) {
         var profile = profileService.syncUser(token);
         return ResponseEntity.ok(ProfileSyncDto.from(profile));
     }
 
     @GetMapping("/{profileId}")
-    public ResponseEntity<ProfileDto> getAllFromProfile(@PathVariable("profileId") UUID profileUUId) {
+    public ResponseEntity<ProfileDto> getAllFromProfileFromId(@PathVariable("profileId") UUID profileUUId) {
         var profileId = new ProfileId(profileUUId);
+        var profile = profileService.getAllFromProfile(profileId);
+        return ResponseEntity.ok(ProfileDto.from(profile));
+    }
+
+    @GetMapping()
+    public ResponseEntity<ProfileDto> getAllFromProfile(@AuthenticationPrincipal() Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
         var profile = profileService.getAllFromProfile(profileId);
         return ResponseEntity.ok(ProfileDto.from(profile));
     }
@@ -45,6 +52,14 @@ public class ProfileController {
         return ResponseEntity.ok(library);
     }
 
+    @PutMapping("/section-visibility")
+    public ResponseEntity<List<ProfileDto.SectionDto>> updateSectionVisibility(@AuthenticationPrincipal Jwt token,
+                                                                               @RequestBody List<ProfileDto.SectionDto> sectionDto) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var sections = profileService.updateSectionVisibility(profileId, sectionDto.stream().map(ProfileDto.SectionDto::toDomain).toList());
+        return ResponseEntity.ok(sections);
+    }
+
     @GetMapping("/{profileId}/library")
     public ResponseEntity<List<LibraryGameDto>> getProfileLibrary(@PathVariable("profileId") UUID profileUUId) {
         var profileId = new ProfileId(profileUUId);
@@ -54,17 +69,17 @@ public class ProfileController {
 
     @PutMapping("/library/{gameId}/add-favorite")
     public ResponseEntity<Void> addFavoriteToGame(@PathVariable("gameId") UUID gameId,
-                                                                  @AuthenticationPrincipal Jwt token) {
+                                                  @AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
-        profileService.addFavoriteToGame(profileId,gameId);
+        profileService.addFavoriteToGame(profileId, gameId);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/library/{gameId}/remove-favorite")
     public ResponseEntity<Void> removeFavoriteFromGame(@PathVariable("gameId") UUID gameId,
-                                                                       @AuthenticationPrincipal Jwt token) {
+                                                       @AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
-        profileService.removeFavoriteFromGame(profileId,gameId);
+        profileService.removeFavoriteFromGame(profileId, gameId);
         return ResponseEntity.ok().build();
     }
 
@@ -83,6 +98,7 @@ public class ProfileController {
         var friends = profileService.getAllFriends(profileId).stream().map(ProfileSyncDto::from).toList();
         return ResponseEntity.ok(friends);
     }
+
     @GetMapping("/{profileId}/friends")
     public ResponseEntity<List<ProfileSyncDto>> getFriends(@PathVariable("profileId") UUID profileUUId) {
         var profileId = new ProfileId(profileUUId);
@@ -117,16 +133,16 @@ public class ProfileController {
         profileService.declineFriendRequest(profileId, dto.gamerTag());
         return ResponseEntity.noContent().build();
     }
-    
+
     @DeleteMapping("/friend-request/cancel")
     public ResponseEntity<Void> cancelFriendRequest(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
         profileService.cancelFriendRequest(profileId, dto.gamerTag());
         return ResponseEntity.noContent().build();
     }
-    
+
     @DeleteMapping("/friends")
-    public ResponseEntity<Void> deleteFriend(@Valid @RequestBody FriendRequestDto dto,  @AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<Void> deleteFriend(@Valid @RequestBody FriendRequestDto dto, @AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
         profileService.removeFriend(profileId, dto.gamerTag());
         return ResponseEntity.noContent().build();

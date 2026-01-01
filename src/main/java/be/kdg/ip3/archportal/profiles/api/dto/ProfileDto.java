@@ -41,6 +41,9 @@ public record ProfileDto(
         public static SectionDto from(Section section) {
             return new SectionDto(section.getType(), section.getVisibility());
         }
+        public Section toDomain() {
+            return new Section(this.type, this.visibility);
+        }
     }
 
     public record GameDto(UUID gameId, boolean isFavorite) {}
