@@ -32,6 +32,21 @@ public class ProfileController {
         return ResponseEntity.ok(ProfileSyncDto.from(profile));
     }
 
+    @GetMapping("/{profileId}")
+    public ResponseEntity<ProfileDto> getAllFromProfileFromId(@PathVariable("profileId") UUID profileUUId) {
+        var profileId = new ProfileId(profileUUId);
+        var profile = profileService.getAllFromProfile(profileId);
+        return ResponseEntity.ok(ProfileDto.from(profile));
+    }
+
+    @GetMapping()
+    public ResponseEntity<ProfileDto> getAllFromProfile(@AuthenticationPrincipal() Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var profile = profileService.getAllFromProfile(profileId);
+        return ResponseEntity.ok(ProfileDto.from(profile));
+    }
+
+
     @PutMapping("/benefits/{benefitId}/toggle")
     public ResponseEntity<ProfileDto> toggleBenefit(
             @PathVariable UUID benefitId,
