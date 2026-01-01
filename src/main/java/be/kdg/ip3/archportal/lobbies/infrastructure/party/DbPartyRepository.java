@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.lobbies.infrastructure.party;
 
 import be.kdg.ip3.archportal.lobbies.domain.PlayerId;
+import be.kdg.ip3.archportal.lobbies.domain.lobby.GameLobbyId;
 import be.kdg.ip3.archportal.lobbies.domain.party.Party;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyId;
 import be.kdg.ip3.archportal.lobbies.domain.party.PartyRepository;
@@ -28,6 +29,14 @@ public class DbPartyRepository implements PartyRepository {
     public void deleteById(PartyId partyId) {
         this.jpaPartyRepository.deleteById(partyId.id());
     }
+
+    @Override
+    public Optional<Party> findByStartedLobbyId(GameLobbyId startedLobbyId) {
+        return jpaPartyRepository
+                .findByStartedLobbyId(startedLobbyId.id())
+                .map(JpaPartyEntity::toDomain);
+    }
+
 
     @Override
     public boolean existsByPlayerId(PlayerId playerId) {

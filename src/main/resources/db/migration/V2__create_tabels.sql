@@ -216,16 +216,18 @@ alter table lobbyservice.game_sessions
 
 create table lobbyservice.party
 (
-    max_members  integer      not null,
-    chat_room_id uuid         not null,
-    host_id      uuid         not null,
-    id           uuid         not null
+    id              uuid         not null
         primary key,
-    title        varchar(100) not null
+    title           varchar(100) not null,
+    max_members     integer      not null,
+    chat_room_id    uuid         not null,
+    selected_game_id uuid,
+    started_lobby_id uuid
 );
 
 alter table lobbyservice.party
     owner to "user";
+
 
 create table lobbyservice.party_invite
 (
@@ -243,14 +245,23 @@ alter table lobbyservice.party_invite
 
 create table lobbyservice.party_member
 (
-    members  uuid,
-    party_id uuid not null
-        constraint fkctrpcp93h130dwe6j1jlhf960
-            references lobbyservice.party
+    party_id   uuid    not null,
+    player_id  uuid    not null,
+    is_host    boolean not null,
+    is_ready   boolean not null,
+
+    constraint pk_party_member
+        primary key (party_id, player_id),
+
+    constraint fk_party_member_party
+        foreign key (party_id)
+            references lobbyservice.party(id)
+            on delete cascade
 );
 
 alter table lobbyservice.party_member
     owner to "user";
+
 
 create table profileservice.friendship
 (

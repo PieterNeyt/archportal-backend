@@ -16,6 +16,7 @@ import be.kdg.ip3.archportal.lobbies.domain.session.GameSession;
 import be.kdg.ip3.archportal.lobbies.domain.session.GameSessionId;
 import be.kdg.ip3.archportal.lobbies.domain.session.SessionNotFoundException;
 import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
+import be.kdg.ip3.archportal.lobbies.shared.LobbyEndedEvent;
 import be.kdg.ip3.archportal.lobbies.shared.SessionEndedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
 import org.springframework.context.ApplicationEventPublisher;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -60,7 +62,6 @@ public class GameLobbyService implements LobbiesApi {
         return lobby.getGameId().id();
     }
 
-
     public GameLobby createSinglePlayerLobby(PlayerId playerId, GameId gameId) {
         var lobby = GameLobby.newSinglePlayerLobby(gameId);
 
@@ -81,9 +82,19 @@ public class GameLobbyService implements LobbiesApi {
 
     }
 
+    public void joinMultiplayerLobbyBatch(Set<PlayerId> members, GameLobbyId lobbyId) {
+        var lobby = gameLobbies.findById(lobbyId).orElseThrow(lobbyId::notFound);
+        members.forEach(lobby::addPlayer);
+        gameLobbies.save(lobby);
+        members.forEach(member -> publisher.publishEvent(new ChatRoomJoinedEvent(member.id(), lobby.getChatRoomId().id())));
+    }
+
+
     public GameLobby joinMultiplayerLobby(PlayerId playerId, GameLobbyId lobbyId) {
+
         var lobby = gameLobbies.findById(lobbyId)
                 .orElseThrow(lobbyId::notFound);
+
         lobby.addPlayer(playerId);
         gameLobbies.save(lobby);
         publisher.publishEvent(new ChatRoomJoinedEvent(playerId.id(), lobby.getChatRoomId().id()));
@@ -163,8 +174,6 @@ public class GameLobbyService implements LobbiesApi {
 
         sessions.forEach(lobby::addSession);
 
-        lobby.closeLobby();
-
         gameLobbies.save(lobby);
         return sessions.stream()
                 .filter(s -> s.getPlayerId().equals(ownerId))
@@ -208,12 +217,16 @@ public class GameLobbyService implements LobbiesApi {
                         session.getEndTime()
                 ))
         );
-        if (lobby.getPlayers().isEmpty())
+        if (lobby.getPlayers().isEmpty()){
+            publisher.publishEvent(new LobbyEndedEvent(lobby.getGameLobbyId()));
             gameLobbies.delete(lobby);
-        else
+        }
+        else{
             gameLobbies.save(lobby);
+        }
         publisher.publishEvent(new ChatRoomLeftEvent(playerId.id(), lobby.getChatRoomId().id()));
     }
+
 
     public void endPlayerSession(PlayerId playerId, GameLobbyId lobbyId) {
         var lobby = gameLobbies.findById(lobbyId)
