@@ -28,4 +28,13 @@ public interface JpaProfileRepository extends JpaRepository<JpaProfileEntity, UU
                 )
             """)
     List<JpaProfileEntity> findAllFriendsOf(UUID profileId);
+
+    @Query("""
+    select g.id
+    from JpaProfileEntity p
+    join p.games g
+    where p.id = :profileId
+""")
+    List<UUID> findGameIdsByProfileId(UUID profileId);
+
 }

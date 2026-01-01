@@ -68,10 +68,14 @@ public class GameLobby {
     }
 
     public void addPlayer(PlayerId playerId) {
+        if (players.contains(playerId)) {
+            return;
+        }
         if (players.size() >= maxPlayers) {
             throw new IllegalStateException("Lobby is full");
         }
         players.add(playerId);
+
         if (players.size() == maxPlayers) {
             gameLobbyStatus = GameLobbyStatus.FULL;
         }
@@ -81,7 +85,7 @@ public class GameLobby {
         if (!players.contains(playerId))
             throw new NotFoundException("Player not found");
         players.remove(playerId);
-
+        this.gameLobbyStatus=GameLobbyStatus.OPEN;
         var optionalSession = getGameSession(playerId);
         if (optionalSession.isPresent()) {
             var session = optionalSession.get();
