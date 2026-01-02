@@ -9,6 +9,7 @@ import lombok.Getter;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @AggregateRoot
@@ -24,12 +25,12 @@ public class Profile {
     private int platformPoints;
     private final Set<UUID> platformBenefits;
     private final Set<FriendRequest> incomingFriendRequests;
-
+    private List<Section> sections;
     private UUID activeProfilePictureId;
     private UUID activeUsernameColorId;
 
     public Profile(ProfileId profileId, Set<UUID> platformBenefits, int platformPoints, String lastName, String email, String icon,
-                   String gamerTag, String firstName, List<Game> games, Set<FriendRequest> incomingFriendRequests, String originalIcon, UUID activeProfilePictureId, UUID activeUsernameColorId) {
+                   String gamerTag, String firstName, List<Game> games, Set<FriendRequest> incomingFriendRequests,List<Section> sections,String originalIcon, UUID activeProfilePictureId, UUID activeUsernameColorId) {
         this.id = profileId;
         setEmail(email);
         this.platformBenefits = platformBenefits;
@@ -43,11 +44,16 @@ public class Profile {
         this.activeProfilePictureId = activeProfilePictureId;
         this.activeUsernameColorId = activeUsernameColorId;
         this.originalIcon = originalIcon;
+        this.sections = Objects.requireNonNullElseGet(sections, Profile::createDefaultSections);
     }
 
     public static Profile createProfile(ProfileId profileId, String firstName, String lastName, String gamerTag, String email, String icon) {
-        return new Profile(profileId, new HashSet<>(), 0, lastName, email, icon, gamerTag, firstName, new ArrayList<>(), new HashSet<>(),null,null,null);
-
+        return new Profile(profileId, new HashSet<>(), 0, lastName, email, icon, gamerTag, firstName, new ArrayList<>(), new HashSet<>(), null, "",null, null);
+    }
+    private static List<Section> createDefaultSections() {
+        return Arrays.stream(SectionType.values())
+                .map(Section::createDefault)
+                .toList();
     }
 
     private void setEmail(String email) {
@@ -231,5 +237,30 @@ public class Profile {
             throw new IllegalArgumentException("Game is already not marked as favorite.");
 
         game.unfavorite();
+    }
+
+    public void updateSectionVisibility(List<Section> newSections) {
+        if (newSections == null) {
+            throw new IllegalArgumentException("Sections list cannot be null.");
+        }
+
+        Set<SectionType> providedTypes = newSections.stream()
+                .map(Section::getType)
+                .collect(Collectors.toSet());
+
+        Set<SectionType> requiredTypes = EnumSet.allOf(SectionType.class);
+
+        if (!providedTypes.containsAll(requiredTypes)) {
+            List<SectionType> missing = requiredTypes.stream()
+                    .filter(type -> !providedTypes.contains(type))
+                    .toList();
+            throw new IllegalArgumentException("Missing sections in update: " + missing);
+        }
+
+        if (newSections.size() != requiredTypes.size()) {
+            throw new IllegalArgumentException("Duplicate or extra sections provided.");
+        }
+
+        this.sections = newSections;
     }
 }

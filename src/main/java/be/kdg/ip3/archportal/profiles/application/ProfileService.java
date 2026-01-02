@@ -1,10 +1,13 @@
 package be.kdg.ip3.archportal.profiles.application;
 
+import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
 import be.kdg.ip3.archportal.communications.shared.CreateNotificationSettingsEvent;
 import be.kdg.ip3.archportal.communications.shared.NotificationType;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
+import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
+import be.kdg.ip3.archportal.profiles.api.dto.ProfileDto;
 import be.kdg.ip3.archportal.profiles.application.command.AcquirePlatformPointsCommand;
 import be.kdg.ip3.archportal.profiles.domain.Library.Game;
 import be.kdg.ip3.archportal.profiles.domain.NotFoundException;
@@ -16,6 +19,7 @@ import be.kdg.ip3.archportal.profiles.domain.friendship.FriendshipRepository;
 import be.kdg.ip3.archportal.profiles.domain.profile.Profile;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileRepository;
+import be.kdg.ip3.archportal.profiles.domain.profile.Section;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.shops.shared.ShopsApi;
 import org.springframework.context.ApplicationEventPublisher;
@@ -89,8 +93,8 @@ public class ProfileService {
         String firstName = token.getClaim("given_name");
         String lastName = token.getClaim("family_name");
         String gamerTag = token.getClaim("preferred_username");
-        String email = token.getClaim("email");
         String keycloakIcon = token.getClaim("icon");
+        String email = token.getClaim("email");
 
         var profile = profileRepository.findById(profileId)
                 .orElseGet(() -> {
@@ -269,5 +273,17 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public Profile getProfile(ProfileId profileId) {
         return profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+    }
+
+    public Profile getAllFromProfile(ProfileId id) {
+        return profileRepository.findById(id)
+                .orElseThrow(id::notFound);
+    }
+
+    public List<ProfileDto.SectionDto> updateSectionVisibility(ProfileId profileId, List<Section> list) {
+        var profile = profileRepository.findById(profileId).orElseThrow(profileId::notFound);
+        profile.updateSectionVisibility(list);
+        profileRepository.save(profile);
+        return profile.getSections().stream().map(ProfileDto.SectionDto::from).toList();
     }
 }

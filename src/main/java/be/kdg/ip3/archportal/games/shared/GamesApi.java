@@ -23,4 +23,6 @@ public interface GamesApi {
     boolean validateGame(UUID uuid);
 
     GrantedAchievementDto findAchievementByExternalAchId(String externalAchId, UUID gameId);
+
+    List<AchievementDto> getAllAchievements(Map<UUID, LocalDateTime> achievementIds,List<UUID> gameIds);
 }

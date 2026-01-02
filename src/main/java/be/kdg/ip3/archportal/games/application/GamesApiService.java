@@ -1,6 +1,7 @@
 package be.kdg.ip3.archportal.games.application;
 
 import be.kdg.ip3.archportal.games.domain.NotFoundException;
+import be.kdg.ip3.archportal.games.domain.game.GameId;
 import be.kdg.ip3.archportal.games.domain.game.GameRepository;
 import be.kdg.ip3.archportal.games.shared.AchievementDto;
 import be.kdg.ip3.archportal.games.shared.GamesApi;
@@ -49,11 +50,24 @@ public class GamesApiService implements GamesApi {
                 .toList();
     }
 
+    @Override
+    public List<AchievementDto> getAllAchievements(Map<UUID, LocalDateTime> achievementIds, List<UUID> gameIds) {
+        var games = gameRepository.findAllById(gameIds);
+        return games.stream()
+                .flatMap(game -> game.getAchievements().stream())
+                .filter(achievement -> achievementIds.containsKey(achievement.getId().id()))
+                .map(achievement -> {
+                    LocalDateTime unlockedAt = achievementIds.get(achievement.getId().id());
+                    return AchievementDto.fromDomain(achievement, unlockedAt);
+                })
+                .toList();
+    }
+
 
     @Override
     public GlobalGameDto getGameById(UUID gameId) {
         var game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new NotFoundException("Game Id["+gameId+"] not found"));
+                .orElseThrow(() -> new NotFoundException("Game Id[" + gameId + "] not found"));
 
         return GlobalGameDto.fromDomain(game);
     }
@@ -61,7 +75,7 @@ public class GamesApiService implements GamesApi {
     @Override
     public int getMaxPlayersForGame(UUID gameId) {
         var game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new NotFoundException("Game Id["+gameId+"] not found"));
+                .orElseThrow(() -> new NotFoundException("Game Id[" + gameId + "] not found"));
 
         return game.getMaxLobbySize();
     }
@@ -86,7 +100,7 @@ public class GamesApiService implements GamesApi {
                 .filter(gameId -> !gameRepository.existsById(gameId))
                 .toList();
     }
-    
+
     @Override
     public String getGameUrl(UUID gameId) {
         var game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Game with id " + gameId + " not found"));

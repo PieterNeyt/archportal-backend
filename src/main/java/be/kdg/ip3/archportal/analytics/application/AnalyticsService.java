@@ -133,4 +133,18 @@ public class AnalyticsService implements AnalyticsApi {
 
         playerStatisticsRepository.save(playerStats);
     }
+
+    public PlayerStatistics getPlayerStats(PlayerId playerId) {
+        return playerStatisticsRepository.findById(playerId)
+                .orElseThrow(() -> new NotFoundException("player stats not found"));
+    }
+
+    public  List<AchievementDto>  getAchievementsFromProfile(PlayerId playerId) {
+        var playerStats = playerStatisticsRepository.findById(playerId)
+                .orElseThrow(() -> new NotFoundException("player stats not found"));
+
+        var achievementIds = playerStats.getAllAchievementIds();
+        var gameIds = playerStats.getAllGameIds();
+        return gamesApi.getAllAchievements(achievementIds,gameIds);
+    }
 }
