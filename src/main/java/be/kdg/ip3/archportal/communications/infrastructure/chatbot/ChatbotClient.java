@@ -17,6 +17,8 @@ public class ChatbotClient {
     private int teamNumber;
     @Value("${model.provider}")
     private String modelProvider;
+    @Value("${ai.api.key}")
+    private String apiKey;
 
     public ChatbotClient(@Qualifier("chatbotApi") RestClient restClient) {
         this.restClient = restClient;
@@ -27,6 +29,7 @@ public class ChatbotClient {
         log.info("Sending message to AI chatbot: {}", message);
         return restClient.post()
                 .uri("")
+                .header("X-API-Key", apiKey)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(message)
                 .retrieve()
