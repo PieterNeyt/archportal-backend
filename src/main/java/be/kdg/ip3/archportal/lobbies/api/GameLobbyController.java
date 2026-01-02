@@ -197,13 +197,14 @@ public class GameLobbyController {
         var lobby = gameLobbyService.validateSession(new GameSessionId(sessionId));
 
         var session = gameLobbyService.getSession(new GameSessionId(sessionId));
-
+        var gamerTag= gameLobbyService.getSessionGamerTag(session.getPlayerId().id());
         return ResponseEntity.ok(
                 new SessionInfo(
                         session.getGameSessionId().id(),
                         lobby.getGameLobbyId().id(),
                         session.getPlayerId().id(),
-                        lobby.getGameId().id()
+                        lobby.getGameId().id(),
+                        gamerTag
                 )
         );
     }
