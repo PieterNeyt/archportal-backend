@@ -1,8 +1,10 @@
 package be.kdg.ip3.archportal.profiles.api;
 
+import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.FriendRequestDto;
 import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.ProfileDto;
+import be.kdg.ip3.archportal.profiles.api.dto.ProfileSyncDto;
 import be.kdg.ip3.archportal.profiles.application.ProfileService;
 import be.kdg.ip3.archportal.profiles.domain.profile.ProfileId;
 import jakarta.validation.Valid;
@@ -24,18 +26,26 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
-    @GetMapping({"", "/"})
-    public ResponseEntity<ProfileDto> getUser(@AuthenticationPrincipal Jwt token) {
-        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
-        var profile = profileService.getProfile(profileId);
+    @GetMapping({"/sync"})
+    public ResponseEntity<ProfileSyncDto> syncUser(@AuthenticationPrincipal Jwt token) {
+        var profile = profileService.syncUser(token);
+        return ResponseEntity.ok(ProfileSyncDto.from(profile));
+    }
+
+    @GetMapping("/{profileId}")
+    public ResponseEntity<ProfileDto> getAllFromProfileFromId(@PathVariable("profileId") UUID profileUUId) {
+        var profileId = new ProfileId(profileUUId);
+        var profile = profileService.getAllFromProfile(profileId);
         return ResponseEntity.ok(ProfileDto.from(profile));
     }
 
-    @PutMapping("/sync")
-    public ResponseEntity<ProfileDto> syncUser(@AuthenticationPrincipal Jwt token) {
-        var profile = profileService.syncUser(token);
+    @GetMapping()
+    public ResponseEntity<ProfileDto> getAllFromProfile(@AuthenticationPrincipal() Jwt token) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var profile = profileService.getAllFromProfile(profileId);
         return ResponseEntity.ok(ProfileDto.from(profile));
     }
+
 
     @PutMapping("/benefits/{benefitId}/toggle")
     public ResponseEntity<ProfileDto> toggleBenefit(
@@ -56,6 +66,23 @@ public class ProfileController {
     @GetMapping("/library")
     public ResponseEntity<List<LibraryGameDto>> getLibrary(@AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var library = profileService.getLibrary(profileId);
+        return ResponseEntity.ok(library);
+    }
+
+    @PutMapping("/section-visibility")
+    public ResponseEntity<List<ProfileDto.SectionDto>> updateSectionVisibility(@AuthenticationPrincipal Jwt token,
+                                                                               @RequestBody List<ProfileDto.SectionDto> sectionDto) {
+        var profileId = new ProfileId(UUID.fromString(token.getSubject()));
+        var sections = profileService.updateSectionVisibility(
+                profileId,
+                sectionDto.stream().map(ProfileDto.SectionDto::toDomain).toList());
+        return ResponseEntity.ok(sections);
+    }
+
+    @GetMapping("/{profileId}/library")
+    public ResponseEntity<List<LibraryGameDto>> getProfileLibrary(@PathVariable("profileId") UUID profileUUId) {
+        var profileId = new ProfileId(profileUUId);
         var library = profileService.getLibrary(profileId);
         return ResponseEntity.ok(library);
     }
@@ -86,23 +113,30 @@ public class ProfileController {
     }
 
     @GetMapping("/friends")
-    public ResponseEntity<List<ProfileDto>> getFriends(@AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<List<ProfileSyncDto>> getFriends(@AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
-        var friends = profileService.getAllFriends(profileId).stream().map(ProfileDto::from).toList();
+        var friends = profileService.getAllFriends(profileId).stream().map(ProfileSyncDto::from).toList();
+        return ResponseEntity.ok(friends);
+    }
+
+    @GetMapping("/{profileId}/friends")
+    public ResponseEntity<List<ProfileSyncDto>> getFriends(@PathVariable("profileId") UUID profileUUId) {
+        var profileId = new ProfileId(profileUUId);
+        var friends = profileService.getAllFriends(profileId).stream().map(ProfileSyncDto::from).toList();
         return ResponseEntity.ok(friends);
     }
 
     @GetMapping("/friend-requests/incoming")
-    public ResponseEntity<List<ProfileDto>> getProfilesIncomingRequests(@AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<List<ProfileSyncDto>> getProfilesIncomingRequests(@AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
-        var profiles = profileService.findAllProfilesIncomingRequests(profileId).stream().map(ProfileDto::from).toList();
+        var profiles = profileService.findAllProfilesIncomingRequests(profileId).stream().map(ProfileSyncDto::from).toList();
         return ResponseEntity.ok(profiles);
     }
 
     @GetMapping("/friend-requests/outgoing")
-    public ResponseEntity<List<ProfileDto>> getProfilesOutgoingRequests(@AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<List<ProfileSyncDto>> getProfilesOutgoingRequests(@AuthenticationPrincipal Jwt token) {
         var profileId = new ProfileId(UUID.fromString(token.getSubject()));
-        var profiles = profileService.findAllProfilesOutgoingRequests(profileId).stream().map(ProfileDto::from).toList();
+        var profiles = profileService.findAllProfilesOutgoingRequests(profileId).stream().map(ProfileSyncDto::from).toList();
         return ResponseEntity.ok(profiles);
     }
 

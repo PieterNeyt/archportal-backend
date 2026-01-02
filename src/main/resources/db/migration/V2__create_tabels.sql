@@ -50,6 +50,88 @@ create table analyticsservice.game_statistics_winner_records
 alter table analyticsservice.game_statistics_winner_records
     owner to "user";
 
+create table profileservice.friendship
+(
+    id           uuid not null
+        primary key,
+    profile_a_id uuid not null,
+    profile_b_id uuid not null,
+    unique (profile_a_id, profile_b_id)
+);
+
+alter table profileservice.friendship
+    owner to "user";
+
+create table profileservice.profile
+(
+    platform_points integer      not null,
+    id              uuid         not null
+        primary key,
+    email           varchar(255) not null,
+    first_name      varchar(255) not null,
+    gamer_tag       varchar(255) not null
+        unique,
+    icon            varchar(255),
+    last_name       varchar(255) not null
+);
+
+alter table profileservice.profile
+    owner to "user";
+
+create table profileservice.friend_requests
+(
+    receiver_id uuid not null
+        constraint fk15vobrb7rv66cvbjkrtdqvav
+            references profileservice.profile,
+    sender_id   uuid not null,
+    constraint uq_friend_request_sender_receiver
+        primary key (sender_id, receiver_id)
+);
+
+alter table profileservice.friend_requests
+    owner to "user";
+
+create table profileservice.profile_library
+(
+    favorite   boolean not null,
+    id         uuid    not null,
+    profile_id uuid    not null
+        constraint fkqcvi1bxqexcua044kqsptultb
+            references profileservice.profile
+);
+
+alter table profileservice.profile_library
+    owner to "user";
+
+create table profileservice.profile_platform_benefits
+(
+    benefit_id uuid not null,
+    profile_id uuid not null
+        constraint fk7dedl6qrgn7cmg2kv104ha710
+            references profileservice.profile
+);
+
+alter table profileservice.profile_platform_benefits
+    owner to "user";
+
+create table profileservice.profile_sections
+(
+    profile_id uuid         not null
+        constraint fkptonat02hi2c3blamfingkmc3
+            references profileservice.profile,
+    type       varchar(255) not null
+        constraint profile_sections_type_check
+            check ((type)::text = ANY
+        ((ARRAY ['GAMES'::character varying, 'FAVORIETES'::character varying, 'STATISTICS'::character varying, 'FRIENDS'::character varying, 'ACHIEVEMENTS'::character varying])::text[])),
+    visibility varchar(255) not null
+        constraint profile_sections_visibility_check
+            check ((visibility)::text = ANY
+                   ((ARRAY ['PUBLIC'::character varying, 'FRIENDS'::character varying, 'PRIVATE'::character varying])::text[]))
+);
+
+alter table profileservice.profile_sections
+    owner to "user";
+
 create table communicationservice.chat_room
 (
     id    uuid         not null
@@ -120,7 +202,7 @@ create table communicationservice.notifications
     type        varchar(255)  not null
         constraint notifications_type_check
             check ((type)::text = ANY
-        ((ARRAY ['CHAT'::character varying, 'SYSTEM'::character varying, 'ACHIEVEMENT'::character varying, 'PARTY_INVITE'::character varying, 'GAME_INVITE'::character varying, 'FRIEND_REQUEST'::character varying, 'TURN_REMINDER'::character varying])::text[]))
+        ((ARRAY ['CHAT'::character varying, 'SYSTEM'::character varying, 'ACHIEVEMENT'::character varying, 'GAME_INVITE'::character varying, 'FRIEND_REQUEST'::character varying, 'TURN_REMINDER'::character varying])::text[]))
     );
 
 alter table communicationservice.notifications
