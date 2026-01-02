@@ -1,8 +1,8 @@
 create table analyticsservice.player_statistics
 (
-    total_minutes_played numeric(21) not null,
-    last_played          timestamp(6),
-    player_id            uuid        not null
+    total_time_played numeric(21) not null,
+    last_played       timestamp(6),
+    player_id         uuid        not null
         primary key
 );
 
@@ -11,10 +11,10 @@ alter table analyticsservice.player_statistics
 
 create table analyticsservice.game_statistics
 (
-    last_played_at         timestamp(6),
-    total_playtime_minutes bigint,
-    game_id                uuid not null,
-    player_statistics_id   uuid not null
+    last_played_at       timestamp(6),
+    total_time_played    bigint,
+    game_id              uuid not null,
+    player_statistics_id uuid not null
         constraint fkb2nxq4c4s45orklggwiywpnpm
             references analyticsservice.player_statistics,
     primary key (game_id, player_statistics_id)
@@ -214,10 +214,11 @@ create table gameservice.games
     price          numeric(19, 2) not null,
     id             uuid           not null
         primary key,
-    studio_id      uuid           not null,
+    studio_id      uuid,
     title          varchar(100)   not null,
     description    varchar(255)   not null,
-    game_url       varchar(255)   not null,
+    game_url       varchar(255)   not null
+        unique,
     genre          varchar(255)   not null
         constraint games_genre_check
             check ((genre)::text = ANY
@@ -270,6 +271,7 @@ alter table gameservice.owner
 create table lobbyservice.game_lobbies
 (
     max_players       integer not null,
+    chat_room_id      uuid,
     game_id           uuid    not null,
     game_lobby_id     uuid    not null
         primary key,
@@ -309,11 +311,123 @@ create table lobbyservice.game_sessions
 alter table lobbyservice.game_sessions
     owner to "user";
 
+create table lobbyservice.party
+(
+    max_members      integer      not null,
+    chat_room_id     uuid         not null,
+    id               uuid         not null
+        primary key,
+    selected_game_id uuid,
+    started_lobby_id uuid,
+    title            varchar(100) not null
+);
+
+alter table lobbyservice.party
+    owner to "user";
+
+create table lobbyservice.party_invite
+(
+    id          uuid not null
+        primary key,
+    party_id    uuid not null
+        constraint fkg0d7md7nqv6y8unxo7tfr722f
+            references lobbyservice.party,
+    receiver_id uuid not null,
+    sender_id   uuid not null
+);
+
+alter table lobbyservice.party_invite
+    owner to "user";
+
+create table lobbyservice.party_member
+(
+    is_host   boolean not null,
+    is_ready  boolean not null,
+    id        uuid    not null
+        primary key,
+    party_id  uuid    not null
+        constraint fkctrpcp93h130dwe6j1jlhf960
+            references lobbyservice.party,
+    player_id uuid    not null
+);
+
+alter table lobbyservice.party_member
+    owner to "user";
+
+create table profileservice.friendship
+(
+    id           uuid not null
+        primary key,
+    profile_a_id uuid not null,
+    profile_b_id uuid not null,
+    unique (profile_a_id, profile_b_id)
+);
+
+alter table profileservice.friendship
+    owner to "user";
+
+create table profileservice.profile
+(
+    platform_points           integer      not null,
+    active_profile_picture_id uuid,
+    active_username_color_id  uuid,
+    id                        uuid         not null
+        primary key,
+    email                     varchar(255) not null,
+    first_name                varchar(255) not null,
+    gamer_tag                 varchar(255) not null
+        unique,
+    icon                      varchar(255),
+    last_name                 varchar(255) not null,
+    original_icon             varchar(255)
+);
+
+alter table profileservice.profile
+    owner to "user";
+
+create table profileservice.friend_requests
+(
+    receiver_id uuid not null
+        constraint fk15vobrb7rv66cvbjkrtdqvav
+            references profileservice.profile,
+    sender_id   uuid not null,
+    constraint uq_friend_request_sender_receiver
+        primary key (sender_id, receiver_id)
+);
+
+alter table profileservice.friend_requests
+    owner to "user";
+
+create table profileservice.profile_library
+(
+    favorite   boolean not null,
+    id         uuid    not null,
+    profile_id uuid    not null
+        constraint fkqcvi1bxqexcua044kqsptultb
+            references profileservice.profile
+);
+
+alter table profileservice.profile_library
+    owner to "user";
+
+create table profileservice.profile_platform_benefits
+(
+    benefit_id uuid not null,
+    profile_id uuid not null
+        constraint fk7dedl6qrgn7cmg2kv104ha710
+            references profileservice.profile,
+    primary key (benefit_id, profile_id)
+);
+
+alter table profileservice.profile_platform_benefits
+    owner to "user";
+
 create table shopservice.cart
 (
-    id         uuid not null
+    applied_benefit_id uuid,
+    id                 uuid not null
         primary key,
-    profile_id uuid not null
+    profile_id         uuid not null
 );
 
 alter table shopservice.cart
@@ -332,11 +446,12 @@ alter table shopservice.cart_items
 
 create table shopservice.orders
 (
-    completed  boolean,
-    id         uuid not null
+    completed                  boolean,
+    id                         uuid not null
         primary key,
-    profile_id uuid not null,
-    payment_id varchar(255)
+    profile_id                 uuid not null,
+    applied_benefit_percentage numeric(38, 2),
+    payment_id                 varchar(255)
 );
 
 alter table shopservice.orders
@@ -356,3 +471,20 @@ create table shopservice.order_line
 alter table shopservice.order_line
     owner to "user";
 
+
+create table shopservice.benefits
+(
+    point_cost    integer      not null,
+    id            uuid         not null
+        primary key,
+    configuration varchar(255),
+    description   varchar(255),
+    name          varchar(255) not null,
+    type          varchar(255) not null
+        constraint benefits_type_check
+            check ((type)::text = ANY
+        ((ARRAY ['USERNAME_COLOR'::character varying, 'GAME_DISCOUNT'::character varying, 'UNIQUE_PROFILE_PICTURE'::character varying])::text[]))
+    );
+
+alter table shopservice.benefits
+    owner to "user";
