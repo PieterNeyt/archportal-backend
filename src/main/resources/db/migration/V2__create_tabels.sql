@@ -1,10 +1,23 @@
+create table analyticsservice.player_statistics
+(
+    total_time_played numeric(21) not null,
+    last_played       timestamp(6),
+    player_id         uuid        not null
+        primary key
+);
+
+alter table analyticsservice.player_statistics
+    owner to "user";
+
 create table analyticsservice.game_statistics
 (
-    last_played_at         timestamp(6),
-    total_playtime_minutes bigint,
-    game_id                uuid not null,
-    profile_id             uuid not null,
-    primary key (game_id, profile_id)
+    last_played_at       timestamp(6),
+    total_time_played    bigint,
+    game_id              uuid not null,
+    player_statistics_id uuid not null
+        constraint fkb2nxq4c4s45orklggwiywpnpm
+            references analyticsservice.player_statistics,
+    primary key (game_id, player_statistics_id)
 );
 
 alter table analyticsservice.game_statistics
@@ -12,12 +25,12 @@ alter table analyticsservice.game_statistics
 
 create table analyticsservice.game_statistics_achievements
 (
-    time_unlocked  timestamp(6) not null,
-    achievement_id uuid         not null,
-    game_id        uuid         not null,
-    profile_id     uuid         not null,
-    constraint fkk4v5751ifp0x4yt71ctkoexbl
-        foreign key (game_id, profile_id) references analyticsservice.game_statistics
+    time_unlocked        timestamp(6) not null,
+    achievement_id       uuid         not null,
+    game_id              uuid         not null,
+    player_statistics_id uuid         not null,
+    constraint fknshxjxmcyu798gpmubo2yroid
+        foreign key (game_id, player_statistics_id) references analyticsservice.game_statistics
 );
 
 alter table analyticsservice.game_statistics_achievements
@@ -25,13 +38,13 @@ alter table analyticsservice.game_statistics_achievements
 
 create table analyticsservice.game_statistics_winner_records
 (
-    played_at  timestamp(6) not null,
-    game_id    uuid         not null,
-    profile_id uuid         not null,
-    session_id uuid         not null,
-    winner     varchar(255) not null,
-    constraint fkg8x5ekhxkglxh1jbu4gbi62fi
-        foreign key (game_id, profile_id) references analyticsservice.game_statistics
+    played_at            timestamp(6) not null,
+    game_id              uuid         not null,
+    player_statistics_id uuid         not null,
+    session_id           uuid         not null,
+    winner               varchar(255) not null,
+    constraint fko4xgid8hwhb5sk5y0mka16qt9
+        foreign key (game_id, player_statistics_id) references analyticsservice.game_statistics
 );
 
 alter table analyticsservice.game_statistics_winner_records
@@ -119,10 +132,11 @@ create table gameservice.games
     price          numeric(19, 2) not null,
     id             uuid           not null
         primary key,
-    studio_id      uuid           not null,
+    studio_id      uuid,
     title          varchar(100)   not null,
     description    varchar(255)   not null,
-    game_url       varchar(255)   not null,
+    game_url       varchar(255)   not null
+        unique,
     genre          varchar(255)   not null
         constraint games_genre_check
             check ((genre)::text = ANY
@@ -175,6 +189,7 @@ alter table gameservice.owner
 create table lobbyservice.game_lobbies
 (
     max_players       integer not null,
+    chat_room_id      uuid,
     game_id           uuid    not null,
     game_lobby_id     uuid    not null
         primary key,
@@ -216,18 +231,17 @@ alter table lobbyservice.game_sessions
 
 create table lobbyservice.party
 (
-    id              uuid         not null
+    max_members      integer      not null,
+    chat_room_id     uuid         not null,
+    id               uuid         not null
         primary key,
-    title           varchar(100) not null,
-    max_members     integer      not null,
-    chat_room_id    uuid         not null,
     selected_game_id uuid,
-    started_lobby_id uuid
+    started_lobby_id uuid,
+    title            varchar(100) not null
 );
 
 alter table lobbyservice.party
     owner to "user";
-
 
 create table lobbyservice.party_invite
 (
@@ -245,23 +259,18 @@ alter table lobbyservice.party_invite
 
 create table lobbyservice.party_member
 (
-    party_id   uuid    not null,
-    player_id  uuid    not null,
-    is_host    boolean not null,
-    is_ready   boolean not null,
-
-    constraint pk_party_member
-        primary key (party_id, player_id),
-
-    constraint fk_party_member_party
-        foreign key (party_id)
-            references lobbyservice.party(id)
-            on delete cascade
+    is_host   boolean not null,
+    is_ready  boolean not null,
+    id        uuid    not null
+        primary key,
+    party_id  uuid    not null
+        constraint fkctrpcp93h130dwe6j1jlhf960
+            references lobbyservice.party,
+    player_id uuid    not null
 );
 
 alter table lobbyservice.party_member
     owner to "user";
-
 
 create table profileservice.friendship
 (
@@ -277,15 +286,18 @@ alter table profileservice.friendship
 
 create table profileservice.profile
 (
-    platform_points integer      not null,
-    id              uuid         not null
+    platform_points           integer      not null,
+    active_profile_picture_id uuid,
+    active_username_color_id  uuid,
+    id                        uuid         not null
         primary key,
-    email           varchar(255) not null,
-    first_name      varchar(255) not null,
-    gamer_tag       varchar(255) not null
+    email                     varchar(255) not null,
+    first_name                varchar(255) not null,
+    gamer_tag                 varchar(255) not null
         unique,
-    icon            varchar(255),
-    last_name       varchar(255) not null
+    icon                      varchar(255),
+    last_name                 varchar(255) not null,
+    original_icon             varchar(255)
 );
 
 alter table profileservice.profile
@@ -321,7 +333,8 @@ create table profileservice.profile_platform_benefits
     benefit_id uuid not null,
     profile_id uuid not null
         constraint fk7dedl6qrgn7cmg2kv104ha710
-            references profileservice.profile
+            references profileservice.profile,
+    primary key (benefit_id, profile_id)
 );
 
 alter table profileservice.profile_platform_benefits
@@ -329,10 +342,10 @@ alter table profileservice.profile_platform_benefits
 
 create table shopservice.cart
 (
-    id         uuid not null
+    applied_benefit_id uuid,
+    id                 uuid not null
         primary key,
-    profile_id uuid not null,
-    appliedBenefitId uuid not null
+    profile_id         uuid not null
 );
 
 alter table shopservice.cart
@@ -351,12 +364,12 @@ alter table shopservice.cart_items
 
 create table shopservice.orders
 (
-    completed  boolean,
-    id         uuid not null
+    completed                  boolean,
+    id                         uuid not null
         primary key,
-    profile_id uuid not null,
-    applied_benefit_percentage  decimal(5,4),
-    payment_id varchar(255)
+    profile_id                 uuid not null,
+    applied_benefit_percentage numeric(38, 2),
+    payment_id                 varchar(255)
 );
 
 alter table shopservice.orders
@@ -388,8 +401,8 @@ create table shopservice.benefits
     type          varchar(255) not null
         constraint benefits_type_check
             check ((type)::text = ANY
-                   ((ARRAY ['USERNAME_COLOR'::character varying, 'GAME_DISCOUNT'::character varying, 'UNIQUE_PROFILE_PICTURE'::character varying])::text[]))
-);
+        ((ARRAY ['USERNAME_COLOR'::character varying, 'GAME_DISCOUNT'::character varying, 'UNIQUE_PROFILE_PICTURE'::character varying])::text[]))
+    );
 
 alter table shopservice.benefits
     owner to "user";
