@@ -24,8 +24,8 @@ public class PlayerStatistics {
         this.lastPlayed = lastPlayed;
     }
 
-    public PlayerStatistics(PlayerId playerId, Duration totalMinutesPlayed, Date lastPlayed) {
-        this(playerId, new ArrayList<>(), totalMinutesPlayed, lastPlayed);
+    public PlayerStatistics(PlayerId playerId) {
+        this(playerId, new ArrayList<>(), Duration.ZERO, null);
     }
 
     public GameStatistics findGameStatisticsById(GameStatisticsId gameStatsId) {

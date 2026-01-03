@@ -100,6 +100,7 @@ public class ProfileService {
                 .orElseGet(() -> {
                     Profile newProfile = Profile.createProfile(profileId, firstName, lastName, gamerTag, email, keycloakIcon);
                     eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
+                    eventPublisher.publishEvent(new CreateNotificationSettingsEvent(profileId.id()));
                     return newProfile;
                 });
 
