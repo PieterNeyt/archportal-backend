@@ -5,7 +5,9 @@ import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoom;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomId;
 import be.kdg.ip3.archportal.communications.domain.chatroom.ChatRoomRepository;
 import be.kdg.ip3.archportal.communications.domain.chatroom.Message;
+import be.kdg.ip3.archportal.communications.infrastructure.chatbot.ChatbotClient;
 import be.kdg.ip3.archportal.communications.shared.AddNotificationEvent;
+import be.kdg.ip3.archportal.lobbies.shared.LobbiesApi;
 import be.kdg.ip3.archportal.profiles.shared.FriendShipCreatedEvent;
 import be.kdg.ip3.archportal.profiles.shared.ProfileDto;
 import be.kdg.ip3.archportal.profiles.shared.ProfilesApi;
@@ -36,12 +38,16 @@ class ChatRoomSociableTest {
     ProfilesApi profilesApi;
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
+    @Mock
+    ChatbotClient chatbotClient;
+    @Mock
+    LobbiesApi lobbiesApi;
 
     ChatRoomService service;
 
     @BeforeEach
     void setUp() {
-        service = new ChatRoomService(chatRoomRepository, profilesApi, applicationEventPublisher);
+        service = new ChatRoomService(chatRoomRepository, profilesApi, applicationEventPublisher, chatbotClient, lobbiesApi);
     }
 
     @Nested
@@ -67,7 +73,7 @@ class ChatRoomSociableTest {
 
             when(profilesApi.existsById(creatorId)).thenReturn(true);
             when(profilesApi.getProfilesFromGamerTags(gamerTags)).thenReturn(List.of(
-                    new ProfileDto(UUID.randomUUID(), "f", "l", "icon", "a",new HashSet<>())
+                    new ProfileDto(UUID.randomUUID(), "f", "l", "icon", "a", new HashSet<>())
             ));
 
             assertThatThrownBy(() -> service.createChatRoom(gamerTags, creatorId))
@@ -86,8 +92,8 @@ class ChatRoomSociableTest {
 
             when(profilesApi.existsById(creatorId)).thenReturn(true);
             when(profilesApi.getProfilesFromGamerTags(gamerTags)).thenReturn(List.of(
-                    new ProfileDto(profileAId, "f", "l", "icon", "a", new  HashSet<>()),
-                    new ProfileDto(profileBId, "f2", "l2", "icon2", "b",new  HashSet<>())
+                    new ProfileDto(profileAId, "f", "l", "icon", "a", new HashSet<>()),
+                    new ProfileDto(profileBId, "f2", "l2", "icon2", "b", new HashSet<>())
             ));
             when(profilesApi.getFriendIdsWithCreator(creatorId, List.of(profileAId, profileBId))).thenReturn(List.of(profileAId));
 
