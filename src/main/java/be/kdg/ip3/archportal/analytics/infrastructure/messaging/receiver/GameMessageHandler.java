@@ -27,23 +27,24 @@ public class GameMessageHandler {
     void onTTTGameResultMessage(TttGameResultMessage message) {
         log.info("Received message: {}", message);
         analyticsService.recordGameResult(
-                new SessionId(message.sessionId()) ,
-                message.winner(),
-                message.timestamp()
-        );
-    }
-    @RabbitListener(queues = RabbitMQTopology.CHECKERS_QUEUE_NAME)
-    void onCheckersGameResultMessage(CheckersGameResultMessage message) {
-        log.info("Received Checkers message: {}", message);
-        analyticsService.recordGameResult(
                 new SessionId(message.sessionId()),
                 message.winner(),
                 message.timestamp()
         );
     }
+
+    @RabbitListener(queues = RabbitMQTopology.CHECKERS_QUEUE_NAME)
+    void onCheckersGameResultMessage(CheckersGameResultMessage msg) {
+        analyticsService.recordGameResult(
+                new SessionId(msg.sessionId()),
+                msg.winner(),
+                java.time.LocalDateTime.parse(msg.timestamp())
+        );
+    }
+
     @RabbitListener(queues = RabbitMQTopology.ACHIEVEMENT_QUEUE_NAME)
     void onAchievementUnlockedMessage(AchievementUnlockedMessage message) {
-        log.info("Received Achievement unlock message: {}", message);
+
         var playerId = new PlayerId(message.playerId());
         var gameId = new GameId(message.gameId());
         var gameStatsId = new GameStatisticsId(gameId, playerId);
@@ -53,5 +54,6 @@ public class GameMessageHandler {
                 playerId,
                 gameStatsId
         );
+
     }
 }
