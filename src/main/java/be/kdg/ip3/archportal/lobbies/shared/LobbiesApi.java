@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface LobbiesApi {
     UUID getPlayerIdBySessionId(UUID sessionId);
     UUID getGameIdBySessionId(UUID sessionId);
+    String getGameTitleOfCurrentGameByProfileId(UUID profileId);
 }

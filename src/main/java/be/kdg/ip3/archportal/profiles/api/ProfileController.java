@@ -1,6 +1,5 @@
 package be.kdg.ip3.archportal.profiles.api;
 
-import be.kdg.ip3.archportal.games.shared.GlobalGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.FriendRequestDto;
 import be.kdg.ip3.archportal.profiles.api.dto.LibraryGameDto;
 import be.kdg.ip3.archportal.profiles.api.dto.ProfileDto;
@@ -123,6 +122,15 @@ public class ProfileController {
     public ResponseEntity<List<ProfileSyncDto>> getFriends(@PathVariable("profileId") UUID profileUUId) {
         var profileId = new ProfileId(profileUUId);
         var friends = profileService.getAllFriends(profileId).stream().map(ProfileSyncDto::from).toList();
+        return ResponseEntity.ok(friends);
+    }
+
+    @GetMapping("/{profileId}/is-friends")
+    public ResponseEntity<Boolean> getFriends(@PathVariable("profileId") UUID profileUUId,
+                                              @AuthenticationPrincipal Jwt token) {
+        var profileVisitingId = new ProfileId(UUID.fromString(token.getSubject()));
+        var profileVisitorId = new ProfileId(profileUUId);
+        var friends = profileService.getIsFriends(profileVisitingId,profileVisitorId);
         return ResponseEntity.ok(friends);
     }
 
