@@ -372,7 +372,7 @@ FROM profileservice.profile p
          CROSS JOIN (
     VALUES
         ('GAMES'),
-        ('FAVORIETES'),
+        ('FAVORITES'),
         ('STATISTICS'),
         ('FRIENDS'),
         ('ACHIEVEMENTS')

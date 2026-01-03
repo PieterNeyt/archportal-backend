@@ -286,4 +286,14 @@ public class ProfileService {
         profileRepository.save(profile);
         return profile.getSections().stream().map(ProfileDto.SectionDto::from).toList();
     }
+
+    public boolean getIsFriends(ProfileId profileVisitingId, ProfileId profileVisitorId) {
+        if (profileVisitingId.equals(profileVisitorId)) return false;
+
+        var profileFriends = getAllFriends(profileVisitingId);
+        if (profileFriends == null) return false;
+
+        return profileFriends.stream()
+                .anyMatch(friend -> friend.getId().equals(profileVisitorId));
+    }
 }
