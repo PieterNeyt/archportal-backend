@@ -56,12 +56,12 @@ public class GameLobbyService implements LobbiesApi {
 
     @Override
     public String getGameTitleOfCurrentGameByProfileId(UUID profileId) {
-        var lobby = gameLobbies.getLobbyFromPLayerID(new PlayerId(profileId)).orElse(null);
-        var gameTitle = "";
-        if (lobby != null) {
-            gameTitle = gamesApi.getGameById(lobby.getGameId().id()).title();
-        }
-        return gameTitle;
+        if (profileId == null)
+            return "";
+        
+        return gameLobbies.getLobbyFromPLayerID(new PlayerId(profileId))
+                .map(lobby -> gamesApi.getGameById(lobby.getGameId().id()).title())
+                .orElse("");
     }
 
     @Override
@@ -227,11 +227,10 @@ public class GameLobbyService implements LobbiesApi {
                         session.getEndTime()
                 ))
         );
-        if (lobby.getPlayers().isEmpty()){
+        if (lobby.getPlayers().isEmpty()) {
             publisher.publishEvent(new LobbyEndedEvent(lobby.getGameLobbyId()));
             gameLobbies.delete(lobby);
-        }
-        else{
+        } else {
             gameLobbies.save(lobby);
         }
         publisher.publishEvent(new ChatRoomLeftEvent(playerId.id(), lobby.getChatRoomId().id()));

@@ -59,7 +59,7 @@ public class ChatRoomController {
 
     @PostMapping("/bot")
     public ResponseEntity<String> sendMessage(@Valid @RequestBody CreateMessageDto dto, @AuthenticationPrincipal Jwt token) {
-        var profileId = UUID.fromString(token.getSubject());
+        var profileId = token != null ? UUID.fromString(token.getSubject()) : null;
         var message = chatRoomService.createChatBotMessage(profileId, dto.text());
         return ResponseEntity.ok(message);
     }
