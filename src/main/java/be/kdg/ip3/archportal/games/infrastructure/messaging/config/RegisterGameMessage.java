@@ -1,11 +1,14 @@
 package be.kdg.ip3.archportal.games.infrastructure.messaging.config;
 
+import be.kdg.ip3.archportal.games.application.command.AchievementCommand;
+import be.kdg.ip3.archportal.games.domain.achievement.Achievement;
 import be.kdg.ip3.archportal.games.domain.game.GameGenre;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public record RegisterGameMessage(
         @Size(min = 1, max = 100)
@@ -24,6 +27,7 @@ public record RegisterGameMessage(
         GameGenre genre,
         @NotNull
         @Min(1)
-        int maxlobbysize
+        int maxlobbysize,
+        List<AchievementCommand> achievements
 ) {
 }

@@ -54,10 +54,6 @@ public class RabbitMQTopology {
     }
 
 
-    @Bean
-    TopicExchange platformExchange() {
-        return new TopicExchange(PLATFORM_EXCHANGE);
-    }
 
     @Bean
     Queue registerGameQueue() {

@@ -9,18 +9,23 @@ import be.kdg.ip3.archportal.analytics.infrastructure.messaging.config.Achieveme
 import be.kdg.ip3.archportal.analytics.infrastructure.messaging.config.CheckersGameResultMessage;
 import be.kdg.ip3.archportal.analytics.infrastructure.messaging.config.RabbitMQTopology;
 import be.kdg.ip3.archportal.analytics.infrastructure.messaging.config.TttGameResultMessage;
+import be.kdg.ip3.archportal.games.shared.GamesApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 
 @Slf4j
 @Component
 public class GameMessageHandler {
     private final AnalyticsService analyticsService;
+    private final GamesApi gamesApi;
 
-    public GameMessageHandler(AnalyticsService analyticsService) {
+    public GameMessageHandler(AnalyticsService analyticsService, GamesApi gamesApi) {
         this.analyticsService = analyticsService;
+        this.gamesApi = gamesApi;
     }
 
     @RabbitListener(queues = RabbitMQTopology.TTT_QUEUE_NAME)
@@ -56,4 +61,24 @@ public class GameMessageHandler {
         );
 
     }
+
+    @RabbitListener(queues = RabbitMQTopology.UNLOCKED_ACL_ACHIEVEMENT_QUEUE)
+    void onUnlockedAclAchievementMessage(AchievementUnlockedMessage message) {
+
+        log.info("ACL achievement message: gameId={}, playerId={}, externalAchId={}",
+                message.gameId(), message.playerId(), message.externalAchId());
+
+        var playerId = new PlayerId(message.playerId());
+        var gameId = gamesApi.getGameIdByName("Chess");
+        var gameStatsId = new GameStatisticsId(new GameId(gameId), playerId);
+
+        analyticsService.grantAchievement(
+                message.externalAchId(),
+                playerId,
+                gameStatsId
+        );
+
+    }
+
+
 }
