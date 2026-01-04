@@ -205,6 +205,9 @@ public class GameLobbyService implements LobbiesApi {
                 .findFirst()
                 .orElseThrow(() -> new SessionNotFoundException(sessionId));
     }
+    public String getSessionGamerTag(UUID profileId) {
+       return profileApi.getProfileGamerTag(profileId);
+    }
 
 
     public boolean isPlayerInLobby(PlayerId playerId) {

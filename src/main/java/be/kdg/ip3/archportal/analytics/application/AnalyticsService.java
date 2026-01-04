@@ -69,17 +69,20 @@ public class AnalyticsService implements AnalyticsApi {
     private void instantiateSingleGameStatistics(CreateGameStatsDto dto) {
         var playerId = new PlayerId(dto.profileID());
         var gameId = new GameId(dto.gameID());
-        var gameStatsId = new GameStatisticsId(gameId,playerId);
+        var gameStatsId = new GameStatisticsId(gameId, playerId);
 
         if (!gamesApi.validateGame(gameId.id()))
             throw new NotFoundException("Game not found");
 
-        var playerStats = playerStatisticsRepository.findById(playerId)
-                .orElseThrow(() -> new NotFoundException("player stats not found"));
+        var playerStats = getOrCreatePlayerStatistics(playerId);
 
         playerStats.addGameStatistics(gameStatsId);
-
         playerStatisticsRepository.save(playerStats);
+    }
+
+    private PlayerStatistics getOrCreatePlayerStatistics(PlayerId playerId) {
+        return playerStatisticsRepository.findById(playerId)
+                .orElseGet(() -> new PlayerStatistics(playerId));
     }
 
     public GameStatistics getGameStatistics(PlayerId playerId, GameId gameId) {
