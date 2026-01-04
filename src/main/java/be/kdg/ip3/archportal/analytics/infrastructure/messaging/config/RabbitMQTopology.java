@@ -17,6 +17,9 @@ public class RabbitMQTopology {
 
     public static final String ACHIEVEMENT_EXCHANGE_NAME = "achievement-exchange";
     public static final String ACHIEVEMENT_QUEUE_NAME = "achievement-queue";
+
+    public static final String PLATFORM_EXCHANGE = "platformExchange";
+    public static final String UNLOCKED_ACL_ACHIEVEMENT_QUEUE = "archportal.achievement.unlocked.queue";
     // ttt topology
 
     @Bean
@@ -63,5 +66,22 @@ public class RabbitMQTopology {
     @Bean
     Binding achievementQueueToAchievementExchangeBinding() {
         return BindingBuilder.bind(achievementQueue()).to(achievementExchange()).with("*.achievement.unlock");
+    }
+
+    @Bean
+    TopicExchange platformExchange() {
+        return new TopicExchange(PLATFORM_EXCHANGE);
+    }
+
+    @Bean
+    Queue unlockAchievementQueue() {
+        return QueueBuilder.nonDurable(UNLOCKED_ACL_ACHIEVEMENT_QUEUE).build();
+    }
+
+    @Bean
+    Binding unlockAchievementBinding(Queue unlockAchievementQueue, TopicExchange platformExchange) {
+        return BindingBuilder.bind(unlockAchievementQueue)
+                .to(platformExchange)
+                .with("platform.achievement.unlocked");
     }
 }

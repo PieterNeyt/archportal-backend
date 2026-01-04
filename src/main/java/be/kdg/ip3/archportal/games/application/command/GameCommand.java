@@ -42,7 +42,7 @@ public record GameCommand(
                 message.gameUrl(),
                 message.price(),
                 message.genre(),
-                message.maxlobbysize()
+                message.maxLobbySize()
         );
     }
 

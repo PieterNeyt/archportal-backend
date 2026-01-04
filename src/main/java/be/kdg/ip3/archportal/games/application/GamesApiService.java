@@ -63,6 +63,12 @@ public class GamesApiService implements GamesApi {
                 .toList();
     }
 
+    @Override
+    public UUID getGameIdByName(String gameName) {
+        return gameRepository.findIdByName(gameName)
+                .orElseThrow(() -> new NotFoundException("Game with name [" + gameName + "] not found"));
+    }
+
 
     @Override
     public GlobalGameDto getGameById(UUID gameId) {
