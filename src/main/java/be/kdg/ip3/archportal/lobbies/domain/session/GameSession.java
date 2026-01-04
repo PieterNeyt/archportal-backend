@@ -41,13 +41,10 @@ public class GameSession {
     public static GameSession create(GameLobbyId gameLobbyId,
                                      PlayerId playerId,
                                      String baseLaunchUrl) {
-
         var sessionId = GameSessionId.create();
-        String launchUrl = baseLaunchUrl + "session/" + sessionId.id();
-
+        String launchUrl = String.format("%s%s/%s", baseLaunchUrl, gameLobbyId.id(), sessionId.id());
         return new GameSession(sessionId, gameLobbyId, playerId, launchUrl);
     }
-
     public void endSession() {
         this.endTime = LocalDateTime.now();
     }

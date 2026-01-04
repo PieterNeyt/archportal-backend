@@ -30,7 +30,17 @@ public class RegisterMessageHandler {
     )
     void onRegisterAclGameMessage(@Valid RegisterGameMessage message) {
         log.info("Received register game message from acl: {}", message);
-        gameService.createGameFromMessage(GameCommand.fromMessage(message));
+
+        // 1) Create game
+        var game = gameService.createGameFromMessage(GameCommand.fromMessage(message));
+
+        // 2) Add achievements
+        if (message.achievements() != null) {
+            message.achievements().forEach(a -> {
+                gameService.addAchievementFromExternalSystem(a, game.getId());
+            });
+        }
     }
+
 
 }

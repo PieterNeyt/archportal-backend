@@ -25,4 +25,5 @@ public interface GamesApi {
     GrantedAchievementDto findAchievementByExternalAchId(String externalAchId, UUID gameId);
 
     List<AchievementDto> getAllAchievements(Map<UUID, LocalDateTime> achievementIds,List<UUID> gameIds);
+    UUID getGameIdByName(String gameName);
 }

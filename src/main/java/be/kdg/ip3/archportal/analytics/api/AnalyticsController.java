@@ -55,24 +55,6 @@ public class AnalyticsController {
         return ResponseEntity.ok(achievements);
     }
 
-
-    @PostMapping("/game/{gameId}/achievement/{externalAchievementId}/user/{userId}")
-    public ResponseEntity<Void> grantAchievement(@PathVariable("externalAchievementId") String externalAchId,
-                                                 @PathVariable("userId") UUID userUUId,
-                                                     @PathVariable("gameId") UUID gameUUID) {
-        var playerId = new PlayerId(userUUId);
-        var gameId = new GameId(gameUUID);
-        var gameStatsId = new GameStatisticsId(gameId,playerId);
-
-        analyticsService.grantAchievement(externalAchId,playerId,gameStatsId);
-
-        var location = UriComponentsBuilder.fromPath("/api/analytics/game/{gameId}/achievement/{achievementId}/user/{userId}")
-                .buildAndExpand(gameUUID, externalAchId, playerId.id())
-                .toUri();
-
-        return ResponseEntity.created(location).build();
-    }
-
     @GetMapping("/game/{gameId}/achievements")
     public ResponseEntity<List<AchievementDto>> getAchievements(@PathVariable("gameId") UUID gameUUID, @AuthenticationPrincipal Jwt jwt) {
         var playerId = new PlayerId(UUID.fromString(jwt.getSubject()));

@@ -37,6 +37,12 @@ public class DbGameRepository implements GameRepository {
                 .toList();
     }
 
+
+    @Override
+    public Optional<UUID> findIdByName(String name) {
+        return jpaGameRepository.findGameIdByName(name);
+    }
+
     @Override
     public Optional<Game> findById(UUID gameId) {
         return jpaGameRepository.findById(gameId).map(JpaGameEntity::toDomain);
