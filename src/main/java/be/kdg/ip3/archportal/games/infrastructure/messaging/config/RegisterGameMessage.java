@@ -24,6 +24,6 @@ public record RegisterGameMessage(
         GameGenre genre,
         @NotNull
         @Min(1)
-        int maxlobbysize
+        int maxLobbySize
 ) {
 }
