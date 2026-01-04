@@ -32,7 +32,7 @@ VALUES ('f7b56a1e-1c63-4d0c-aa75-3b40e8253e19', '3f071d5d-5d2e-4b5f-9c12-7cf7e90
         'A cooperative adventure where players defend an ancient forest from encroaching corruption.', 44.99,
         'https://us1.discourse-cdn.com/flex020/uploads/makecode/original/3X/a/6/a6d432439027cb0df20f1907aa9cfca496add0e4.png',
         'https://hub.example.com/games/forestbound', 'ADVENTURE', 12),
-       ('1b2d89fa-bd59-4873-b568-8df26c3a047c', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', 'Tic-Tac-Toe Deluxe',
+       ('1b2d89fa-bd59-4873-b568-8df26c3a047c', 'd1ed8db6-2c4a-4b72-9481-7dfcb2a3a912', 'Tic-Tac-Toe Deluxe local',
         'Speel met kruisjes en gaatjes', 44.99,
         'https://content.tinytap.it/2CF7E204-AE31-418B-A18D-3212C7EDBBC6/coverImage.png?ver=0',
         'http://localhost:5174/ttt/', 'STRATEGY', 2),

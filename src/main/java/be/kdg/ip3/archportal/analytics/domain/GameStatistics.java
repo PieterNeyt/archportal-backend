@@ -46,11 +46,9 @@ public class GameStatistics {
         boolean alreadyUnlocked = this.achievements.stream()
                 .anyMatch(a -> a.getAchievementId().equals(achievementId));
 
-        if (alreadyUnlocked)
-            throw new IllegalStateException("Achievement '" + achievementId.id() + "' has already been unlocked for this player.");
-
-
-        this.achievements.add(new Achievement(achievementId));
+        if (!alreadyUnlocked){
+            this.achievements.add(new Achievement(achievementId));
+        }
     }
 
     public Map<UUID, LocalDateTime> getAchievementIds() {
