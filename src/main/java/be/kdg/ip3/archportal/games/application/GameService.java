@@ -51,8 +51,8 @@ public class GameService {
         return game;
     }
 
-    public void createGameFromMessage(GameCommand command) {
-        createGameInternal(command, null);
+    public Game createGameFromMessage(GameCommand command) {
+        return createGameInternal(command, null);
     }
 
     private Game createGameInternal(GameCommand command, GameStudioId studioId) {
@@ -93,5 +93,16 @@ public class GameService {
 
         this.gameRepository.save(game);
         return achievement;
+    }
+
+    public void addAchievementFromExternalSystem(AchievementCommand cmd, GameId gameId) {
+        var game = gameRepository.findById(gameId.id())
+                .orElseThrow(() -> new NotFoundException("game not found"));
+
+
+
+        game.addAchievement(new Achievement(cmd.title(), cmd.description(), cmd.imageUrl(), new ExternalAchId(cmd.externalAchId())));
+
+        gameRepository.save(game);
     }
 }

@@ -23,4 +23,24 @@ public class RegisterMessageHandler {
         log.info("Received message: {}", message);
         gameService.createGameFromMessage(GameCommand.fromMessage(message));
     }
+
+    @RabbitListener(
+            queues = RabbitMQTopology.REGISTER_ACL_GAME_QUEUE,
+            containerFactory = "simpleRabbitListenerContainerFactory"
+    )
+    void onRegisterAclGameMessage(@Valid RegisterGameMessage message) {
+        log.info("Received register game message from acl: {}", message);
+
+        // 1) Create game
+        var game = gameService.createGameFromMessage(GameCommand.fromMessage(message));
+
+        // 2) Add achievements
+        if (message.achievements() != null) {
+            message.achievements().forEach(a -> {
+                gameService.addAchievementFromExternalSystem(a, game.getId());
+            });
+        }
+    }
+
+
 }

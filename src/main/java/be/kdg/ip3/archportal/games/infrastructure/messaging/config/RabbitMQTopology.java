@@ -12,6 +12,11 @@ public class RabbitMQTopology {
     public static final String REGISTER_GAME_DLX = "register-exchange.dlx";
     public static final String REGISTER_GAME_DLQ = "register-queue.dlq";
 
+    public static final String PLATFORM_EXCHANGE = "platformExchange";
+    public static final String REGISTER_ACL_GAME_QUEUE = "archportal.games.register.queue";
+
+
+
     @Bean
     TopicExchange registerExchange() {
         return new TopicExchange(REGISTER_GAME_EXCHANGE);
@@ -46,5 +51,19 @@ public class RabbitMQTopology {
                 .bind(registerGameDlq())
                 .to(registerGameDlx())
                 .with("register.game.failed");
+    }
+
+
+
+    @Bean
+    Queue registerGameQueue() {
+        return QueueBuilder.nonDurable(REGISTER_ACL_GAME_QUEUE).build();
+    }
+
+    @Bean
+    Binding registerGameBinding(Queue registerGameQueue, TopicExchange platformExchange) {
+        return BindingBuilder.bind(registerGameQueue)
+                .to(platformExchange)
+                .with("platform.game.registered");
     }
 }
