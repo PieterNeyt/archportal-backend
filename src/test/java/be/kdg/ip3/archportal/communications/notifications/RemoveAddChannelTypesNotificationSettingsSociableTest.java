@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -119,6 +120,45 @@ public class RemoveAddChannelTypesNotificationSettingsSociableTest {
             assertThatThrownBy(() -> service.removeChannelType(channelToRemove,profileId ))
                     .isInstanceOf(NotFoundException.class)
                     .hasMessage("Profile [" + profileId.id() +"] not found");
+        }
+    }
+
+    @Nested
+    class SettingsLifecycle {
+        @Test
+        void createNotificationSettings_savesNewSettings() {
+            var profileId = UUID.randomUUID();
+
+            service.createNotificationSettings(profileId);
+
+            var captor = ArgumentCaptor.forClass(NotificationSettings.class);
+            verify(notificationSettingsRepository).save(captor.capture());
+            assertThat(captor.getValue().getProfileId().id()).isEqualTo(profileId);
+        }
+
+        @Test
+        void getNotificationSettings_returnsDto() {
+            var profileId = new ProfileId(UUID.randomUUID());
+            var settings = new NotificationSettings(profileId);
+
+            when(notificationSettingsRepository.findById(profileId)).thenReturn(Optional.of(settings));
+
+            var result = service.getNotificationSettings(profileId);
+
+            assertThat(result.channels()).isEqualTo(settings.getChannelType());
+        }
+    }
+    
+    @Nested
+    class ExceptionFlow {
+
+        @Test
+        void getNotificationSettings_profileNotFound_throwsNotFoundException() {
+            var profileId = new ProfileId(UUID.randomUUID());
+            when(notificationSettingsRepository.findById(profileId)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> service.getNotificationSettings(profileId))
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 }
