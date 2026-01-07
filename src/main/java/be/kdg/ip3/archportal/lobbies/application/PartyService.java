@@ -149,7 +149,7 @@ public class PartyService {
         else
             partyRepository.save(party);
 
-        publisher.publishEvent(new ChatRoomLeftEvent(party.getChatRoomId().id(), playerId.id()));
+        publisher.publishEvent(new ChatRoomLeftEvent(playerId.id(), party.getChatRoomId().id()));
     }
 
     public void kickFromParty(PlayerId playerId, String gamertag) {
@@ -160,7 +160,7 @@ public class PartyService {
         party.checkHost(playerId);
         party.leaveParty(memberId);
         partyRepository.save(party);
-        publisher.publishEvent(new ChatRoomLeftEvent(party.getChatRoomId().id(), memberId.id()));
+        publisher.publishEvent(new ChatRoomLeftEvent(memberId.id(), party.getChatRoomId().id()));
     }
 
     public List<GlobalGameDto> getEligibleGames(PlayerId playerId) {
