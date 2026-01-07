@@ -42,9 +42,22 @@ public class GameSession {
                                      PlayerId playerId,
                                      String baseLaunchUrl) {
         var sessionId = GameSessionId.create();
-        String launchUrl = String.format("%s%s/%s", baseLaunchUrl, gameLobbyId.id(), sessionId.id());
+
+        String launchUrl;
+        if (baseLaunchUrl.contains("localhost:3333")) {
+            launchUrl = baseLaunchUrl;
+        } else {
+            launchUrl = String.format(
+                    "%s%s/%s",
+                    baseLaunchUrl,
+                    gameLobbyId.id(),
+                    sessionId.id()
+            );
+        }
+
         return new GameSession(sessionId, gameLobbyId, playerId, launchUrl);
     }
+
     public void endSession() {
         this.endTime = LocalDateTime.now();
     }
